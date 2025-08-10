@@ -1,6 +1,9 @@
 import { StyleSheet, View, TextInput, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Dashboard() {
+  const navigation = useNavigation();
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <TextInput
@@ -9,13 +12,13 @@ export default function Dashboard() {
         autoCapitalize="none"
       />
       <View style={styles.gridContainer}>
-        <TouchableOpacity style={styles.squareButton}><Text style={styles.buttonText}>Button 1</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.squareButton} onPress={() => navigation.navigate('JobList')}><Text style={styles.buttonText}>Button 1</Text></TouchableOpacity>
         <TouchableOpacity style={styles.squareButton}><Text style={styles.buttonText}>Button 2</Text></TouchableOpacity>
         <TouchableOpacity style={styles.squareButton}><Text style={styles.buttonText}>Button 3</Text></TouchableOpacity>
         <TouchableOpacity style={styles.squareButton}><Text style={styles.buttonText}>Button 4</Text></TouchableOpacity>
       </View>
       <View style={styles.columnContainer}>
-        <TouchableOpacity style={styles.rectButton}><Text style={styles.buttonText}>Wide Button 1</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.rectButton} onPress={() => navigation.navigate('Activity')}><Text style={styles.buttonText}>Wide Button 1</Text></TouchableOpacity>
         <TouchableOpacity style={styles.rectButton}><Text style={styles.buttonText}>Wide Button 2</Text></TouchableOpacity>
         <TouchableOpacity style={styles.rectButton}><Text style={styles.buttonText}>Wide Button 3</Text></TouchableOpacity>
       </View>
