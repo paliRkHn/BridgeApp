@@ -1,0 +1,49 @@
+CREDITS
+=======
+
+Bridge App - Community Services Platform
+Version 1.0.0
+Last updated: December 2024
+
+ICONS & GRAPHICS
+================
+
+This app uses icons from Flaticon, a free icon library.
+
+Job icons created by Smashicons - Flaticon
+Available at: https://www.flaticon.com/free-icons/job
+
+Bookmark icons created by Mihimihi - Flaticon
+Available at: https://www.flaticon.com/free-icons/bookmark
+
+Paperwork icons created by Smashicons - Flaticon
+Available at: https://www.flaticon.com/free-icons/paperwork
+
+Username icons created by saoso - Flaticon
+Available at: https://www.flaticon.com/free-icons/username
+
+Employee icons created by Tanah Basah - Flaticon
+Available at: https://www.flaticon.com/free-icons/employee
+
+Set up icons created by Gajah Mada - Flaticon
+Available at: https://www.flaticon.com/free-icons/set-up
+
+TECHNOLOGY STACK
+================
+
+• React Native
+• React Navigation
+• Vector Icons
+• Expo (if applicable)
+
+DEVELOPMENT
+===========
+
+Bridge App - Community Services Platform
+Developed for connecting community workers and opportunities.
+
+LICENSE
+=======
+
+This project is proprietary software.
+Icons used under Flaticon's free license with proper attribution. 

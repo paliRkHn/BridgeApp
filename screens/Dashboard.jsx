@@ -1,4 +1,4 @@
-import { StyleSheet, View, TextInput, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TextInput, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Dashboard() {
@@ -12,15 +12,30 @@ export default function Dashboard() {
         autoCapitalize="none"
       />
       <View style={styles.gridContainer}>
-        <TouchableOpacity style={styles.squareButton} onPress={() => navigation.navigate('JobList')}><Text style={styles.buttonText}>Button 1</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.squareButton}><Text style={styles.buttonText}>Button 2</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.squareButton}><Text style={styles.buttonText}>Button 3</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.squareButton}><Text style={styles.buttonText}>Button 4</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.squareButton} onPress={() => navigation.navigate('JobList')}>
+          <Image source={require('../assets/mobile.png')} style={styles.buttonIcon} resizeMode="contain" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.squareButton}>
+          <Image source={require('../assets/bookmark.png')} style={styles.buttonIcon} resizeMode="contain" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.squareButton}>
+          <Image source={require('../assets/papers.png')} style={styles.buttonIcon} resizeMode="contain" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.squareButton} onPress={() => navigation.navigate('Profile')}>
+          <Image source={require('../assets/user.png')} style={styles.buttonIcon} resizeMode="contain" />
+        </TouchableOpacity>
       </View>
       <View style={styles.columnContainer}>
-        <TouchableOpacity style={styles.rectButton} onPress={() => navigation.navigate('Activity')}><Text style={styles.buttonText}>Wide Button 1</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.rectButton}><Text style={styles.buttonText}>Wide Button 2</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.rectButton}><Text style={styles.buttonText}>Wide Button 3</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.rectButton} onPress={() => navigation.navigate('Activity')}>
+          <Image source={require('../assets/time.png')} style={styles.longButtonIcon} resizeMode="contain" />
+          <Text style={styles.buttonText}>Activity</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.rectButton}>
+          <Image source={require('../assets/settings.png')} style={styles.longButtonIcon } resizeMode="contain" />
+          <Text style={styles.buttonText}>Settings</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.rectButton}>
+          <Image source={require('../assets/question.png')} style={styles.longButtonIcon} resizeMode="contain" />
+          <Text style={styles.buttonText}>Help</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -78,5 +93,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  buttonIcon: {
+    width: 90,
+    height: 90,
+    tintColor: '#fff',
+  },
+  longButtonIcon: {
+    width: 40,
+    height: 40,
+    tintColor: '#fff',
   },
 });

@@ -8,6 +8,7 @@ import Dashboard from './screens/Dashboard';
 import Activity from './screens/Activity';
 import JobList from './screens/JobList';
 import JobDescription from './screens/JobDescription';
+import Profile from './screens/Profile';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,7 @@ export default function App() {
         <Stack.Screen name="Activity" component={Activity} />
         <Stack.Screen name="JobList" component={JobList} />
         <Stack.Screen name="JobDescription" component={JobDescription} />
+        <Stack.Screen name="Profile" component={Profile} />
         
 
 
