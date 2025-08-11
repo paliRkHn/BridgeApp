@@ -15,7 +15,7 @@ export default function Dashboard() {
         <TouchableOpacity style={styles.squareButton} onPress={() => navigation.navigate('JobList')}>
           <Image source={require('../assets/mobile.png')} style={styles.buttonIcon} resizeMode="contain" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.squareButton}>
+        <TouchableOpacity style={styles.squareButton} onPress={() => navigation.navigate('Activity', { initialTab: 'Saved' })}>
           <Image source={require('../assets/bookmark.png')} style={styles.buttonIcon} resizeMode="contain" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.squareButton}>
@@ -88,6 +88,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
   },
   buttonText: {
     color: '#fff',

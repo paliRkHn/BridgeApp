@@ -10,6 +10,7 @@ import {
   Switch
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import BottomNav from '../components/BottomNav';
 
 export default function JobList() {
   const navigation = useNavigation();
@@ -140,7 +141,7 @@ export default function JobList() {
               thumbColor={showSavedOnly ? '#fff' : '#f4f3f4'}
             />
           </View>
-        </View>
+          </View>
 
                  {/* Elements List */}
          <View style={styles.elementsContainer}>
@@ -164,8 +165,11 @@ export default function JobList() {
                </View>
              </TouchableOpacity>
            ))}
-         </View>
+          </View>
+        {/* Bottom spacer to avoid content under nav */}
+        <View style={{ height: 90 }} />
       </ScrollView>
+      <BottomNav />
     </SafeAreaView>
   );
 }
