@@ -126,52 +126,55 @@ export default function JobList() {
                  {/* Elements List */}
          <View style={styles.elementsContainer}>
            {filteredElements.map((element) => (
-             <TouchableOpacity key={element.id} style={styles.elementItem} onPress={() => navigation.navigate('JobDescription')}>
-              <Image 
-                source={{ uri: element.image }} 
-                style={styles.elementImage}
-                resizeMode="cover"
-              />
-              <View style={styles.elementContent}>
-                <Text style={styles.elementTitle}>{element.title}</Text>
-                <View style={styles.elementList}>
-                  {element.items.map((item, index) => (
-                    <View key={index} style={styles.listItem}>
-                      <Text style={styles.bulletPoint}>•</Text>
-                      <Text style={styles.listItemText}>{item}</Text>
-                    </View>
-                  ))}
-                  {!!element.company && (
-                    <View style={styles.listItem}>
-                      <Text style={styles.bulletPoint}>•</Text>
-                      <Text style={styles.listItemText}>Company: {element.company}</Text>
-                    </View>
-                  )}
-                  {!!element.category && (
-                    <View style={styles.listItem}>
-                      <Text style={styles.bulletPoint}>•</Text>
-                      <Text style={styles.listItemText}>Category: {element.category}</Text>
-                    </View>
-                  )}
-                  {!!element.jobType && (
-                    <View style={styles.listItem}>
-                      <Text style={styles.bulletPoint}>•</Text>
-                      <Text style={styles.listItemText}>{element.jobType}</Text>
-                    </View>
-                  )}
-                  
+             <TouchableOpacity key={element.id} style={styles.elementContainer} onPress={() => navigation.navigate('JobDescription')}>
+              <View style={styles.elementItem}>
+                <Image 
+                  source={{ uri: element.image }} 
+                  style={styles.elementImage}
+                  resizeMode="cover"
+                />
+                <View style={styles.elementContent}>
+                  <Text style={styles.elementTitle}>{element.title}</Text>
+                  <View style={styles.elementList}>
+                    {element.items.map((item, index) => (
+                      <View key={index} style={styles.listItem}>
+                        <Text style={styles.bulletPoint}>•</Text>
+                        <Text style={styles.listItemText}>{item}</Text>
+                      </View>
+                    ))}
+                    {!!element.company && (
+                      <View style={styles.listItem}>
+                        <Text style={styles.bulletPoint}>•</Text>
+                        <Text style={styles.listItemText}>Company: {element.company}</Text>
+                      </View>
+                    )}
+                    {!!element.category && (
+                      <View style={styles.listItem}>
+                        <Text style={styles.bulletPoint}>•</Text>
+                        <Text style={styles.listItemText}>Category: {element.category}</Text>
+                      </View>
+                    )}
+                    {!!element.jobType && (
+                      <View style={styles.listItem}>
+                        <Text style={styles.bulletPoint}>•</Text>
+                        <Text style={styles.listItemText}>{element.jobType}</Text>
+                      </View>
+                    )}
+                    
+                  </View>
+                </View>
                 </View>
                 {(!!element.suburb || !!element.city) && (
                     <View style={styles.listLocation}>
                       <View style={styles.bulletIcon}>
                         <Ionicons name="location-sharp" size={16} color="#432272" />
                       </View>
-                      <Text style={styles.listItemText}>
+                      <Text style={styles.listLocationText}>
                         {`${element.suburb || ''}${element.suburb && element.city ? ', ' : ''}${element.city || ''}`}
                       </Text>
                     </View>
                   )}
-               </View>
+               
              </TouchableOpacity>
            ))}
           </View>
@@ -299,12 +302,18 @@ const styles = StyleSheet.create({
   elementsContainer: {
     paddingHorizontal: 20,
   },
+  elementContainer: {
+    flexDirection: 'column',
+    backgroundColor: '#f8f9fa',
+    alignItems: 'center',
+    width: '100%',
+  },
   elementItem: {
     flexDirection: 'row',
     backgroundColor: '#f8f9fa',
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    padding: 6,
+    marginBottom: 2,
     alignItems: 'flex-start',
   },
   elementImage: {
@@ -331,7 +340,17 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   listLocation: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignSelf: 'center',
     alignItems: 'center',
+    width: '100%',
+    marginBottom: 16,
+  },
+  listLocationText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
   bulletPoint: {
     fontSize: 16,
