@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -11,67 +11,47 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import BottomNav from '../components/BottomNav';
+import { db } from '../firebase';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function JobList() {
   const navigation = useNavigation();
   const [selectedClassification, setSelectedClassification] = useState('All');
   const [showSavedOnly, setShowSavedOnly] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [elements, setElements] = useState([]);
   
   // Sample classifications
   const classifications = ['All', 'Physical', 'Social', 'Educational', 'Creative', 'Wellness'];
   
-  // Sample data elements
-  const elements = [
-    {
-      id: 1,
-      title: 'Morning Yoga Session',
-      image: 'https://via.placeholder.com/80x80/432272/FFFFFF?text=YOGA',
-      items: ['Improves flexibility and balance', 'Reduces stress and anxiety', 'Enhances mindfulness'],
-      classification: 'Physical',
-      saved: true
-    },
-    {
-      id: 2,
-      title: 'Community Art Workshop',
-      image: 'https://via.placeholder.com/80x80/432272/FFFFFF?text=ART',
-      items: ['Express creativity through painting', 'Connect with local artists', 'Learn new techniques'],
-      classification: 'Creative',
-      saved: false
-    },
-    {
-      id: 3,
-      title: 'Digital Skills Training',
-      image: 'https://via.placeholder.com/80x80/432272/FFFFFF?text=SKILLS',
-      items: ['Learn basic computer operations', 'Master social media platforms', 'Develop online safety awareness'],
-      classification: 'Educational',
-      saved: true
-    },
-    {
-      id: 4,
-      title: 'Social Coffee Meetup',
-      image: 'https://via.placeholder.com/80x80/432272/FFFFFF?text=COFFEE',
-      items: ['Build new friendships', 'Share experiences and stories', 'Practice conversation skills'],
-      classification: 'Social',
-      saved: false
-    },
-    {
-      id: 5,
-      title: 'Mindfulness Meditation',
-      image: 'https://via.placeholder.com/80x80/432272/FFFFFF?text=MEDITATE',
-      items: ['Reduce stress and anxiety', 'Improve focus and concentration', 'Enhance emotional well-being'],
-      classification: 'Wellness',
-      saved: true
-    },
-    {
-      id: 6,
-      title: 'Gardening Club',
-      image: 'https://via.placeholder.com/80x80/432272/FFFFFF?text=GARDEN',
-      items: ['Learn plant care techniques', 'Connect with nature', 'Share gardening tips'],
-      classification: 'Creative',
-      saved: false
-    }
-  ];
+  // Fetch elements from Firestore (collection: 'jobs')
+  useEffect(() => {
+    const jobsCollection = collection(db, 'jobs');
+    const unsubscribe = onSnapshot(jobsCollection, (snapshot) => {
+      const fetchedElements = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        const location = (data && (data.location || data.address)) || {};
+        const resolvedSuburb = (location && (location.suburb || location.sub)) || data.suburb || '';
+        const resolvedCity = (location && (location.city || location.town)) || data.city || '';
+        return {
+          id: doc.id,
+          title: data.title || 'Untitled',
+          image: data.image || 'https://via.placeholder.com/80x80/432272/FFFFFF?text=IMG',
+          items: Array.isArray(data.items) ? data.items : [],
+          classification: data.classification || 'All',
+          saved: !!data.saved,
+          company: data.company || '',
+          category: data.category || '',
+          jobType: data.jobType || '',
+          suburb: resolvedSuburb,
+          city: resolvedCity,
+        };
+      });
+      setElements(fetchedElements);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const goBack = () => {
     navigation.goBack();
@@ -161,7 +141,36 @@ export default function JobList() {
                       <Text style={styles.listItemText}>{item}</Text>
                     </View>
                   ))}
+                  {!!element.company && (
+                    <View style={styles.listItem}>
+                      <Text style={styles.bulletPoint}>•</Text>
+                      <Text style={styles.listItemText}>Company: {element.company}</Text>
+                    </View>
+                  )}
+                  {!!element.category && (
+                    <View style={styles.listItem}>
+                      <Text style={styles.bulletPoint}>•</Text>
+                      <Text style={styles.listItemText}>Category: {element.category}</Text>
+                    </View>
+                  )}
+                  {!!element.jobType && (
+                    <View style={styles.listItem}>
+                      <Text style={styles.bulletPoint}>•</Text>
+                      <Text style={styles.listItemText}>{element.jobType}</Text>
+                    </View>
+                  )}
+                  
                 </View>
+                {(!!element.suburb || !!element.city) && (
+                    <View style={styles.listLocation}>
+                      <View style={styles.bulletIcon}>
+                        <Ionicons name="location-sharp" size={16} color="#432272" />
+                      </View>
+                      <Text style={styles.listItemText}>
+                        {`${element.suburb || ''}${element.suburb && element.city ? ', ' : ''}${element.city || ''}`}
+                      </Text>
+                    </View>
+                  )}
                </View>
              </TouchableOpacity>
            ))}
@@ -321,11 +330,22 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 4,
   },
+  listLocation: {
+    alignItems: 'center',
+  },
   bulletPoint: {
     fontSize: 16,
     color: '#432272',
     marginRight: 8,
+    marginLeft: 4,
     marginTop: 2,
+  },
+  bulletIcon: {
+    width: 16,
+    height: 20,
+    marginRight: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   listItemText: {
     flex: 1,
