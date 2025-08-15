@@ -10,6 +10,7 @@ import {
   Dimensions
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import BottomNav from '../components/BottomNav';
 
 const { width, height } = Dimensions.get('window');
 
@@ -106,7 +107,10 @@ export default function JobDescription() {
             <Text style={styles.applyButtonText}>Apply</Text>
           </TouchableOpacity>
         </View>
+        {/* Bottom spacer to avoid content under nav */}
+        <View style={{ height: 90 }} />
       </ScrollView>
+      <BottomNav />
     </SafeAreaView>
   );
 }

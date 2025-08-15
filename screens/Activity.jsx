@@ -6,15 +6,21 @@ import {
   ScrollView, 
   TouchableOpacity, 
   SafeAreaView,
-  Dimensions 
+  Dimensions,
+  Image 
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import BottomNav from '../components/BottomNav';
 
 const { width } = Dimensions.get('window');
 
 export default function Activity() {
   const navigation = useNavigation();
+  const route = useRoute();
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [activeTab, setActiveTab] = useState(
+    route?.params?.initialTab === 'Saved' ? 'Saved' : 'Activity'
+  );
   
   // Sample activity dates - these would come from your data
   const activityDates = [5, 12, 18, 25, 30];
@@ -26,6 +32,31 @@ export default function Activity() {
     { title: 'Learning Sessions', description: 'Educational workshops and skill development' },
     { title: 'Creative Activities', description: 'Arts, crafts, and creative expression' },
     { title: 'Wellness Programs', description: 'Mental health and wellness activities' }
+  ];
+
+  // Sample saved items (like JobList) with statuses
+  const savedItems = [
+    {
+      id: 1,
+      title: 'Community Support Worker',
+      image: require('../assets/job-offer.png'),
+      items: ['Part-time position', 'Shift work available', 'Immediate start'],
+      status: 'APPLIED',
+    },
+    {
+      id: 2,
+      title: 'Program Coordinator',
+      image: require('../assets/job-offer.png'),
+      items: ['Full-time role', 'Lead community programs', '3+ years experience'],
+      status: 'IN PROCESS',
+    },
+    {
+      id: 3,
+      title: 'Outreach Specialist',
+      image: require('../assets/job-offer.png'),
+      items: ['Contract role', 'Travel within metro area', 'Must have driver license'],
+      status: 'CLOSED',
+    },
   ];
 
   const goBack = () => {
@@ -81,56 +112,110 @@ export default function Activity() {
         <View style={styles.placeholder} />
       </View>
 
+      {/* Tabs */}
+      <View style={styles.tabsContainer}>
+        <TouchableOpacity
+          style={[styles.tabButton, activeTab === 'Activity' && styles.activeTabButton]}
+          onPress={() => setActiveTab('Activity')}
+        >
+          <Text style={[styles.tabText, activeTab === 'Activity' && styles.activeTabText]}>Activity</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tabButton, activeTab === 'Saved' && styles.activeTabButton]}
+          onPress={() => setActiveTab('Saved')}
+        >
+          <Text style={[styles.tabText, activeTab === 'Saved' && styles.activeTabText]}>Saved</Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Calendar Section */}
-        <View style={styles.calendarContainer}>
-          <View style={styles.calendarHeader}>
-            <TouchableOpacity onPress={() => changeMonth('prev')}>
-              <Text style={styles.monthButton}>‹</Text>
-            </TouchableOpacity>
-            <Text style={styles.monthTitle}>{getMonthName(currentMonth)}</Text>
-            <TouchableOpacity onPress={() => changeMonth('next')}>
-              <Text style={styles.monthButton}>›</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Week days header */}
-          <View style={styles.weekDaysContainer}>
-            {weekDays.map((day, index) => (
-              <Text key={index} style={styles.weekDay}>{day}</Text>
-            ))}
-          </View>
-
-          {/* Calendar grid */}
-          <View style={styles.calendarGrid}>
-            {days.map((day, index) => (
-              <View key={index} style={styles.dayCell}>
-                {day && (
-                  <Text style={[
-                    styles.dayText,
-                    activityDates.includes(day) && styles.activityDay
-                  ]}>
-                    {day}
-                  </Text>
-                )}
+        {activeTab === 'Activity' ? (
+          <>
+            {/* Calendar Section */}
+            <View style={styles.calendarContainer}>
+              <View style={styles.calendarHeader}>
+                <TouchableOpacity onPress={() => changeMonth('prev')}>
+                  <Text style={styles.monthButton}>‹</Text>
+                </TouchableOpacity>
+                <Text style={styles.monthTitle}>{getMonthName(currentMonth)}</Text>
+                <TouchableOpacity onPress={() => changeMonth('next')}>
+                  <Text style={styles.monthButton}>›</Text>
+                </TouchableOpacity>
               </View>
-            ))}
-          </View>
-        </View>
 
-        {/* Activity Types Section */}
-        <View style={styles.activityTypesContainer}>
-          <Text style={styles.sectionTitle}>Activity Types</Text>
-          {activityTypes.map((activity, index) => (
-            <View key={index} style={styles.activityItem}>
-              <Text style={styles.activityTitle}>{activity.title}</Text>
-              <View style={styles.activityDescriptionBlock}>
-                <Text style={styles.activityDescription}>{activity.description}</Text>
+              {/* Week days header */}
+              <View style={styles.weekDaysContainer}>
+                {weekDays.map((day, index) => (
+                  <Text key={index} style={styles.weekDay}>{day}</Text>
+                ))}
+              </View>
+
+              {/* Calendar grid */}
+              <View style={styles.calendarGrid}>
+                {days.map((day, index) => (
+                  <View key={index} style={styles.dayCell}>
+                    {day && (
+                      <Text style={[
+                        styles.dayText,
+                        activityDates.includes(day) && styles.activityDay
+                      ]}>
+                        {day}
+                      </Text>
+                    )}
+                  </View>
+                ))}
               </View>
             </View>
-          ))}
-        </View>
+
+            {/* Activity Types Section */}
+            <View style={styles.activityTypesContainer}>
+              <Text style={styles.sectionTitle}>Activity Types</Text>
+              {activityTypes.map((activity, index) => (
+                <View key={index} style={styles.activityItem}>
+                  <Text style={styles.activityTitle}>{activity.title}</Text>
+                  <View style={styles.activityDescriptionBlock}>
+                    <Text style={styles.activityDescription}>{activity.description}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </>
+        ) : (
+          <View style={styles.savedListContainer}>
+            {savedItems.map((item) => (
+              <View key={item.id} style={styles.savedItem}>
+                <Image source={item.image} style={styles.savedImage} resizeMode="cover" />
+                <View style={styles.savedContent}>
+                  <View style={styles.savedTitleRow}>
+                    <Text style={styles.savedTitle}>{item.title}</Text>
+                    <View
+                      style={[
+                        styles.statusTag,
+                        item.status === 'APPLIED' && { backgroundColor: '#2e7d32' },
+                        item.status === 'IN PROCESS' && { backgroundColor: '#f9a825' },
+                        item.status === 'CLOSED' && { backgroundColor: '#9e9e9e' },
+                      ]}
+                    >
+                      <Text style={styles.statusTagText}>{item.status}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.elementList}>
+                    {item.items.map((point, idx) => (
+                      <View key={idx} style={styles.listItem}>
+                        <Text style={styles.bulletPoint}>•</Text>
+                        <Text style={styles.listItemText}>{point}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+        {/* Bottom spacer to avoid content under nav */}
+        <View style={{ height: 90 }} />
       </ScrollView>
+      <BottomNav />
     </SafeAreaView>
   );
 }
@@ -172,6 +257,31 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 4,
+    backgroundColor: '#f0eef5',
+    borderRadius: 10,
+    padding: 4,
+  },
+  tabButton: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  activeTabButton: {
+    backgroundColor: '#432272',
+  },
+  tabText: {
+    color: '#432272',
+    fontWeight: '600',
+  },
+  activeTabText: {
+    color: '#fff',
   },
   calendarContainer: {
     padding: 20,
@@ -258,6 +368,71 @@ const styles = StyleSheet.create({
     borderLeftColor: '#432272',
   },
   activityDescription: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  // Saved Tab styles
+  savedListContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 24,
+  },
+  savedItem: {
+    flexDirection: 'row',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  savedImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    marginRight: 16,
+  },
+  savedContent: {
+    flex: 1,
+  },
+  savedTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  savedTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginRight: 8,
+    flex: 1,
+  },
+  statusTag: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusTagText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  elementList: {
+    marginTop: 4,
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 4,
+  },
+  bulletPoint: {
+    fontSize: 16,
+    color: '#432272',
+    marginRight: 8,
+    marginTop: 2,
+  },
+  listItemText: {
+    flex: 1,
     fontSize: 14,
     color: '#666',
     lineHeight: 20,

@@ -10,6 +10,7 @@ import {
   TextInput
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import BottomNav from '../components/BottomNav';
 
 export default function Profile() {
   const navigation = useNavigation();
@@ -197,7 +198,10 @@ export default function Profile() {
             ))}
           </View>
         </View>
+        {/* Bottom spacer to avoid content under nav */}
+        <View style={{ height: 90 }} />
       </ScrollView>
+      <BottomNav />
     </SafeAreaView>
   );
 }
