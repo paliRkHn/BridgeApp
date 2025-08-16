@@ -40,5 +40,6 @@ yarn-error.*
 google-services.json
 GoogleService-Info.plist
 .env
-jobsData01.json
 bridge-app-02-firebase-adminsdk-fbsvc-0c54cb90df.json
+jobsData01.json
+jobsData02.json

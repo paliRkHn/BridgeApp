@@ -15,13 +15,13 @@ admin.initializeApp({
 const db = admin.firestore();
 
 async function uploadData() {
-  const collectionRef = db.collection('jobs'); // Change name of collection, will create if not in database
+  const collectionRef = db.collection('categories'); // Change name of collection, will create if not in database
 
   console.log('Starting data upload to Firestore...');
   let uploadedCount = 0;
 
   // Change path to data file
-  for (const job of require('../data/jobsData01.json').jobs) {
+  for (const job of require('../data/categoriesData.json').categories) {
     try {
       // Add each job object as a new document. Firestore will auto-generate the ID.
       await collectionRef.add(job);

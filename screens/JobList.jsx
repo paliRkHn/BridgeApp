@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import BottomNav from '../components/BottomNav';
 import { db } from '../firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
 export default function JobList() {
   const navigation = useNavigation();
@@ -21,9 +21,34 @@ export default function JobList() {
   const [showSavedOnly, setShowSavedOnly] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [elements, setElements] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [expandedCategories, setExpandedCategories] = useState({});
   
-  // Sample classifications
-  const classifications = ['All', 'Physical', 'Social', 'Educational', 'Creative', 'Wellness'];
+  // Fetch categories (and subcategories) from Firestore (collection: 'categories')
+  useEffect(() => {
+    const categoriesCollection = collection(db, 'categories');
+    const unsubscribe = onSnapshot(categoriesCollection, (snapshot) => {
+      const items = snapshot.docs.map((doc) => {
+        const data = doc.data() || {};
+        const nameCandidate = data.name || data.title || data.label || '';
+        const name = typeof nameCandidate === 'string' && nameCandidate.trim() !== '' ? nameCandidate.trim() : doc.id;
+        const subcategoriesArray = Array.isArray(data.subcategories) ? data.subcategories : [];
+        const subcategories = subcategoriesArray
+          .filter((s) => typeof s === 'string' && s.trim() !== '')
+          .map((s) => s.trim());
+        return { id: doc.id, name, subcategories };
+      });
+      const seen = new Set();
+      const deduped = items.filter((item) => {
+        const key = item.name.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setCategories(deduped);
+    });
+    return () => unsubscribe();
+  }, []);
   
   // Fetch elements from Firestore (collection: 'jobs')
   useEffect(() => {
@@ -37,13 +62,14 @@ export default function JobList() {
         return {
           id: doc.id,
           title: data.title || 'Untitled',
-          logo: data.logo || 'https://via.placeholder.com/80x80/432272/FFFFFF?text=IMG',
+          logo: (typeof data.logo === 'string' && data.logo.trim() !== '') ? data.logo : null,
           items: Array.isArray(data.items) ? data.items : [],
           classification: data.classification || 'All',
           saved: !!data.saved,
           company: data.company || '',
           category: data.category || '',
           jobType: data.jobType || '',
+          workMode: data.workMode || '',
           suburb: resolvedSuburb,
           city: resolvedCity,
         };
@@ -57,20 +83,54 @@ export default function JobList() {
     navigation.goBack();
   };
 
-  // Filter elements based on selected classification and saved toggle
-  const filteredElements = elements.filter(element => {
-    const matchesClassification = selectedClassification === 'All' || element.classification === selectedClassification;
+  // Filter elements based on selected category (parent includes its subcategories) and saved toggle
+  const normalizeToStringArray = (value) => {
+    if (typeof value === 'string') {
+      const v = value.trim();
+      return v ? [v] : [];
+    }
+    if (Array.isArray(value)) {
+      return value
+        .filter((v) => typeof v === 'string')
+        .map((v) => v.trim())
+        .filter(Boolean);
+    }
+    if (value && typeof value === 'object') {
+      const name = value.name;
+      if (typeof name === 'string') {
+        const v = name.trim();
+        return v ? [v] : [];
+      }
+    }
+    return [];
+  };
+
+  const normalizedSelected = (selectedClassification || '').trim().toLowerCase();
+  const selectedCategoryObj = categories.find((c) => (c.name || '').trim().toLowerCase() === normalizedSelected);
+  const allowedCategoryValues = selectedClassification === 'All'
+    ? null
+    : new Set(
+        (selectedCategoryObj
+          ? [selectedCategoryObj.name, ...(selectedCategoryObj.subcategories || [])]
+          : [selectedClassification]
+        )
+          .map((s) => (s || '').trim().toLowerCase())
+          .filter(Boolean)
+      );
+
+  const filteredElements = elements.filter((element) => {
+    const elementCategories = normalizeToStringArray(element.category).map((s) => s.toLowerCase());
+    const matchesCategory =
+      selectedClassification === 'All' ||
+      (allowedCategoryValues && elementCategories.some((cat) => allowedCategoryValues.has(cat)));
     const matchesSaved = !showSavedOnly || element.saved;
-    return matchesClassification && matchesSaved;
+    return matchesCategory && matchesSaved;
   });
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={goBack}>
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
         <Text style={styles.title}>Classifications</Text>
         <View style={styles.placeholder} />
       </View>
@@ -90,23 +150,82 @@ export default function JobList() {
             
             {isDropdownOpen && (
               <View style={styles.dropdownMenu}>
-                {classifications.map((classification, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      setSelectedClassification(classification);
-                      setIsDropdownOpen(false);
-                    }}
-                  >
-                    <Text style={[
-                      styles.dropdownItemText,
-                      selectedClassification === classification && styles.selectedItem
-                    ]}>
-                      {classification}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                {/* All option */}
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedClassification('All');
+                    setIsDropdownOpen(false);
+                  }}
+                >
+                  <Text style={[
+                    styles.dropdownItemText,
+                    selectedClassification === 'All' && styles.selectedItem
+                  ]}>
+                    All
+                  </Text>
+                </TouchableOpacity>
+
+                {categories.map((category, index) => {
+                  const hasSubcategories = Array.isArray(category.subcategories) && category.subcategories.length > 0;
+                  const isExpanded = !!expandedCategories[category.name];
+                  return (
+                    <View key={category.id || index}>
+                      <TouchableOpacity
+                        style={styles.dropdownItem}
+                        onPress={() => {
+                          // Select the parent category and close the dropdown.
+                          // The chevron button handles expand/collapse without changing selection.
+                          setSelectedClassification(category.name);
+                          setIsDropdownOpen(false);
+                        }}
+                      >
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Text style={[
+                            styles.dropdownItemText,
+                            selectedClassification === category.name && styles.selectedItem
+                          ]}>
+                            {category.name}
+                          </Text>
+                          {hasSubcategories && (
+                            <TouchableOpacity
+                              onPress={() => {
+                                setExpandedCategories((prev) => ({
+                                  ...prev,
+                                  [category.name]: !prev[category.name],
+                                }));
+                              }}
+                            >
+                              <Ionicons name={isExpanded ? 'chevron-down' : 'chevron-forward'} size={18} color="#666" />
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+
+                      {hasSubcategories && isExpanded && (
+                        <View>
+                          {category.subcategories.map((sub) => (
+                            <TouchableOpacity
+                              key={`${category.name}-${sub}`}
+                              style={styles.subcategoryItem}
+                              onPress={() => {
+                                setSelectedClassification(sub);
+                                setIsDropdownOpen(false);
+                              }}
+                            >
+                              <Text style={[
+                                styles.subcategoryItemText,
+                                selectedClassification === sub && styles.selectedItem
+                              ]}>
+                                {sub}
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
               </View>
             )}
           </View>
@@ -129,7 +248,7 @@ export default function JobList() {
              <TouchableOpacity key={element.id} style={styles.elementContainer} onPress={() => navigation.navigate('JobDescription', { jobId: element.id })}>
               <View style={styles.elementItem}>
                 <Image 
-                  source={{ uri: element.logo }} 
+                  source={element.logo ? { uri: element.logo } : require('../assets/job-offer.png')} 
                   style={styles.elementImage}
                   resizeMode="contain"
                 />
@@ -142,16 +261,10 @@ export default function JobList() {
                         <Text style={styles.listItemText}>{item}</Text>
                       </View>
                     ))}
-                    {!!element.company && (
-                      <View style={styles.listItem}>
-                        <Text style={styles.bulletPoint}>•</Text>
-                        <Text style={styles.listItemText}>Company: {element.company}</Text>
-                      </View>
-                    )}
                     {!!element.category && (
                       <View style={styles.listItem}>
                         <Text style={styles.bulletPoint}>•</Text>
-                        <Text style={styles.listItemText}>Category: {element.category}</Text>
+                        <Text style={styles.listItemText}>{element.category}</Text>
                       </View>
                     )}
                     {!!element.jobType && (
@@ -164,16 +277,22 @@ export default function JobList() {
                   </View>
                 </View>
                 </View>
-                {(!!element.suburb || !!element.city) && (
-                    <View style={styles.listLocation}>
-                      <View style={styles.bulletIcon}>
-                        <Ionicons name="location-sharp" size={16} color="#432272" />
-                      </View>
-                      <Text style={styles.listLocationText}>
-                        {`${element.suburb || ''}${element.suburb && element.city ? ', ' : ''}${element.city || ''}`}
-                      </Text>
+                {element.workMode === 'Remote' ? (
+                  <View style={styles.listLocation}>
+                    <View style={styles.remoteTag}>
+                      <Text style={styles.remoteTagText}>REMOTE</Text>
                     </View>
-                  )}
+                  </View>
+                ) : ((!!element.suburb || !!element.city) && (
+                  <View style={styles.listLocation}>
+                    <View style={styles.bulletIcon}>
+                      <Ionicons name="location-sharp" size={16} color="#432272" />
+                    </View>
+                    <Text style={styles.listLocationText}>
+                      {`${element.suburb || ''}${element.suburb && element.city ? ', ' : ''}${element.city || ''}`}
+                    </Text>
+                  </View>
+                ))}
                
              </TouchableOpacity>
            ))}
@@ -276,6 +395,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
+  subcategoryItem: {
+    paddingLeft: 32,
+    paddingRight: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f6f6f6',
+    backgroundColor: '#fafafa',
+  },
+  subcategoryItemText: {
+    fontSize: 15,
+    color: '#444',
+  },
   dropdownItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -301,12 +432,14 @@ const styles = StyleSheet.create({
   },
   elementsContainer: {
     paddingHorizontal: 20,
+    gap: 10,
   },
   elementContainer: {
     flexDirection: 'column',
     backgroundColor: '#f8f9fa',
     alignItems: 'center',
     width: '100%',
+    borderRadius: 10,
   },
   elementItem: {
     flexDirection: 'row',
@@ -317,10 +450,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   elementImage: {
-    width: 80,
-    height: 80,
+    width: 75,
+    height: 75,
     borderRadius: 8,
-    marginRight: 16,
+    marginRight: 20,
+    marginLeft: 2,
   },
   elementContent: {
     flex: 1,
@@ -329,15 +463,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 8,
+    marginBottom: 10,
+    marginLeft: 10,
+    marginRight: 15,
+    textAlign: 'right',
   },
   elementList: {
-    marginTop: 4,
+    marginTop: 10,
+    marginLeft: 10,
   },
   listItem: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 4,
+    marginBottom: 8,
+  },
+   bulletPoint: {
+    fontSize: 14,
+    color: '#432272',
+    marginRight: 10,
+    marginLeft: 12,
+    marginTop: 0,
+  },
+  listItemText: {
+    flex: 1,
+    fontSize: 15,
+    color: '#4c4c4c',
+    lineHeight: 20,
+    marginRight: 20,
   },
   listLocation: {
     flexDirection: 'row',
@@ -345,6 +496,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     width: '100%',
+    marginTop: 8,
     marginBottom: 16,
   },
   listLocationText: {
@@ -352,24 +504,23 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
-  bulletPoint: {
-    fontSize: 16,
-    color: '#432272',
-    marginRight: 8,
-    marginLeft: 4,
-    marginTop: 0,
-  },
   bulletIcon: {
     width: 16,
     height: 20,
-    marginRight: 8,
+    marginRight: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  listItemText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
+  remoteTag: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 14,
+    backgroundColor: '#432272',
+    opacity: 0.95,
+  },
+  remoteTagText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
   },
 });
