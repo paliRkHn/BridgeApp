@@ -114,9 +114,23 @@ export default function JobDescription() {
 
         {/* Content Sections */}
         <View style={styles.contentContainer}>
+          {/* Section 3: Requirements */}
+          {!!(job?.category || job?.company || job?.jobType) && (
+            <View style={styles.section}>
+              <Text style={styles.roleTitle}>{job?.title || 'Job Overview'}</Text>              
+              <View style={styles.textBlock}>
+                <Text style={styles.textContent}>
+                  {job?.company ? `Company: ${job.company}\n` : ''}
+                  {job?.category ? `Category: ${job.category}\n` : ''}
+                  {job?.jobType ? `${job.jobType}` : ''}
+                </Text>
+              </View>
+            </View>
+          )}
+
           {/* Section 1: Job Overview */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{job?.title || 'Job Overview'}</Text>
+          <Text style={styles.sectionTitle}>Details</Text>
             <View style={styles.textBlock}>
               <Text style={styles.textContent}>
                 {job?.description || 'No description provided.'}
@@ -203,6 +217,13 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 24,
+  },
+  roleTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#432272',
+    marginBottom: 12,
+    textAlign: 'right',
   },
   sectionTitle: {
     fontSize: 20,

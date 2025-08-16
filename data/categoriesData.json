@@ -1,0 +1,48 @@
+{
+  "categories": [
+    {
+      "name": "Technology",
+      "subcategories": [""]
+    },
+    {
+        "name": "Consulting",
+        "subcategories": [""]
+    },
+    {
+        "name": "Financial Services",
+        "subcategories": [""]
+    },
+    {
+        "name": "Manufacturing & Warehouse",
+        "subcategories": ["Manufacture", "Warehouse"]
+    },
+    {
+        "name": "Administration",
+        "subcategories": ["Office Support", "Healthcare Support", "Administration Support"]
+    },
+    {
+        "name": "Retail",
+        "subcategories": [""]
+    },
+    {
+        "name": "Hospitality",
+        "subcategories": ["Hotel", "Kitchen", "Front of the House"]
+    },
+    {
+        "name": "Agriculture",
+        "subcategories": ["Gardening", "Nursery"]
+    },
+    {
+        "name": "Animal Care",
+        "subcategories": ["Pet Shelter", "Pet Grooming"]
+    },
+    {
+        "name": "Services",
+        "subcategories": ["Cleaning", "Security"]
+    },
+    {
+        "name": "Construction",
+        "subcategories": [""]
+    }
+  ]
+}

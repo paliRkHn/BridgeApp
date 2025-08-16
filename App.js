@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { ThemeProvider } from './context/ThemeContext';
 
 import Starter from './screens/Starter';
 import Login from './screens/Login';
@@ -15,21 +15,23 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Starter" component={Starter} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="SignUp" component={SignUp} />
-        <Stack.Screen name="Dashboard" component={Dashboard} />
-        <Stack.Screen name="Activity" component={Activity} />
-        <Stack.Screen name="JobList" component={JobList} />
-        <Stack.Screen name="JobDescription" component={JobDescription} />
-        <Stack.Screen name="Profile" component={Profile} />
-        
+    <ThemeProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name="Starter" component={Starter} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="SignUp" component={SignUp} />
+          <Stack.Screen name="Dashboard" component={Dashboard} />
+          <Stack.Screen name="Activity" component={Activity} />
+          <Stack.Screen name="JobList" component={JobList} />
+          <Stack.Screen name="JobDescription" component={JobDescription} />
+          <Stack.Screen name="Profile" component={Profile} />
+          
 
 
-      </Stack.Navigator>
-    </NavigationContainer>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }
 
