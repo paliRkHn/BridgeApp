@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -9,13 +9,19 @@ import {
   Image,
   Dimensions
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import BottomNav from '../components/BottomNav';
 
 const { width, height } = Dimensions.get('window');
 
 export default function JobDescription() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { jobId } = route.params || {};
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const goBack = () => {
     navigation.goBack();
@@ -31,13 +37,76 @@ export default function JobDescription() {
     console.log('Job applied');
   };
 
+  useEffect(() => {
+    let isActive = true;
+    async function fetchJob() {
+      if (!jobId) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const ref = doc(db, 'jobs', jobId);
+        const snap = await getDoc(ref);
+        if (snap.exists() && isActive) {
+          setJob(snap.data());
+        }
+      } catch (e) {
+        console.log('Failed to fetch job', e);
+      } finally {
+        if (isActive) setLoading(false);
+      }
+    }
+    fetchJob();
+    return () => { isActive = false; };
+  }, [jobId]);
+
+  const bannerUri = (job && job.banner) || 'https://via.placeholder.com/400x200/432272/FFFFFF?text=JOB+BANNER';
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.bannerContainer}>
+            <Image 
+              source={{ uri: 'https://via.placeholder.com/400x200/432272/FFFFFF?text=LOADING...' }}
+              style={styles.bannerImage}
+              resizeMode="cover"
+            />
+          </View>
+        </ScrollView>
+        <BottomNav />
+      </SafeAreaView>
+    );
+  }
+
+  if (!job) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.bannerContainer}>
+            <Image 
+              source={{ uri: 'https://via.placeholder.com/400x200/432272/FFFFFF?text=NOT+FOUND' }}
+              style={styles.bannerImage}
+              resizeMode="cover"
+            />
+          </View>
+          <View style={styles.contentContainer}>
+            <Text style={styles.sectionTitle}>Job not found</Text>
+            <Text style={styles.textContent}>The job you are looking for does not exist.</Text>
+          </View>
+        </ScrollView>
+        <BottomNav />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Banner Image */}
         <View style={styles.bannerContainer}>
           <Image 
-            source={{ uri: 'https://via.placeholder.com/400x200/432272/FFFFFF?text=JOB+BANNER' }}
+            source={{ uri: bannerUri }}
             style={styles.bannerImage}
             resizeMode="cover"
           />
@@ -47,55 +116,51 @@ export default function JobDescription() {
         <View style={styles.contentContainer}>
           {/* Section 1: Job Overview */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Job Overview</Text>
+            <Text style={styles.sectionTitle}>{job?.title || 'Job Overview'}</Text>
             <View style={styles.textBlock}>
               <Text style={styles.textContent}>
-                This position offers an exciting opportunity to work in a dynamic environment where you'll be responsible for coordinating community activities and supporting participants in various programs. The role involves direct interaction with community members and requires strong organizational skills.
+                {job?.description || 'No description provided.'}
               </Text>
             </View>
           </View>
 
           {/* Section 2: Responsibilities */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Responsibilities</Text>
-            <View style={styles.textBlock}>
-              <Text style={styles.textContent}>
-                • Coordinate and facilitate community workshops and events{'\n'}
-                • Provide support and guidance to program participants{'\n'}
-                • Maintain accurate records and documentation{'\n'}
-                • Collaborate with team members to ensure program success{'\n'}
-                • Assist in the development of new community initiatives
-              </Text>
+          {!!(job?.tasks && job.tasks.length) && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Tasks</Text>
+              <View style={styles.textBlock}>
+                <Text style={styles.textContent}>
+                  {job.tasks.map((t, i) => `• ${t}${i < job.tasks.length - 1 ? '\n' : ''}`).join('')}
+                </Text>
+              </View>
             </View>
-          </View>
+          )}
 
           {/* Section 3: Requirements */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Requirements</Text>
-            <View style={styles.textBlock}>
-              <Text style={styles.textContent}>
-                • Previous experience in community work or social services{'\n'}
-                • Strong communication and interpersonal skills{'\n'}
-                • Ability to work flexible hours including evenings and weekends{'\n'}
-                • Valid driver's license and reliable transportation{'\n'}
-                • First aid certification (or willingness to obtain)
-              </Text>
+          {!!(job?.category || job?.company || job?.jobType) && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Details</Text>
+              <View style={styles.textBlock}>
+                <Text style={styles.textContent}>
+                  {job?.company ? `Company: ${job.company}\n` : ''}
+                  {job?.category ? `Category: ${job.category}\n` : ''}
+                  {job?.jobType ? `${job.jobType}` : ''}
+                </Text>
+              </View>
             </View>
-          </View>
+          )}
 
           {/* Section 4: Benefits */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Benefits</Text>
-            <View style={styles.textBlock}>
-              <Text style={styles.textContent}>
-                • Competitive salary with opportunities for advancement{'\n'}
-                • Comprehensive health and dental coverage{'\n'}
-                • Paid time off and holidays{'\n'}
-                • Professional development and training opportunities{'\n'}
-                • Meaningful work that makes a difference in the community
-              </Text>
+          {!!(job?.location) && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Location</Text>
+              <View style={styles.textBlock}>
+                <Text style={styles.textContent}>
+                  {`${job.location.suburb || ''}${job.location.suburb && job.location.city ? ', ' : ''}${job.location.city || ''}`}
+                </Text>
+              </View>
             </View>
-          </View>
+          )}
         </View>
 
         {/* Action Buttons */}
@@ -126,6 +191,8 @@ const styles = StyleSheet.create({
   bannerContainer: {
     width: '100%',
     height: height * 0.25, // 25% of screen height
+    paddingRight: 10,
+    paddingLeft: 10,
   },
   bannerImage: {
     width: '100%',
