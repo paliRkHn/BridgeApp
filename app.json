@@ -24,7 +24,8 @@
       },
       "bundleIdentifier": "com.palomarojas.bridgeapp",
       "edgeToEdgeEnabled": true,
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "package": "com.palomarojas.bridgeapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"

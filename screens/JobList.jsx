@@ -37,7 +37,7 @@ export default function JobList() {
         return {
           id: doc.id,
           title: data.title || 'Untitled',
-          image: data.image || 'https://via.placeholder.com/80x80/432272/FFFFFF?text=IMG',
+          logo: data.logo || 'https://via.placeholder.com/80x80/432272/FFFFFF?text=IMG',
           items: Array.isArray(data.items) ? data.items : [],
           classification: data.classification || 'All',
           saved: !!data.saved,
@@ -126,12 +126,12 @@ export default function JobList() {
                  {/* Elements List */}
          <View style={styles.elementsContainer}>
            {filteredElements.map((element) => (
-             <TouchableOpacity key={element.id} style={styles.elementContainer} onPress={() => navigation.navigate('JobDescription')}>
+             <TouchableOpacity key={element.id} style={styles.elementContainer} onPress={() => navigation.navigate('JobDescription', { jobId: element.id })}>
               <View style={styles.elementItem}>
                 <Image 
-                  source={{ uri: element.image }} 
+                  source={{ uri: element.logo }} 
                   style={styles.elementImage}
-                  resizeMode="cover"
+                  resizeMode="contain"
                 />
                 <View style={styles.elementContent}>
                   <Text style={styles.elementTitle}>{element.title}</Text>
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     color: '#432272',
     marginRight: 8,
     marginLeft: 4,
-    marginTop: 2,
+    marginTop: 0,
   },
   bulletIcon: {
     width: 16,
