@@ -1,28 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  StyleSheet, 
+import {  
   View, 
   Text, 
   ScrollView, 
   TouchableOpacity, 
   SafeAreaView,
   Image,
-  Switch
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import BottomNav from '../components/BottomNav';
 import { db } from '../firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { styles } from '../components/JobList.styles';
+import JobListFiltersPopup from '../components/JobListFiltersPopup';
+import List from '../components/List';
 
 export default function JobList() {
   const navigation = useNavigation();
   const [selectedClassification, setSelectedClassification] = useState('All');
-  const [showSavedOnly, setShowSavedOnly] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [elements, setElements] = useState([]);
   const [categories, setCategories] = useState([]);
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [cities, setCities] = useState([]);
+  const [selectedCity, setSelectedCity] = useState('All');
+  const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
+  const [isMoreFiltersOpen, setIsMoreFiltersOpen] = useState(false);
+  const [availableJobTypes, setAvailableJobTypes] = useState([]);
+  const [availableWorkModes, setAvailableWorkModes] = useState([]);
+  const [cityToSuburbs, setCityToSuburbs] = useState({});
+  const [modalCity, setModalCity] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState(new Set());
+  const [selectedJobTypes, setSelectedJobTypes] = useState(new Set());
+  const [selectedWorkModes, setSelectedWorkModes] = useState(new Set());
+  const [selectedSuburbs, setSelectedSuburbs] = useState(new Set());
+  const [pastOnly, setPastOnly] = useState(false);
+  const hasActiveMoreFilters =
+    selectedJobTypes.size > 0 ||
+    selectedWorkModes.size > 0 ||
+    selectedSuburbs.size > 0 ||
+    selectedCategories.size > 0 ||
+    !!pastOnly;
   
   // Fetch categories (and subcategories) from Firestore (collection: 'categories')
   useEffect(() => {
@@ -49,6 +68,18 @@ export default function JobList() {
     });
     return () => unsubscribe();
   }, []);
+
+  // Build cities list dynamically from elements
+  useEffect(() => {
+    const unique = Array.from(
+      new Set(
+        elements
+          .map((e) => (typeof e.city === 'string' ? e.city.trim() : ''))
+          .filter((c) => c && c.length > 0)
+      )
+    ).sort((a, b) => a.localeCompare(b));
+    setCities(['All', ...unique]);
+  }, [elements]);
   
   // Fetch elements from Firestore (collection: 'jobs')
   useEffect(() => {
@@ -72,6 +103,7 @@ export default function JobList() {
           workMode: data.workMode || '',
           suburb: resolvedSuburb,
           city: resolvedCity,
+          isActive: typeof data.isActive === 'boolean' ? data.isActive : true,
         };
       });
       setElements(fetchedElements);
@@ -81,6 +113,30 @@ export default function JobList() {
 
   const goBack = () => {
     navigation.goBack();
+  };
+
+  const handleResetFilters = () => {
+    setSelectedClassification('All');
+    setSelectedCity('All');
+    setExpandedCategories({});
+    setIsDropdownOpen(false);
+    setIsCityDropdownOpen(false);
+    resetMoreFilters();
+  };
+
+  const handleMoreFilters = () => {
+    setIsDropdownOpen(false);
+    setIsCityDropdownOpen(false);
+    setIsMoreFiltersOpen(true);
+  };
+
+  const resetMoreFilters = () => {
+    setSelectedJobTypes(new Set());
+    setSelectedWorkModes(new Set());
+    setSelectedSuburbs(new Set());
+    setPastOnly(false);
+    setModalCity('');
+    setSelectedCategories(new Set());
   };
 
   // Filter elements based on selected category (parent includes its subcategories) and saved toggle
@@ -105,27 +161,101 @@ export default function JobList() {
     return [];
   };
 
-  const normalizedSelected = (selectedClassification || '').trim().toLowerCase();
-  const selectedCategoryObj = categories.find((c) => (c.name || '').trim().toLowerCase() === normalizedSelected);
-  const allowedCategoryValues = selectedClassification === 'All'
+  // Build allowed category values (OR within group). If multi-select used, it overrides the single dropdown
+  const selectedCategoryLabelsLower = (() => {
+    if (selectedCategories && selectedCategories.size > 0) {
+      return Array.from(selectedCategories).map((s) => (s || '').trim().toLowerCase()).filter(Boolean);
+    }
+    const single = (selectedClassification || '').trim();
+    if (!single || single === 'All') return [];
+    return [(single || '').trim().toLowerCase()];
+  })();
+
+  const categoryNameToItem = React.useMemo(() => {
+    const map = new Map();
+    categories.forEach((c) => {
+      const key = (c.name || '').trim().toLowerCase();
+      if (key) map.set(key, c);
+    });
+    return map;
+  }, [categories]);
+
+  const allowedCategoryValues = selectedCategoryLabelsLower.length === 0
     ? null
     : new Set(
-        (selectedCategoryObj
-          ? [selectedCategoryObj.name, ...(selectedCategoryObj.subcategories || [])]
-          : [selectedClassification]
-        )
-          .map((s) => (s || '').trim().toLowerCase())
-          .filter(Boolean)
+        selectedCategoryLabelsLower.flatMap((label) => {
+          const cat = categoryNameToItem.get(label);
+          if (cat) {
+            const values = [cat.name, ...(Array.isArray(cat.subcategories) ? cat.subcategories : [])];
+            return values.map((v) => (v || '').trim().toLowerCase()).filter(Boolean);
+          }
+          return [(label || '').trim().toLowerCase()].filter(Boolean);
+        })
       );
 
   const filteredElements = elements.filter((element) => {
     const elementCategories = normalizeToStringArray(element.category).map((s) => s.toLowerCase());
     const matchesCategory =
-      selectedClassification === 'All' ||
-      (allowedCategoryValues && elementCategories.some((cat) => allowedCategoryValues.has(cat)));
-    const matchesSaved = !showSavedOnly || element.saved;
-    return matchesCategory && matchesSaved;
+      !allowedCategoryValues || elementCategories.some((cat) => allowedCategoryValues.has(cat));
+    const elementCity = typeof element.city === 'string' ? element.city.trim().toLowerCase() : '';
+    const matchesCity = selectedCity === 'All' || elementCity === (selectedCity || '').trim().toLowerCase();
+    const elementJobType = (element.jobType || '').trim().toLowerCase();
+    const elementWorkMode = (element.workMode || '').trim().toLowerCase();
+    const elementSuburb = (element.suburb || '').trim().toLowerCase();
+    const matchesJobType = selectedJobTypes.size === 0 || selectedJobTypes.has(elementJobType);
+    const matchesWorkMode = selectedWorkModes.size === 0 || selectedWorkModes.has(elementWorkMode);
+    const matchesSuburb = selectedSuburbs.size === 0 || selectedSuburbs.has(elementSuburb);
+    const matchesPast = !pastOnly || (element.isActive === false);
+    return (
+      matchesCategory &&
+      matchesCity &&
+      matchesJobType &&
+      matchesWorkMode &&
+      matchesSuburb &&
+      matchesPast
+    );
   });
+
+  // Build auxiliary lists for More Filters modal
+  useEffect(() => {
+    const jobTypeSet = new Set();
+    const workModeSet = new Set();
+    const cityMap = {};
+    elements.forEach((el) => {
+      if (typeof el.jobType === 'string' && el.jobType.trim()) {
+        jobTypeSet.add(el.jobType.trim());
+      }
+      if (typeof el.workMode === 'string' && el.workMode.trim()) {
+        workModeSet.add(el.workMode.trim());
+      }
+      const city = typeof el.city === 'string' ? el.city.trim() : '';
+      const suburb = typeof el.suburb === 'string' ? el.suburb.trim() : '';
+      if (city && suburb) {
+        if (!cityMap[city]) cityMap[city] = new Set();
+        cityMap[city].add(suburb);
+      }
+    });
+    setAvailableJobTypes(Array.from(jobTypeSet).sort((a, b) => a.localeCompare(b)));
+    setAvailableWorkModes(Array.from(workModeSet).sort((a, b) => a.localeCompare(b)));
+    const normalizedMap = Object.fromEntries(
+      Object.entries(cityMap).map(([c, subs]) => [c, Array.from(subs).sort((a, b) => a.localeCompare(b))])
+    );
+    setCityToSuburbs(normalizedMap);
+    if (modalCity && !normalizedMap[modalCity]) {
+      setModalCity('');
+    }
+  }, [elements]);
+
+  const toggleInSet = (setValue, currentSet, rawKey) => {
+    const key = (rawKey || '').trim().toLowerCase();
+    const next = new Set(currentSet);
+    if (next.has(key)) {
+      next.delete(key);
+    } else {
+      next.add(key);
+    }
+    setValue(next);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -138,389 +268,180 @@ export default function JobList() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Filters Section */}
         <View style={styles.filtersContainer}>
-          {/* Dropdown */}
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity 
-              style={styles.dropdownButton} 
-              onPress={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
-              <Text style={styles.dropdownButtonText}>{selectedClassification}</Text>
-              <Text style={styles.dropdownArrow}>{isDropdownOpen ? '▲' : '▼'}</Text>
-            </TouchableOpacity>
-            
-            {isDropdownOpen && (
-              <View style={styles.dropdownMenu}>
-                {/* All option */}
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setSelectedClassification('All');
-                    setIsDropdownOpen(false);
-                  }}
-                >
-                  <Text style={[
-                    styles.dropdownItemText,
-                    selectedClassification === 'All' && styles.selectedItem
-                  ]}>
-                    All
-                  </Text>
-                </TouchableOpacity>
-
-                {categories.map((category, index) => {
-                  const hasSubcategories = Array.isArray(category.subcategories) && category.subcategories.length > 0;
-                  const isExpanded = !!expandedCategories[category.name];
-                  return (
-                    <View key={category.id || index}>
-                      <TouchableOpacity
-                        style={styles.dropdownItem}
-                        onPress={() => {
-                          // Select the parent category and close the dropdown.
-                          // The chevron button handles expand/collapse without changing selection.
-                          setSelectedClassification(category.name);
-                          setIsDropdownOpen(false);
-                        }}
-                      >
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Text style={[
-                            styles.dropdownItemText,
-                            selectedClassification === category.name && styles.selectedItem
-                          ]}>
-                            {category.name}
-                          </Text>
-                          {hasSubcategories && (
-                            <TouchableOpacity
-                              onPress={() => {
-                                setExpandedCategories((prev) => ({
-                                  ...prev,
-                                  [category.name]: !prev[category.name],
-                                }));
-                              }}
-                            >
-                              <Ionicons name={isExpanded ? 'chevron-down' : 'chevron-forward'} size={18} color="#666" />
-                            </TouchableOpacity>
-                          )}
-                        </View>
-                      </TouchableOpacity>
-
-                      {hasSubcategories && isExpanded && (
-                        <View>
-                          {category.subcategories.map((sub) => (
-                            <TouchableOpacity
-                              key={`${category.name}-${sub}`}
-                              style={styles.subcategoryItem}
-                              onPress={() => {
-                                setSelectedClassification(sub);
-                                setIsDropdownOpen(false);
-                              }}
-                            >
-                              <Text style={[
-                                styles.subcategoryItemText,
-                                selectedClassification === sub && styles.selectedItem
-                              ]}>
-                                {sub}
-                              </Text>
-                            </TouchableOpacity>
-                          ))}
-                        </View>
-                      )}
-                    </View>
-                  );
-                })}
-              </View>
-            )}
-          </View>
-
-          {/* Toggle */}
-          <View style={styles.toggleContainer}>
-            <Text style={styles.toggleLabel}>Saved Only</Text>
-            <Switch
-              value={showSavedOnly}
-              onValueChange={setShowSavedOnly}
-              trackColor={{ false: '#e0e0e0', true: '#432272' }}
-              thumbColor={showSavedOnly ? '#fff' : '#f4f3f4'}
-            />
-          </View>
-          </View>
-
-                 {/* Elements List */}
-         <View style={styles.elementsContainer}>
-           {filteredElements.map((element) => (
-             <TouchableOpacity key={element.id} style={styles.elementContainer} onPress={() => navigation.navigate('JobDescription', { jobId: element.id })}>
-              <View style={styles.elementItem}>
-                <Image 
-                  source={element.logo ? { uri: element.logo } : require('../assets/job-offer.png')} 
-                  style={styles.elementImage}
-                  resizeMode="contain"
-                />
-                <View style={styles.elementContent}>
-                  <Text style={styles.elementTitle}>{element.title}</Text>
-                  <View style={styles.elementList}>
-                    {element.items.map((item, index) => (
-                      <View key={index} style={styles.listItem}>
-                        <Text style={styles.bulletPoint}>•</Text>
-                        <Text style={styles.listItemText}>{item}</Text>
-                      </View>
-                    ))}
-                    {!!element.category && (
-                      <View style={styles.listItem}>
-                        <Text style={styles.bulletPoint}>•</Text>
-                        <Text style={styles.listItemText}>{element.category}</Text>
-                      </View>
-                    )}
-                    {!!element.jobType && (
-                      <View style={styles.listItem}>
-                        <Text style={styles.bulletPoint}>•</Text>
-                        <Text style={styles.listItemText}>{element.jobType}</Text>
-                      </View>
-                    )}
-                    
-                  </View>
-                </View>
-                </View>
-                {element.workMode === 'Remote' ? (
-                  <View style={styles.listLocation}>
-                    <View style={styles.remoteTag}>
-                      <Text style={styles.remoteTagText}>REMOTE</Text>
-                    </View>
-                  </View>
-                ) : ((!!element.suburb || !!element.city) && (
-                  <View style={styles.listLocation}>
-                    <View style={styles.bulletIcon}>
-                      <Ionicons name="location-sharp" size={16} color="#432272" />
-                    </View>
-                    <Text style={styles.listLocationText}>
-                      {`${element.suburb || ''}${element.suburb && element.city ? ', ' : ''}${element.city || ''}`}
+          <View style={{ flex: 1 }}>
+            {/* Categories Dropdown */}
+            <View style={styles.dropdownContainer}>
+              <Text style={styles.dropdownLabel}>Categories</Text>
+              <TouchableOpacity 
+                style={styles.dropdownButton} 
+                onPress={() => {
+                  setIsDropdownOpen(!isDropdownOpen);
+                  setIsCityDropdownOpen(false);
+                }}
+              >
+                <Text style={styles.dropdownButtonText}>{selectedClassification}</Text>
+                <Text style={styles.dropdownArrow}>{isDropdownOpen ? '▲' : '▼'}</Text>
+              </TouchableOpacity>
+              
+              {isDropdownOpen && (
+                <View style={styles.dropdownMenu}>
+                  {/* All option */}
+                  <TouchableOpacity
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setSelectedClassification('All');
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    <Text style={[
+                      styles.dropdownItemText,
+                      selectedClassification === 'All' && styles.selectedItem
+                    ]}>
+                      All
                     </Text>
-                  </View>
-                ))}
-               
-             </TouchableOpacity>
-           ))}
+                  </TouchableOpacity>
+
+                  {categories.map((category, index) => {
+                    const hasSubcategories = Array.isArray(category.subcategories) && category.subcategories.length > 0;
+                    const isExpanded = !!expandedCategories[category.name];
+                    return (
+                      <View key={category.id || index}>
+                        <TouchableOpacity
+                          style={styles.dropdownItem}
+                          onPress={() => {
+                            setSelectedClassification(category.name);
+                            setIsDropdownOpen(false);
+                          }}
+                        >
+                          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Text style={[
+                              styles.dropdownItemText,
+                              selectedClassification === category.name && styles.selectedItem
+                            ]}>
+                              {category.name}
+                            </Text>
+                            {hasSubcategories && (
+                              <TouchableOpacity
+                                onPress={() => {
+                                  setExpandedCategories((prev) => ({
+                                    ...prev,
+                                    [category.name]: !prev[category.name],
+                                  }));
+                                }}
+                              >
+                                <Ionicons name={isExpanded ? 'chevron-down' : 'chevron-forward'} size={18} color="#666" />
+                              </TouchableOpacity>
+                            )}
+                          </View>
+                        </TouchableOpacity>
+
+                        {hasSubcategories && isExpanded && (
+                          <View>
+                            {category.subcategories.map((sub) => (
+                              <TouchableOpacity
+                                key={`${category.name}-${sub}`}
+                                style={styles.subcategoryItem}
+                                onPress={() => {
+                                  setSelectedClassification(sub);
+                                  setIsDropdownOpen(false);
+                                }}
+                              >
+                                <Text style={[
+                                  styles.subcategoryItemText,
+                                  selectedClassification === sub && styles.selectedItem
+                                ]}>
+                                  {sub}
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
+                          </View>
+                        )}
+                      </View>
+                    );
+                  })}
+                </View>
+              )}
+            </View>
+
+            {/* City Dropdown */}
+            <View style={styles.dropdownContainer}>
+              <Text style={styles.dropdownLabel}>City</Text>
+              <TouchableOpacity
+                style={styles.dropdownButton}
+                onPress={() => {
+                  setIsCityDropdownOpen(!isCityDropdownOpen);
+                  setIsDropdownOpen(false);
+                }}
+              >
+                <Text style={styles.dropdownButtonText}>{selectedCity}</Text>
+                <Text style={styles.dropdownArrow}>{isCityDropdownOpen ? '▲' : '▼'}</Text>
+              </TouchableOpacity>
+
+              {isCityDropdownOpen && (
+                <View style={styles.dropdownMenu}>
+                  {cities.map((city, index) => (
+                    <TouchableOpacity
+                      key={`${city}-${index}`}
+                      style={styles.dropdownItem}
+                      onPress={() => {
+                        setSelectedCity(city);
+                        setIsCityDropdownOpen(false);
+                      }}
+                    >
+                      <Text style={[
+                        styles.dropdownItemText,
+                        selectedCity === city && styles.selectedItem,
+                      ]}>
+                        {city}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
+            <View style={styles.moreFiltersContainer}>
+            <TouchableOpacity style={[styles.resetButton, hasActiveMoreFilters && styles.moreFiltersActiveButton]} onPress={handleMoreFilters}>
+                <Text style={[styles.resetButtonText, hasActiveMoreFilters && styles.moreFiltersActiveText]}>More filters</Text>
+            </TouchableOpacity>
+              <TouchableOpacity style={styles.resetButton} onPress={handleResetFilters}>
+                <Text style={styles.resetButtonText}>Reset</Text>
+              </TouchableOpacity>
+            </View>
           </View>
+        </View>
+
+        {/* Render the list of jobs */}
+        <List elements={filteredElements} />
+
         {/* Bottom spacer to avoid content under nav */}
         <View style={{ height: 90 }} />
       </ScrollView>
       <BottomNav />
+      
+      {/* More Filters Modal */}
+      <JobListFiltersPopup
+        isOpen={isMoreFiltersOpen}
+        onClose={() => setIsMoreFiltersOpen(false)}
+        categories={categories}
+        selectedClassification={selectedClassification}
+        setSelectedClassification={setSelectedClassification}
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+        availableJobTypes={availableJobTypes}
+        availableWorkModes={availableWorkModes}
+        cityToSuburbs={cityToSuburbs}
+        modalCity={modalCity}
+        setModalCity={setModalCity}
+        selectedJobTypes={selectedJobTypes}
+        setSelectedJobTypes={setSelectedJobTypes}
+        selectedWorkModes={selectedWorkModes}
+        setSelectedWorkModes={setSelectedWorkModes}
+        selectedSuburbs={selectedSuburbs}
+        setSelectedSuburbs={setSelectedSuburbs}
+        pastOnly={pastOnly}
+        setPastOnly={setPastOnly}
+        onReset={resetMoreFilters}
+      />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#432272',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#432272',
-  },
-  placeholder: {
-    width: 40,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  filtersContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: '#f8f9fa',
-    margin: 16,
-    borderRadius: 12,
-  },
-  dropdownContainer: {
-    flex: 1,
-    marginRight: 16,
-    position: 'relative',
-  },
-  dropdownButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-  },
-  dropdownButtonText: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
-  },
-  dropdownArrow: {
-    fontSize: 12,
-    color: '#666',
-  },
-  dropdownMenu: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    marginTop: 4,
-    zIndex: 1000,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  subcategoryItem: {
-    paddingLeft: 32,
-    paddingRight: 16,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f6f6f6',
-    backgroundColor: '#fafafa',
-  },
-  subcategoryItemText: {
-    fontSize: 15,
-    color: '#444',
-  },
-  dropdownItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  dropdownItemText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  selectedItem: {
-    color: '#432272',
-    fontWeight: 'bold',
-  },
-  toggleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  toggleLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginRight: 8,
-  },
-  elementsContainer: {
-    paddingHorizontal: 20,
-    gap: 10,
-  },
-  elementContainer: {
-    flexDirection: 'column',
-    backgroundColor: '#f8f9fa',
-    alignItems: 'center',
-    width: '100%',
-    borderRadius: 10,
-  },
-  elementItem: {
-    flexDirection: 'row',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 12,
-    padding: 6,
-    marginBottom: 2,
-    alignItems: 'flex-start',
-  },
-  elementImage: {
-    width: 75,
-    height: 75,
-    borderRadius: 8,
-    marginRight: 20,
-    marginLeft: 2,
-  },
-  elementContent: {
-    flex: 1,
-  },
-  elementTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-    marginLeft: 10,
-    marginRight: 15,
-    textAlign: 'right',
-  },
-  elementList: {
-    marginTop: 10,
-    marginLeft: 10,
-  },
-  listItem: {
-    flexDirection: 'row',
-    marginBottom: 8,
-  },
-   bulletPoint: {
-    fontSize: 14,
-    color: '#432272',
-    marginRight: 10,
-    marginLeft: 12,
-    marginTop: 0,
-  },
-  listItemText: {
-    flex: 1,
-    fontSize: 15,
-    color: '#4c4c4c',
-    lineHeight: 20,
-    marginRight: 20,
-  },
-  listLocation: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    alignItems: 'center',
-    width: '100%',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  listLocationText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
-  bulletIcon: {
-    width: 16,
-    height: 20,
-    marginRight: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  remoteTag: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 14,
-    backgroundColor: '#432272',
-    opacity: 0.95,
-  },
-  remoteTagText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-});
