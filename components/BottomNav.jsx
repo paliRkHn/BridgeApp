@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
+    paddingBottom: 50,
   },
   navButton: {
     flex: 1,
