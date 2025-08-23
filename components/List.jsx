@@ -38,7 +38,12 @@ export default function List({ elements = [] }) {
                   {!!element.category && (
                     <View style={styles.listItem}>
                       <Text style={styles.bulletPoint}>•</Text>
-                      <Text style={styles.listItemText}>{element.category}</Text>
+                      <Text style={styles.listItemText}>
+                        {Array.isArray(element.category) 
+                          ? element.category.join(', ')
+                          : element.category
+                        }
+                      </Text>
                     </View>
                   )}
                   {!!element.jobType && (

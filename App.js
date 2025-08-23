@@ -1,6 +1,9 @@
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ThemeProvider } from './context/ThemeContext';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AuthProvider } from './context/AuthContext';
 
 import Starter from './screens/Starter';
 import Login from './screens/Login';
@@ -14,24 +17,26 @@ import Profile from './screens/Profile';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
   return (
-    <ThemeProvider>
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen name="Starter" component={Starter} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="SignUp" component={SignUp} />
-          <Stack.Screen name="Dashboard" component={Dashboard} />
-          <Stack.Screen name="Activity" component={Activity} />
-          <Stack.Screen name="JobList" component={JobList} />
-          <Stack.Screen name="JobDescription" component={JobDescription} />
-          <Stack.Screen name="Profile" component={Profile} />
-          
-
-
-        </Stack.Navigator>
-      </NavigationContainer>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <NavigationContainer>
+            <Stack.Navigator>
+              <Stack.Screen name="Starter" component={Starter} />
+              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="SignUp" component={SignUp} />
+              <Stack.Screen name="Dashboard" component={Dashboard} />
+              <Stack.Screen name="Activity" component={Activity} />
+              <Stack.Screen name="JobList" component={JobList} />
+              <Stack.Screen name="JobDescription" component={JobDescription} />
+              <Stack.Screen name="Profile" component={Profile} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </AuthProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
 

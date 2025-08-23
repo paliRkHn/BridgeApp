@@ -1,0 +1,382 @@
+import React, { useState } from 'react';
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  ScrollView, 
+  TouchableOpacity, 
+  SafeAreaView,
+  TextInput,
+  Image,
+  Alert,
+  KeyboardAvoidingView,
+  Platform
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
+import { MaterialIcons } from '@expo/vector-icons';
+
+export default function SignUpForm({ 
+  formData, 
+  setFormData, 
+  isPasswordVisible, 
+  setIsPasswordVisible, 
+  isConfirmPasswordVisible, 
+  setIsConfirmPasswordVisible,
+  handleAvatarUpload,
+  handleSignUp,
+  isLoading = false
+}) {
+  const navigation = useNavigation();
+  const { theme } = useTheme();
+
+  const goBack = () => {
+    navigation.goBack();
+  };
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['bottom']}>
+      <KeyboardAvoidingView 
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView 
+          style={styles.scrollView} 
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.scrollContent}
+        >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={[styles.title, { color: theme.primary }]}>Sign Up</Text>
+          <View style={styles.placeholder} />
+        </View>
+
+        {/* Avatar Section */}
+        <View style={styles.avatarSection}>
+          <Image 
+            source={formData.avatar} 
+            style={styles.avatar}
+            resizeMode="cover"
+          />
+          <TouchableOpacity style={[styles.uploadButton, { backgroundColor: theme.primary }]} onPress={handleAvatarUpload}>
+            <Text style={styles.uploadButtonText}>Upload Photo</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Registration Form */}
+        <View style={styles.formContainer}>
+          {/* Name Fields */}
+          <View style={styles.nameRow}>
+            <View style={styles.nameField}>
+              <Text style={[styles.label, { color: theme.text }]}>First Name *</Text>
+              <TextInput
+                style={[styles.input, { 
+                  borderColor: theme.secondary,
+                  backgroundColor: theme.background,
+                  color: theme.text
+                }]}
+                value={formData.firstName}
+                onChangeText={(text) => setFormData({...formData, firstName: text})}
+                placeholder="Enter first name"
+                placeholderTextColor={theme.secondary}
+                autoCapitalize="words"
+                returnKeyType="next"
+              />
+            </View>
+            <View style={styles.nameField}>
+              <Text style={[styles.label, { color: theme.text }]}>Last Name *</Text>
+              <TextInput
+                style={[styles.input, { 
+                  borderColor: theme.secondary,
+                  backgroundColor: theme.background,
+                  color: theme.text
+                }]}
+                value={formData.lastName}
+                onChangeText={(text) => setFormData({...formData, lastName: text})}
+                placeholder="Enter last name"
+                placeholderTextColor={theme.secondary}
+                autoCapitalize="words"
+                returnKeyType="next"
+              />
+            </View>
+          </View>
+
+          {/* Email Field */}
+          <View style={styles.fieldContainer}>
+            <Text style={[styles.label, { color: theme.text }]}>Email Address *</Text>
+            <TextInput
+              style={[styles.input, { 
+                borderColor: theme.secondary,
+                backgroundColor: theme.background,
+                color: theme.text
+              }]}
+              value={formData.email}
+              onChangeText={(text) => setFormData({...formData, email: text})}
+              placeholder="Enter email address"
+              placeholderTextColor={theme.secondary}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              returnKeyType="next"
+            />
+          </View>
+
+          {/* Password Field */}
+          <View style={styles.fieldContainer}>
+            <Text style={[styles.label, { color: theme.text }]}>Password *</Text>
+            <View style={[styles.passwordContainer, { 
+              borderColor: theme.secondary,
+              backgroundColor: theme.background
+            }]}>
+              <TextInput
+                style={[styles.passwordInput, { color: theme.text }]}
+                value={formData.password}
+                onChangeText={(text) => setFormData({...formData, password: text})}
+                placeholder="Enter password"
+                placeholderTextColor={theme.secondary}
+                secureTextEntry={!isPasswordVisible}
+                autoCapitalize="none"
+                returnKeyType="next"
+              />
+              <TouchableOpacity 
+                style={styles.eyeButton}
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+              >
+                <View style={styles.eyeButtonText}>
+                  {isPasswordVisible ? <MaterialIcons name="visibility" size={24} color="black" /> : <MaterialIcons name="visibility-off" size={24} color="black" />}
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Confirm Password Field */}
+          <View style={styles.fieldContainer}>
+            <Text style={[styles.label, { color: theme.text }]}>Confirm Password *</Text>
+            <View style={[styles.passwordContainer, { 
+              borderColor: theme.secondary,
+              backgroundColor: theme.background
+            }]}>
+              <TextInput
+                style={[styles.passwordInput, { color: theme.text }]}
+                value={formData.confirmPassword}
+                onChangeText={(text) => setFormData({...formData, confirmPassword: text})}
+                placeholder="Confirm password"
+                placeholderTextColor={theme.secondary}
+                secureTextEntry={!isConfirmPasswordVisible}
+                autoCapitalize="none"
+                returnKeyType="done"
+                onSubmitEditing={handleSignUp}
+              />
+              <TouchableOpacity 
+                style={styles.eyeButton}
+                onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
+              >
+                <View style={styles.eyeButtonText}>
+                  {isConfirmPasswordVisible ? <MaterialIcons name="visibility" size={24} color="black" /> : <MaterialIcons name="visibility-off" size={24} color="black" />}
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Terms and Conditions */}
+          <View style={styles.termsContainer}>
+            <Text style={[styles.termsText, { color: theme.secondary }]}>
+              By signing up, you agree to our{' '}
+              <Text style={[styles.linkText, { color: theme.primary }]}>Terms of Service</Text>
+              {' '}and{' '}
+              <Text style={[styles.linkText, { color: theme.primary }]}>Privacy Policy</Text>
+            </Text>
+          </View>
+        </View>
+
+        {/* Sign Up Button */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity 
+            style={[styles.signUpButton, { backgroundColor: theme.primary }]} 
+            onPress={handleSignUp}
+            disabled={isLoading}
+          >
+            <Text style={styles.signUpButtonText}>
+              {isLoading ? 'Creating Account...' : 'Sign Up'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Login Link */}
+        <View style={styles.loginContainer}>
+          <Text style={[styles.loginText, { color: theme.secondary }]}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={[styles.loginLink, { color: theme.primary }]}>Log In</Text>
+          </TouchableOpacity>
+        </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    keyboardAvoidingView: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingBottom: 20,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: '#e0e0e0',
+    },
+    backButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: '#432272',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    backButtonText: {
+      color: '#fff',
+      fontSize: 20,
+      fontWeight: 'bold',
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#432272',
+    },
+    placeholder: {
+      width: 40,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    avatarSection: {
+      alignItems: 'center',
+      paddingVertical: 24,
+    },
+    avatar: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
+    },
+    uploadButton: {
+      backgroundColor: '#432272',
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      borderRadius: 20,
+    },
+    uploadButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    formContainer: {
+      paddingHorizontal: 20,
+    },
+    nameRow: {
+      flexDirection: 'row',
+      gap: 12,
+      marginBottom: 16,
+    },
+    nameField: {
+      flex: 1,
+    },
+    fieldContainer: {
+      marginBottom: 16,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#333',
+      marginBottom: 8,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
+      borderRadius: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      fontSize: 16,
+      backgroundColor: '#f9f9f9',
+    },
+    passwordContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
+      borderRadius: 8,
+      backgroundColor: '#f9f9f9',
+    },
+    passwordInput: {
+      flex: 1,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      fontSize: 16,
+    },
+    eyeButton: {
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    eyeButtonText: {
+      fontSize: 20,
+    },
+    termsContainer: {
+      marginTop: 8,
+      marginBottom: 24,
+    },
+    termsText: {
+      fontSize: 14,
+      color: '#666',
+      lineHeight: 20,
+    },
+    linkText: {
+      color: '#432272',
+      fontWeight: '600',
+    },
+    buttonContainer: {
+      paddingHorizontal: 20,
+      marginBottom: 24,
+    },
+    signUpButton: {
+      backgroundColor: '#432272',
+      borderRadius: 12,
+      paddingVertical: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    signUpButtonText: {
+      color: '#fff',
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    loginContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingBottom: 24,
+    },
+    loginText: {
+      fontSize: 16,
+      color: '#666',
+    },
+    loginLink: {
+      fontSize: 16,
+      color: '#432272',
+      fontWeight: '600',
+    },
+  });
+  
