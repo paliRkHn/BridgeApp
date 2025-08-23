@@ -89,12 +89,17 @@ export default function Login() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <Image
-          source={require('../assets/logo_square.png')}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <TextInput
+                 <View style={styles.bannerContainer}>
+           <Image
+             source={require('../assets/logo_square.png')}
+             style={styles.image}
+             resizeMode="cover"
+           />
+         </View>
+         
+         <View style={styles.spacer} />
+         
+         <TextInput
           style={styles.input}
           placeholder="Email"
           value={username}
@@ -173,16 +178,32 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    paddingTop: 50,
     paddingBottom: 50,
+    paddingHorizontal: 20,
+  },
+  bannerContainer: {
+    height: '35%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    backgroundColor: '#432272',
+    borderBottomLeftRadius: 100,
+    borderBottomRightRadius: 100,
+    zIndex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   image: {
-    width: 120,
-    height: 120,
+    marginBottom: 30,
+    width: 170,
+    height: 170,
     borderRadius: 20,
-    marginBottom: 80,
+  },
+  spacer: {
+    minHeight: '45%',
   },
   input: {
     width: '100%',
@@ -258,7 +279,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     maxWidth: 350,
-    marginTop: 12,
+    marginTop: 20,
+    marginBottom: 10,
     borderRadius: 24,
     overflow: 'hidden',
   },
