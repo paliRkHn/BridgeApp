@@ -62,13 +62,14 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     width: '100%',
     maxWidth: 400,
     marginBottom: 32,
   },
   squareButton: {
-    width: '47%',
+    width: '40%',
+    height: '40%',
     aspectRatio: 1,
     backgroundColor: '#432272',
     borderRadius: 12,
@@ -98,8 +99,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonIcon: {
-    width: 90,
-    height: 90,
+    width: 70,
+    height: 70,
     tintColor: '#fff',
   },
   longButtonIcon: {

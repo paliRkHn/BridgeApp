@@ -13,12 +13,14 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import BottomNav from '../components/BottomNav';
+import { useTheme } from '../context/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
 export default function JobDescription() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { theme } = useTheme();
   const { jobId } = route.params || {};
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -64,7 +66,7 @@ export default function JobDescription() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.bannerContainer}>
             <Image 
@@ -81,7 +83,7 @@ export default function JobDescription() {
 
   if (!job) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.bannerContainer}>
             <Image 
@@ -101,7 +103,7 @@ export default function JobDescription() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Banner Image */}
         <View style={styles.bannerContainer}>
@@ -117,13 +119,26 @@ export default function JobDescription() {
           {/* Section 3: Requirements */}
           {!!(job?.category || job?.company || job?.jobType) && (
             <View style={styles.section}>
-              <Text style={styles.roleTitle}>{job?.title || 'Job Overview'}</Text>              
+              <Text style={[styles.roleTitle, { color: theme.primary }]}>{job?.title || 'Job Overview'}</Text>
               <View style={styles.textBlock}>
-                <Text style={styles.textContent}>
-                  {job?.company ? `Company: ${job.company}\n` : ''}
-                  {job?.category ? `Category: ${job.category}\n` : ''}
-                  {job?.jobType ? `${job.jobType}` : ''}
-                </Text>
+                {!!job?.company && (
+                  <View style={styles.detailRow}>
+                    <Text style={[styles.detailLabel, { color: theme.text }]}>Company: </Text>
+                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.company}</Text>
+                  </View>
+                )}
+                {!!job?.category && (
+                  <View style={styles.detailRow}>
+                    <Text style={[styles.detailLabel, { color: theme.text }]}>Category: </Text>
+                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.category}</Text>
+                  </View>
+                )}
+                {!!job?.jobType && (
+                  <View style={styles.detailRow}>
+                    <Text style={[styles.detailLabel, { color: theme.text }]}>Job type: </Text>
+                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.jobType}</Text>
+                  </View>
+                )}
               </View>
             </View>
           )}
@@ -153,13 +168,26 @@ export default function JobDescription() {
           {/* Section 3: Requirements */}
           {!!(job?.category || job?.company || job?.jobType) && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Details</Text>
+              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Details</Text>
               <View style={styles.textBlock}>
-                <Text style={styles.textContent}>
-                  {job?.company ? `Company: ${job.company}\n` : ''}
-                  {job?.category ? `Category: ${job.category}\n` : ''}
-                  {job?.jobType ? `${job.jobType}` : ''}
-                </Text>
+                {!!job?.company && (
+                  <View style={styles.detailRow}>
+                    <Text style={[styles.detailLabel, { color: theme.text }]}>Company: </Text>
+                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.company}</Text>
+                  </View>
+                )}
+                {!!job?.category && (
+                  <View style={styles.detailRow}>
+                    <Text style={[styles.detailLabel, { color: theme.text }]}>Category: </Text>
+                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.category}</Text>
+                  </View>
+                )}
+                {!!job?.jobType && (
+                  <View style={styles.detailRow}>
+                    <Text style={[styles.detailLabel, { color: theme.text }]}>Job type: </Text>
+                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.jobType}</Text>
+                  </View>
+                )}
               </View>
             </View>
           )}
@@ -167,9 +195,9 @@ export default function JobDescription() {
           {/* Section 4: Benefits */}
           {!!(job?.location) && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Location</Text>
+              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Location</Text>
               <View style={styles.textBlock}>
-                <Text style={styles.textContent}>
+                <Text style={[styles.textContent, { color: theme.text }]}>
                   {`${job.location.suburb || ''}${job.location.suburb && job.location.city ? ', ' : ''}${job.location.city || ''}`}
                 </Text>
               </View>
@@ -179,10 +207,10 @@ export default function JobDescription() {
 
         {/* Action Buttons */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Save</Text>
+          <TouchableOpacity style={[styles.saveButton, { borderColor: theme.primary }]} onPress={handleSave}>
+            <Text style={[styles.saveButtonText, { color: theme.primary }]}>Save</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
+          <TouchableOpacity style={[styles.applyButton, { backgroundColor: theme.primary }]} onPress={handleApply}>
             <Text style={styles.applyButtonText}>Apply</Text>
           </TouchableOpacity>
         </View>
@@ -242,6 +270,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     lineHeight: 24,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    marginBottom: 6,
+    flexWrap: 'wrap',
+  },
+  detailLabel: {
+    fontSize: 16,
+    color: '#000000',
+    fontWeight: 'bold',
+  },
+  detailValue: {
+    fontSize: 16,
+    color: '#333',
   },
   buttonContainer: {
     flexDirection: 'row',
