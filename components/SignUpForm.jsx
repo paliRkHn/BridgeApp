@@ -15,7 +15,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
 import { MaterialIcons } from '@expo/vector-icons';
-import { handleAvatarUpload } from '../services/imageUploadService';
+import AvatarUpload from './AvatarUpload';
 
 export default function SignUpForm({ 
   formData, 
@@ -29,40 +29,17 @@ export default function SignUpForm({
 }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
-  
-  // Local state for avatar upload
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const goBack = () => {
     navigation.goBack();
   };
 
-  // Handle avatar selection and update form data
-  const handleImageSelected = (imageUri) => {
-    if (imageUri === null) {
-      // Reset to default avatar
-      setFormData(prev => ({
-        ...prev,
-        avatar: require('../assets/idea.png')
-      }));
-    } else {
-      // Set custom image
-      setFormData(prev => ({
-        ...prev,
-        avatar: { uri: imageUri }
-      }));
-    }
-  };
-
-  // Handle avatar upload button press
-  const handleAvatarPress = () => {
-    handleAvatarUpload(
-      handleImageSelected,
-      setUploadProgress,
-      setIsUploadingAvatar,
-      formData.avatar
-    );
+  // Handle avatar changes from AvatarUpload component
+  const handleAvatarChange = (newAvatar) => {
+    setFormData(prev => ({
+      ...prev,
+      avatar: newAvatar
+    }));
   };
 
   return (
@@ -86,37 +63,13 @@ export default function SignUpForm({
 
         {/* Avatar Section */}
         <View style={styles.avatarSection}>
-          <View style={styles.avatarContainer}>
-            <Image 
-              source={formData.avatar.uri ? { uri: formData.avatar.uri } : formData.avatar} 
-              style={styles.avatar}
-              resizeMode="cover"
-            />
-            {isUploadingAvatar && (
-              <View style={styles.progressOverlay}>
-                <View style={[styles.progressBar, { width: `${uploadProgress}%` }]} />
-              </View>
-            )}
-          </View>
-          <TouchableOpacity 
-            style={[
-              styles.uploadButton, 
-              { backgroundColor: theme.primary },
-              isUploadingAvatar && styles.disabledButton
-            ]} 
-            onPress={handleAvatarPress}
-            disabled={isUploadingAvatar}
-          >
-            <Text style={styles.uploadButtonText}>
-              {isUploadingAvatar ? 'Processing...' : 
-               (formData.avatar && formData.avatar.uri ? 'Change Photo' : 'Upload Photo')}
-            </Text>
-          </TouchableOpacity>
-          {isUploadingAvatar && (
-            <Text style={[styles.progressText, { color: theme.secondary }]}>
-              {Math.round(uploadProgress)}% complete
-            </Text>
-          )}
+          <AvatarUpload
+            avatar={formData.avatar}
+            onAvatarChange={handleAvatarChange}
+            size={120}
+            showUploadButton={true}
+            style={styles.avatarUploadContainer}
+          />
         </View>
 
         {/* Registration Form */}
@@ -134,7 +87,7 @@ export default function SignUpForm({
                 value={formData.firstName}
                 onChangeText={(text) => setFormData({...formData, firstName: text})}
                 placeholder="Enter first name"
-                placeholderTextColor={theme.secondary}
+                placeholderTextColor="#999"
                 autoCapitalize="words"
                 returnKeyType="next"
               />
@@ -150,7 +103,7 @@ export default function SignUpForm({
                 value={formData.lastName}
                 onChangeText={(text) => setFormData({...formData, lastName: text})}
                 placeholder="Enter last name"
-                placeholderTextColor={theme.secondary}
+                placeholderTextColor="#999"
                 autoCapitalize="words"
                 returnKeyType="next"
               />
@@ -188,7 +141,7 @@ export default function SignUpForm({
                 value={formData.password}
                 onChangeText={(text) => setFormData({...formData, password: text})}
                 placeholder="Enter password"
-                placeholderTextColor={theme.secondary}
+                placeholderTextColor="#999"
                 secureTextEntry={!isPasswordVisible}
                 autoCapitalize="none"
                 returnKeyType="next"
@@ -216,7 +169,7 @@ export default function SignUpForm({
                 value={formData.confirmPassword}
                 onChangeText={(text) => setFormData({...formData, confirmPassword: text})}
                 placeholder="Confirm password"
-                placeholderTextColor={theme.secondary}
+                placeholderTextColor="#999"
                 secureTextEntry={!isConfirmPasswordVisible}
                 autoCapitalize="none"
                 returnKeyType="done"
@@ -249,7 +202,7 @@ export default function SignUpForm({
           <TouchableOpacity 
             style={[styles.signUpButton, { backgroundColor: theme.primary }]} 
             onPress={handleSignUp}
-            disabled={isLoading || isUploadingAvatar}
+            disabled={isLoading}
           >
             <Text style={styles.signUpButtonText}>
               {isLoading ? 'Creating Account...' : 'Sign Up'}
@@ -319,51 +272,8 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       paddingVertical: 24,
     },
-    avatarContainer: {
-      position: 'relative',
-      marginBottom: 16,
-    },
-    avatar: {
-      width: 120,
-      height: 120,
-      borderRadius: 60,
-      borderWidth: 1,
-      borderColor: '#e0e0e0',
-    },
-    progressOverlay: {
-      position: 'absolute',
-      bottom: 5,
-      left: 5,
-      right: 5,
-      height: 6,
-      backgroundColor: 'rgba(0,0,0,0.2)',
-      borderRadius: 3,
-      overflow: 'hidden',
-    },
-    progressBar: {
-      height: '100%',
-      backgroundColor: '#4CAF50',
-      borderRadius: 3,
-    },
-    uploadButton: {
-      backgroundColor: '#432272',
-      paddingHorizontal: 20,
-      paddingVertical: 10,
-      borderRadius: 20,
-      marginBottom: 8,
-    },
-    disabledButton: {
-      opacity: 0.6,
-    },
-    uploadButtonText: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: '600',
-    },
-    progressText: {
-      fontSize: 14,
-      color: '#666',
-      marginTop: 4,
+    avatarUploadContainer: {
+      marginBottom: 0,
     },
     formContainer: {
       paddingHorizontal: 20,

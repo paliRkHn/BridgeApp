@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -7,74 +7,94 @@ import {
   TouchableOpacity, 
   SafeAreaView,
   Image,
-  TextInput
+  TextInput,
+  Modal,
+  Dimensions
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import BottomNav from '../components/BottomNav';
+import AvatarUpload from '../components/AvatarUpload';
+import { JobHistorySection, SkillsSection, EducationSection } from '../components/ProfileEdit';
+import { useAuth } from '../context/AuthContext';
+import { uploadAvatarForUser } from '../services/imageUploadService';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Profile() {
   const navigation = useNavigation();
+  const { user, userProfile, updateUserProfile, refreshUserProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   
-  // Sample profile data
+  // Get screen dimensions for responsive modal
+  const screenHeight = Dimensions.get('window').height;
+
+  // Get avatar source for modal display
+  const getModalAvatarSource = () => {
+    if (profileData.avatar && profileData.avatar.uri) {
+      return { uri: profileData.avatar.uri };
+    } else if (profileData.avatar && typeof profileData.avatar === 'string') {
+      return { uri: profileData.avatar };
+    } else if (profileData.avatar) {
+      return profileData.avatar;
+    } else {
+      return require('../assets/idea.png');
+    }
+  };
+  
+  // Use real user data from auth context, with fallbacks
   const [profileData, setProfileData] = useState({
-    name: 'Sarah Johnson',
-    location: 'Melbourne, Australia',
-    summary: 'Experienced community worker with a passion for helping others. Skilled in program coordination and building meaningful relationships with diverse populations.',
-    avatar: 'https://via.placeholder.com/120x120/432272/FFFFFF?text=SJ'
+    name: '',
+    location: '',
+    summary: '',
+    avatar: require('../assets/idea.png'),
+    jobHistory: [],
+    education: [],
+    skills: []
   });
 
-  const jobHistory = [
-    {
-      id: 1,
-      title: 'Community Coordinator',
-      company: 'Bridge Community Services',
-      duration: '2021 - Present',
-      description: 'Coordinate community programs and support services for diverse populations.'
-    },
-    {
-      id: 2,
-      title: 'Social Worker',
-      company: 'Melbourne Social Services',
-      duration: '2019 - 2021',
-      description: 'Provided direct support to individuals and families in need.'
-    },
-    {
-      id: 3,
-      title: 'Volunteer Coordinator',
-      company: 'Local Community Center',
-      duration: '2017 - 2019',
-      description: 'Managed volunteer programs and community outreach initiatives.'
+  // Update local state when userProfile changes
+  useEffect(() => {
+    if (userProfile) {
+      setProfileData({
+        name: userProfile.displayName || `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim() || '',
+        location: userProfile.city ? `${userProfile.suburb || ''} ${userProfile.city}`.trim() : '',
+        summary: userProfile.summary || '',
+        avatar: userProfile.photoURL || require('../assets/idea.png'),
+        jobHistory: userProfile.jobHistory || [],
+        education: userProfile.education || [],
+        skills: userProfile.skills || []
+      });
     }
-  ];
+  }, [userProfile]);
 
-  const education = [
-    {
-      id: 1,
-      degree: 'Bachelor of Social Work',
-      institution: 'University of Melbourne',
-      year: '2017',
-      description: 'Major in Community Development and Social Policy'
-    },
-    {
-      id: 2,
-      degree: 'Certificate in Mental Health First Aid',
-      institution: 'Mental Health Australia',
-      year: '2020',
-      description: 'Certified to provide initial support to people experiencing mental health issues'
+  // Handle avatar changes
+  const handleAvatarChange = async (newAvatar) => {
+    setProfileData(prev => ({
+      ...prev,
+      avatar: newAvatar
+    }));
+
+    // Upload avatar to Firebase Storage if it's a new image
+    if (newAvatar && newAvatar.uri && user) {
+      try {
+        const photoURL = await uploadAvatarForUser(user.uid, newAvatar.uri);
+        await updateUserProfile(user.uid, { photoURL });
+        await refreshUserProfile();
+      } catch (error) {
+        console.error('Failed to update avatar:', error);
+      }
+    } else if (!newAvatar.uri && user) {
+      // Remove avatar
+      try {
+        await updateUserProfile(user.uid, { photoURL: null });
+        await refreshUserProfile();
+      } catch (error) {
+        console.error('Failed to remove avatar:', error);
+      }
     }
-  ];
+  };
 
-  const skills = [
-    'Program Coordination',
-    'Community Outreach',
-    'Case Management',
-    'Crisis Intervention',
-    'Cultural Sensitivity',
-    'Team Leadership',
-    'Documentation',
-    'Public Speaking'
-  ];
+
 
   const goBack = () => {
     navigation.navigate('Dashboard');
@@ -84,10 +104,31 @@ export default function Profile() {
     setIsEditing(!isEditing);
   };
 
-  const saveProfile = () => {
-    setIsEditing(false);
-    // Here you would typically save to a database
-    console.log('Profile saved');
+  const saveProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const [firstName, ...lastNameParts] = profileData.name.split(' ');
+      const lastName = lastNameParts.join(' ');
+      
+      await updateUserProfile(user.uid, {
+        displayName: profileData.name,
+        firstName: firstName || '',
+        lastName: lastName || '',
+        city: profileData.location.split(' ').pop() || '',
+        suburb: profileData.location.split(' ').slice(0, -1).join(' ') || '',
+        summary: profileData.summary,
+        jobHistory: profileData.jobHistory,
+        skills: profileData.skills,
+        education: profileData.education
+      });
+      
+      await refreshUserProfile();
+      setIsEditing(false);
+      console.log('Profile saved');
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+    }
   };
 
   return (
@@ -95,9 +136,6 @@ export default function Profile() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={goBack}>
-            <Text style={styles.backButtonText}>←</Text>
-          </TouchableOpacity>
           <Text style={styles.title}>Profile</Text>
           <TouchableOpacity style={styles.editButton} onPress={isEditing ? saveProfile : toggleEdit}>
             <Text style={styles.editButtonText}>{isEditing ? 'Save' : 'Edit'}</Text>
@@ -106,10 +144,15 @@ export default function Profile() {
 
         {/* Profile Header */}
         <View style={styles.profileHeader}>
-          <Image 
-            source={{ uri: profileData.avatar }} 
-            style={styles.avatar}
-            resizeMode="cover"
+          <AvatarUpload
+            avatar={profileData.avatar}
+            onAvatarChange={handleAvatarChange}
+            size={120}
+            showUploadButton={isEditing}
+            buttonText={isEditing ? undefined : null}
+            disabled={!isEditing}
+            style={styles.avatarUploadContainer}
+            onAvatarPress={() => setIsImageModalVisible(true)}
           />
           <View style={styles.profileInfo}>
             {isEditing ? (
@@ -120,21 +163,63 @@ export default function Profile() {
                 placeholder="Enter your name"
               />
             ) : (
-              <Text style={styles.name}>{profileData.name}</Text>
+              <Text style={[styles.name, !profileData.name && styles.placeholder]}>
+                {profileData.name || 'Name not set'}
+              </Text>
             )}
             
             {isEditing ? (
-              <TextInput
-                style={styles.locationInput}
-                value={profileData.location}
-                onChangeText={(text) => setProfileData({...profileData, location: text})}
-                placeholder="Enter your location (optional)"
-              />
+              <View style={styles.locationInputContainer}>
+                <Ionicons name="location-sharp" size={14} color="#999" style={styles.locationIcon} />
+                <TextInput
+                  style={styles.locationInput}
+                  value={profileData.location}
+                  onChangeText={(text) => setProfileData({...profileData, location: text})}
+                  placeholder="Enter your location (optional)"
+                />
+              </View>
             ) : (
-              profileData.location && <Text style={styles.location}>{profileData.location}</Text>
+              <View style={styles.locationContainer}>
+                <Ionicons 
+                  name="location-sharp" 
+                  size={16} 
+                  color={profileData.location ? "#666" : "#999"} 
+                  style={styles.locationIcon} 
+                />
+                <Text style={[styles.location, !profileData.location && styles.placeholder]}>
+                  {profileData.location || 'No location set'}
+                </Text>
+              </View>
             )}
           </View>
         </View>
+
+        {/* Job History */}
+        <JobHistorySection
+          jobHistory={profileData.jobHistory}
+          onUpdateJobHistory={(updatedHistory) => 
+            setProfileData({...profileData, jobHistory: updatedHistory})
+          }
+          isEditing={isEditing}
+        />
+     
+        {/* Education */}
+        <EducationSection
+          education={profileData.education}
+          onUpdateEducation={(updatedEducation) => 
+            setProfileData({...profileData, education: updatedEducation})
+          }
+          isEditing={isEditing}
+        />
+
+        {/* Skills */}
+        <SkillsSection
+          skills={profileData.skills}
+          onUpdateSkills={(updatedSkills) => 
+            setProfileData({...profileData, skills: updatedSkills})
+          }
+          isEditing={isEditing}
+        />
 
         {/* Personal Summary */}
         <View style={styles.section}>
@@ -149,59 +234,46 @@ export default function Profile() {
               numberOfLines={4}
             />
           ) : (
-            profileData.summary && (
-              <View style={styles.textBlock}>
-                <Text style={styles.textContent}>{profileData.summary}</Text>
-              </View>
-            )
+            <View style={styles.textBlock}>
+              <Text style={[styles.textContent, !profileData.summary && styles.placeholder]}>
+                {profileData.summary || 'Tell everyone a bit about yourself. Tap Edit to add.'}
+              </Text>
+            </View>
           )}
         </View>
 
-        {/* Job History */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Job History</Text>
-          {jobHistory.map((job) => (
-            <View key={job.id} style={styles.jobItem}>
-              <View style={styles.jobHeader}>
-                <Text style={styles.jobTitle}>{job.title}</Text>
-                <Text style={styles.jobDuration}>{job.duration}</Text>
-              </View>
-              <Text style={styles.jobCompany}>{job.company}</Text>
-              <Text style={styles.jobDescription}>{job.description}</Text>
-            </View>
-          ))}
-        </View>
-
-        {/* Education */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Education</Text>
-          {education.map((edu) => (
-            <View key={edu.id} style={styles.educationItem}>
-              <View style={styles.educationHeader}>
-                <Text style={styles.educationDegree}>{edu.degree}</Text>
-                <Text style={styles.educationYear}>{edu.year}</Text>
-              </View>
-              <Text style={styles.educationInstitution}>{edu.institution}</Text>
-              <Text style={styles.educationDescription}>{edu.description}</Text>
-            </View>
-          ))}
-        </View>
-
-        {/* Skills */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Skills</Text>
-          <View style={styles.skillsContainer}>
-            {skills.map((skill, index) => (
-              <View key={index} style={styles.skillTag}>
-                <Text style={styles.skillText}>{skill}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
         {/* Bottom spacer to avoid content under nav */}
         <View style={{ height: 90 }} />
       </ScrollView>
       <BottomNav />
+
+      {/* Avatar Image Modal */}
+      <Modal
+        visible={isImageModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsImageModalVisible(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setIsImageModalVisible(false)}
+        >
+          <View style={styles.modalContent}>
+            <TouchableOpacity 
+              style={styles.closeButton}
+              onPress={() => setIsImageModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>✕</Text>
+            </TouchableOpacity>
+            <Image 
+              source={getModalAvatarSource()}
+              style={styles.modalImage}
+              resizeMode="contain"
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -255,28 +327,29 @@ const styles = StyleSheet.create({
   profileHeader: {
     flexDirection: 'row',
     padding: 20,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
-  avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+  avatarUploadContainer: {
     marginRight: 20,
+    marginBottom: 0,
   },
   profileInfo: {
     flex: 1,
+    marginTop: 20,
   },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 4,
+    textAlign: 'right',
   },
   nameInput: {
     fontSize: 24,
     fontWeight: 'bold',
+    textAlign: 'right',
     color: '#333',
     marginBottom: 4,
     borderWidth: 1,
@@ -284,17 +357,32 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 8,
   },
-  location: {
-    fontSize: 16,
-    color: '#666',
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
-  locationInput: {
-    fontSize: 16,
-    color: '#666',
+  locationInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#e0e0e0',
     borderRadius: 4,
     padding: 8,
+  },
+  locationIcon: {
+    marginRight: 8,
+  },
+  location: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'right',
+    fontStyle: 'italic',
+  },
+  locationInput: {
+    fontSize: 16,
+    color: '#666',
+    flex: 1,
   },
   section: {
     padding: 20,
@@ -363,54 +451,50 @@ const styles = StyleSheet.create({
     color: '#666',
     lineHeight: 20,
   },
-  educationItem: {
-    marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  educationHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 4,
-  },
-  educationDegree: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+
+
+  modalOverlay: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  educationYear: {
-    fontSize: 14,
-    color: '#666',
-    fontStyle: 'italic',
+  modalContent: {
+    width: '90%',
+    maxWidth: 400,
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 15,
+    padding: 10,
   },
-  educationInstitution: {
-    fontSize: 16,
-    color: '#432272',
-    fontWeight: '600',
-    marginBottom: 8,
+  closeButton: {
+    position: 'absolute',
+    top: -20,
+    right: 10,
+    zIndex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  educationDescription: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  skillsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  skillTag: {
-    backgroundColor: '#432272',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  skillText: {
+  closeButtonText: {
     color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  modalImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
+    backgroundColor: '#f0f0f0',
+  },
+  placeholder: {
+    color: '#999',
     fontSize: 14,
-    fontWeight: '500',
   },
 });
