@@ -15,7 +15,11 @@
     },
     "ios": {
       "bundleIdentifier": "com.palomarojas.bridgeapp",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs access to camera to take profile photos.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to photo library to select profile photos."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +29,11 @@
       "bundleIdentifier": "com.palomarojas.bridgeapp",
       "edgeToEdgeEnabled": true,
       "package": "com.palomarojas.bridgeapp",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
       "intentFilters": [
         {
           "action": "VIEW",

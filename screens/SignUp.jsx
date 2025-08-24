@@ -1,20 +1,10 @@
 import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity, 
-  SafeAreaView,
-  TextInput,
-  Image,
-  Alert
-} from 'react-native';
+import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { signUp } from '../services/authService';
 import { createUserProfile } from '../services/userService';
-import { useTheme } from '../context/ThemeContext';
+import { uploadAvatarForUser } from '../services/imageUploadService';
 import SignUpForm from '../components/SignUpForm';
 
 export default function SignUp() {
@@ -31,18 +21,6 @@ export default function SignUp() {
   });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
-
-  const handleAvatarUpload = () => {
-    // In a real app, this would open image picker
-    Alert.alert(
-      'Upload Avatar',
-      'Avatar upload functionality would be implemented here with image picker.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'OK' }
-      ]
-    );
-  };
 
   const validateForm = () => {
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.confirmPassword) {
@@ -71,9 +49,28 @@ export default function SignUp() {
       const { firstName, lastName, email, password } = formData;
       const displayName = `${firstName} ${lastName}`;
 
+      // Create user account
       const authUser = await signUp(email, password, displayName);
 
-      await createUserProfile(authUser, {
+      let photoURL = null;
+
+      // Upload avatar if selected
+      if (formData.avatar && formData.avatar.uri) {
+        try {
+          photoURL = await uploadAvatarForUser(authUser.uid, formData.avatar.uri);
+          console.log('Avatar uploaded successfully:', photoURL);
+        } catch (uploadError) {
+          console.error('Avatar upload failed:', uploadError);
+          // Continue with account creation even if avatar upload fails
+          Alert.alert(
+            'Warning',
+            'Account created successfully, but avatar upload failed. You can update your avatar later in your profile.'
+          );
+        }
+      }
+
+      // Create user profile
+      await createUserProfile(authUser, null, {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         email: email.trim(),
@@ -81,19 +78,20 @@ export default function SignUp() {
         dateOfBirth: formData.dateOfBirth,
         suburb: formData.suburb,
         city: formData.city,
-    });
+        photoURL: photoURL,
+      });
 
-    //Sign in process
-    Alert.alert(
-      'Success',
-      'Account created successfully!',
-      [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('Login')
-        }
-      ]
-    );
+      //Sign in process
+      Alert.alert(
+        'Success',
+        'Account created successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Login')
+          }
+        ]
+      );
     } catch (error) {
       console.error('Error signing up:', error);
       let errorMessage = 'Failed to create account.';
@@ -125,7 +123,6 @@ export default function SignUp() {
       setIsPasswordVisible={setIsPasswordVisible}
       isConfirmPasswordVisible={isConfirmPasswordVisible}
       setIsConfirmPasswordVisible={setIsConfirmPasswordVisible}
-      handleAvatarUpload={handleAvatarUpload}
       handleSignUp={handleSignUp}
       isLoading={isLoading}
     />
