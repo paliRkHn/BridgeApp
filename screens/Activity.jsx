@@ -11,12 +11,15 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import BottomNav from '../components/BottomNav';
+import { useAuth } from '../context/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
 export default function Activity() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { userProfile } = useAuth();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [activeTab, setActiveTab] = useState(
     route?.params?.initialTab === 'Saved' ? 'Saved' : 'Activity'
@@ -34,30 +37,36 @@ export default function Activity() {
     { title: 'Wellness Programs', description: 'Mental health and wellness activities' }
   ];
 
-  // Sample saved items (like JobList) with statuses
-  const savedItems = [
+  // Get saved jobs from user profile or use sample data
+  const userSavedJobs = userProfile?.savedJobs || [];
+  
+  // Sample saved items (kept as examples) with statuses
+  const sampleSavedItems = [
     {
-      id: 1,
+      id: 'sample-1',
       title: 'Community Support Worker',
       image: require('../assets/job-offer.png'),
       items: ['Part-time position', 'Shift work available', 'Immediate start'],
       status: 'APPLIED',
     },
     {
-      id: 2,
+      id: 'sample-2',
       title: 'Program Coordinator',
       image: require('../assets/job-offer.png'),
       items: ['Full-time role', 'Lead community programs', '3+ years experience'],
       status: 'IN PROCESS',
     },
     {
-      id: 3,
+      id: 'sample-3',
       title: 'Outreach Specialist',
       image: require('../assets/job-offer.png'),
       items: ['Contract role', 'Travel within metro area', 'Must have driver license'],
       status: 'CLOSED',
     },
   ];
+
+  // Combine user saved jobs with sample items
+  const savedItems = [...userSavedJobs, ...sampleSavedItems];
 
   const goBack = () => {
     navigation.goBack();
@@ -105,9 +114,6 @@ export default function Activity() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={goBack}>
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
         <Text style={styles.title}>Activity</Text>
         <View style={styles.placeholder} />
       </View>
@@ -181,35 +187,114 @@ export default function Activity() {
             </View>
           </>
         ) : (
-          <View style={styles.savedListContainer}>
-            {savedItems.map((item) => (
-              <View key={item.id} style={styles.savedItem}>
-                <Image source={item.image} style={styles.savedImage} resizeMode="cover" />
-                <View style={styles.savedContent}>
-                  <View style={styles.savedTitleRow}>
-                    <Text style={styles.savedTitle}>{item.title}</Text>
-                    <View
-                      style={[
-                        styles.statusTag,
-                        item.status === 'APPLIED' && { backgroundColor: '#2e7d32' },
-                        item.status === 'IN PROCESS' && { backgroundColor: '#f9a825' },
-                        item.status === 'CLOSED' && { backgroundColor: '#9e9e9e' },
-                      ]}
+          <View style={styles.savedContainer}>
+            {/* Real Saved Jobs Section */}
+            {userSavedJobs.length > 0 && (
+              <View style={styles.savedJobsSection}>
+                <Text style={styles.savedSectionTitle}>Your Saved Jobs</Text>
+                <View style={styles.elementsContainer}>
+                  {userSavedJobs.map((job) => (
+                    <TouchableOpacity
+                      key={job.id}
+                      style={styles.elementContainer}
+                      onPress={() => navigation.navigate('JobDescription', { jobId: job.id })}
                     >
-                      <Text style={styles.statusTagText}>{item.status}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.elementList}>
-                    {item.items.map((point, idx) => (
-                      <View key={idx} style={styles.listItem}>
-                        <Text style={styles.bulletPoint}>•</Text>
-                        <Text style={styles.listItemText}>{point}</Text>
+                      <View style={styles.elementItem}>
+                        <Image
+                          source={typeof job.image === 'string' ? { uri: job.image } : job.image}
+                          style={styles.elementImage}
+                          resizeMode="contain"
+                        />
+                        <View style={styles.elementContent}>
+                          <Text style={styles.elementTitle}>{job.title}</Text>
+                          <View style={styles.elementList}>
+                            {Array.isArray(job.items) && job.items.map((item, index) => (
+                              <View key={index} style={styles.listItem}>
+                                <Text style={styles.bulletPoint}>•</Text>
+                                <Text style={styles.listItemText}>{item}</Text>
+                              </View>
+                            ))}
+                            {job.company && (
+                              <View style={styles.listItem}>
+                                <Text style={styles.bulletPoint}>•</Text>
+                                <Text style={styles.listItemText}>{job.company}</Text>
+                              </View>
+                            )}
+                            {job.category && (
+                              <View style={styles.listItem}>
+                                <Text style={styles.bulletPoint}>•</Text>
+                                <Text style={styles.listItemText}>{job.category}</Text>
+                              </View>
+                            )}
+                            {job.jobType && (
+                              <View style={styles.listItem}>
+                                <Text style={styles.bulletPoint}>•</Text>
+                                <Text style={styles.listItemText}>{job.jobType}</Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
                       </View>
-                    ))}
-                  </View>
+                      {/* Location or Remote Tag */}
+                      {job.location?.workMode === 'Remote' ? (
+                        <View style={styles.listLocation}>
+                          <View style={styles.remoteTag}>
+                            <Text style={styles.remoteTagText}>REMOTE</Text>
+                          </View>
+                        </View>
+                      ) : ((job.location?.suburb || job.location?.city) && (
+                        <View style={styles.listLocation}>
+                          <View style={styles.bulletIcon}>
+                            <Ionicons name="location-sharp" size={16} color="#432272" />
+                          </View>
+                          <Text style={styles.listLocationText}>
+                            {`${job.location.suburb || ''}${job.location.suburb && job.location.city ? ', ' : ''}${job.location.city || ''}`}
+                          </Text>
+                        </View>
+                      ))}
+                    </TouchableOpacity>
+                  ))}
                 </View>
               </View>
-            ))}
+            )}
+
+            {/* Example Data Section */}
+            <View style={styles.exampleSection}>
+              <View style={styles.savedListContainer}>
+                {sampleSavedItems.map((item) => (
+                  <TouchableOpacity 
+                    key={item.id} 
+                    style={styles.savedItem}
+                    disabled={true} // Make examples non-clickable
+                  >
+                    <Image source={item.image} style={styles.savedImage} resizeMode="cover" />
+                    <View style={styles.savedContent}>
+                      <View style={styles.savedTitleRow}>
+                        <Text style={styles.savedTitle}>{item.title}</Text>
+                        <View
+                          style={[
+                            styles.statusTag,
+                            item.status === 'APPLIED' && { backgroundColor: '#2e7d32' },
+                            item.status === 'IN PROCESS' && { backgroundColor: '#f9a825' },
+                            item.status === 'CLOSED' && { backgroundColor: '#9e9e9e' },
+                          ]}
+                        >
+                          <Text style={styles.statusTagText}>{item.status}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.elementList}>
+                        {item.items.map((point, idx) => (
+                          <View key={idx} style={styles.listItem}>
+                            <Text style={styles.bulletPoint}>•</Text>
+                            <Text style={styles.listItemText}>{point}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
           </View>
         )}
         {/* Bottom spacer to avoid content under nav */}
@@ -373,6 +458,95 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   // Saved Tab styles
+  savedContainer: {
+    paddingTop: 12,
+  },
+  savedJobsSection: {
+    marginBottom: 24,
+  },
+  exampleSection: {
+    marginBottom: 24,
+  },
+  savedSectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#432272',
+    marginBottom: 16,
+    paddingHorizontal: 20,
+  },
+  // JobList-style elements for saved jobs
+  elementsContainer: {
+    paddingHorizontal: 20,
+    gap: 10,
+  },
+  elementContainer: {
+    flexDirection: 'column',
+    backgroundColor: '#f8f9fa',
+    alignItems: 'center',
+    width: '100%',
+    borderRadius: 10,
+  },
+  elementItem: {
+    flexDirection: 'row',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 6,
+    marginBottom: 2,
+    alignItems: 'flex-start',
+  },
+  elementImage: {
+    width: 75,
+    height: 75,
+    borderRadius: 8,
+    marginRight: 20,
+    marginLeft: 2,
+  },
+  elementContent: {
+    flex: 1,
+  },
+  elementTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+    marginLeft: 10,
+    marginRight: 15,
+    textAlign: 'right',
+  },
+  listLocation: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  listLocationText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+  },
+  bulletIcon: {
+    width: 16,
+    height: 20,
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  remoteTag: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 14,
+    backgroundColor: '#432272',
+    opacity: 0.95,
+  },
+  remoteTagText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  // Original example data styles
   savedListContainer: {
     paddingHorizontal: 16,
     paddingTop: 12,
@@ -418,23 +592,25 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   elementList: {
-    marginTop: 4,
+    marginTop: 10,
+    marginLeft: 10,
   },
   listItem: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   bulletPoint: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#432272',
-    marginRight: 8,
-    marginTop: 2,
+    marginRight: 10,
+    marginLeft: 12,
+    marginTop: 0,
   },
   listItemText: {
     flex: 1,
-    fontSize: 14,
-    color: '#666',
+    fontSize: 15,
+    color: '#4c4c4c',
     lineHeight: 20,
+    marginRight: 20,
   },
 });

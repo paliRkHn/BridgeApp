@@ -14,6 +14,7 @@ import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import BottomNav from '../components/BottomNav';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,17 +22,62 @@ export default function JobDescription() {
   const navigation = useNavigation();
   const route = useRoute();
   const { theme } = useTheme();
+  const { user, userProfile, updateUserProfile, refreshUserProfile } = useAuth();
   const { jobId } = route.params || {};
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const goBack = () => {
     navigation.goBack();
   };
 
-  const handleSave = () => {
-    // Handle save functionality
-    console.log('Job saved');
+  const handleSave = async () => {
+    if (!user || !job || isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const savedJobs = userProfile?.savedJobs || [];
+      let updatedSavedJobs;
+
+      if (isSaved) {
+        // Remove from saved jobs
+        updatedSavedJobs = savedJobs.filter(savedJob => savedJob.id !== jobId);
+        setIsSaved(false);
+        console.log('Job removed from saved');
+      } else {
+        // Add to saved jobs
+        const jobToSave = {
+          id: jobId,
+          title: job.title || 'Untitled Job',
+          company: job.company || 'Unknown Company',
+          image: job.logo || require('../assets/job-offer.png'),
+          items: job.items || [],
+          status: 'SAVED',
+          savedAt: new Date().toISOString(),
+          category: job.category || '',
+          jobType: job.jobType || '',
+          location: job.location || {}
+        };
+        updatedSavedJobs = [...savedJobs, jobToSave];
+        setIsSaved(true);
+        console.log('Job added to saved');
+      }
+
+      // Update user profile
+      await updateUserProfile(user.uid, {
+        savedJobs: updatedSavedJobs
+      });
+      
+      await refreshUserProfile();
+    } catch (error) {
+      console.error('Error saving job:', error);
+      // Revert the state if there was an error
+      setIsSaved(!isSaved);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleApply = () => {
@@ -61,6 +107,14 @@ export default function JobDescription() {
     fetchJob();
     return () => { isActive = false; };
   }, [jobId]);
+
+  // Check if job is already saved
+  useEffect(() => {
+    if (userProfile && jobId) {
+      const savedJobs = userProfile.savedJobs || [];
+      setIsSaved(savedJobs.some(savedJob => savedJob.id === jobId));
+    }
+  }, [userProfile, jobId]);
 
   const bannerUri = (job && job.banner) || 'https://via.placeholder.com/400x200/432272/FFFFFF?text=JOB+BANNER';
 
@@ -207,8 +261,22 @@ export default function JobDescription() {
 
         {/* Action Buttons */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.saveButton, { borderColor: theme.primary }]} onPress={handleSave}>
-            <Text style={[styles.saveButtonText, { color: theme.primary }]}>Save</Text>
+          <TouchableOpacity 
+            style={[
+              styles.saveButton, 
+              { borderColor: theme.primary },
+              isSaved && { backgroundColor: theme.primary }
+            ]} 
+            onPress={handleSave}
+            disabled={isSaving}
+          >
+            <Text style={[
+              styles.saveButtonText, 
+              { color: isSaved ? '#fff' : theme.primary },
+              isSaving && { opacity: 0.7 }
+            ]}>
+              {isSaving ? 'Saving...' : (isSaved ? 'Saved' : 'Save')}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.applyButton, { backgroundColor: theme.primary }]} onPress={handleApply}>
             <Text style={styles.applyButtonText}>Apply</Text>
