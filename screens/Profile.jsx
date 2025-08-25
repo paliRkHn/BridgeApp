@@ -9,12 +9,18 @@ import {
   Image,
   TextInput,
   Modal,
-  Dimensions
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import BottomNav from '../components/BottomNav';
 import AvatarUpload from '../components/AvatarUpload';
-import { JobHistorySection, SkillsSection, EducationSection } from '../components/ProfileEdit';
+import JobHistorySection from '../components/profile-edit/JobHistorySection';
+import SpecialReqSection from '../components/profile-edit/SpecialReqSection';
+import SkillsSection from '../components/profile-edit/SkillsSection';
+import EducationSection from '../components/profile-edit/EducationSection';
+import WorkTypeSection from '../components/profile-edit/WorkTypeSection';
 import { useAuth } from '../context/AuthContext';
 import { uploadAvatarForUser } from '../services/imageUploadService';
 import { Ionicons } from '@expo/vector-icons';
@@ -49,7 +55,9 @@ export default function Profile() {
     avatar: require('../assets/idea.png'),
     jobHistory: [],
     education: [],
-    skills: []
+    skills: [],
+    specialReqs: [],
+    workType: { contractTypes: [], workModes: [] }
   });
 
   // Update local state when userProfile changes
@@ -62,7 +70,9 @@ export default function Profile() {
         avatar: userProfile.photoURL || require('../assets/idea.png'),
         jobHistory: userProfile.jobHistory || [],
         education: userProfile.education || [],
-        skills: userProfile.skills || []
+        skills: userProfile.skills || [],
+        specialReqs: userProfile.specialReqs || [],
+        workType: userProfile.workType || { contractTypes: [], workModes: [] }
       });
     }
   }, [userProfile]);
@@ -120,7 +130,9 @@ export default function Profile() {
         summary: profileData.summary,
         jobHistory: profileData.jobHistory,
         skills: profileData.skills,
-        education: profileData.education
+        education: profileData.education,
+        specialReqs: profileData.specialReqs,
+        workType: profileData.workType
       });
       
       await refreshUserProfile();
@@ -133,14 +145,19 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
+            <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+      >
+        {/* Sticky Header */}
+        <View style={styles.stickyHeader}>
           <Text style={styles.title}>Profile</Text>
           <TouchableOpacity style={styles.editButton} onPress={isEditing ? saveProfile : toggleEdit}>
             <Text style={styles.editButtonText}>{isEditing ? 'Save' : 'Edit'}</Text>
           </TouchableOpacity>
         </View>
+
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollViewContent}>
 
         {/* Profile Header */}
         <View style={styles.profileHeader}>
@@ -229,7 +246,7 @@ export default function Profile() {
               style={styles.summaryInput}
               value={profileData.summary}
               onChangeText={(text) => setProfileData({...profileData, summary: text})}
-              placeholder="Write a brief summary about yourself (optional)"
+              placeholder="Tell everyone a bit about yourself (optional)."
               multiline
               numberOfLines={4}
             />
@@ -242,10 +259,28 @@ export default function Profile() {
           )}
         </View>
 
-        {/* Bottom spacer to avoid content under nav */}
+          <SpecialReqSection
+           specialReqs={profileData.specialReqs}
+           onUpdateSpecialReqs={(updatedSpecialReqs) => 
+             setProfileData({...profileData, specialReqs: updatedSpecialReqs})
+           }
+           isEditing={isEditing}
+          />
+
+         {/* Work Type */}
+         <WorkTypeSection
+           workType={profileData.workType}
+           onUpdateWorkType={(updatedWorkType) => 
+             setProfileData({...profileData, workType: updatedWorkType})
+           }
+           isEditing={isEditing}
+         />
+ 
+          {/* Bottom spacer to avoid content under nav */}
         <View style={{ height: 90 }} />
-      </ScrollView>
-      <BottomNav />
+        </ScrollView>
+        <BottomNav />
+      </KeyboardAvoidingView>
 
       {/* Avatar Image Modal */}
       <Modal
@@ -282,6 +317,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  stickyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   header: {
     flexDirection: 'row',
@@ -323,6 +376,9 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  scrollViewContent: {
+    paddingBottom: 90,
   },
   profileHeader: {
     flexDirection: 'row',
