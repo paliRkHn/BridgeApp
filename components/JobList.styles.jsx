@@ -38,6 +38,46 @@ export const styles = StyleSheet.create({
       scrollView: {
         flex: 1,
       },
+      // Search styles
+      searchSection: {
+        paddingHorizontal: 20,
+        paddingTop: 16,
+        paddingBottom: 8,
+      },
+      searchLabel: {
+        fontSize: 14,
+        color: '#666',
+        fontStyle: 'italic',
+      },
+      searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        marginHorizontal: 20,
+        marginBottom: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+      },
+      searchIcon: {
+        marginRight: 12,
+      },
+      searchInput: {
+        flex: 1,
+        height: 48,
+        fontSize: 16,
+        color: '#333',
+      },
+      clearButton: {
+        marginLeft: 8,
+        padding: 4,
+      },
       filtersContainer: {
         flexDirection: 'row',
         alignItems: 'center',

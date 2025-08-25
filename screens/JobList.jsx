@@ -6,8 +6,9 @@ import {
   TouchableOpacity, 
   SafeAreaView,
   Image,
+  TextInput,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import BottomNav from '../components/BottomNav';
 import { db } from '../firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
@@ -18,7 +19,10 @@ import List from '../components/List';
 
 export default function JobList() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { searchQuery } = route.params || {};
   const [selectedClassification, setSelectedClassification] = useState('All');
+  const [searchText, setSearchText] = useState(searchQuery || '');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [elements, setElements] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -206,13 +210,26 @@ export default function JobList() {
     const matchesWorkMode = selectedWorkModes.size === 0 || selectedWorkModes.has(elementWorkMode);
     const matchesSuburb = selectedSuburbs.size === 0 || selectedSuburbs.has(elementSuburb);
     const matchesPast = !pastOnly || (element.isActive === false);
+    
+    // Search functionality
+    const searchLower = searchText.toLowerCase().trim();
+    const matchesSearch = !searchLower || (
+      (element.title || '').toLowerCase().includes(searchLower) ||
+      (element.company || '').toLowerCase().includes(searchLower) ||
+      (element.description || '').toLowerCase().includes(searchLower) ||
+      elementCategories.some(cat => cat.includes(searchLower)) ||
+      elementCity.includes(searchLower) ||
+      elementJobType.includes(searchLower)
+    );
+    
     return (
       matchesCategory &&
       matchesCity &&
       matchesJobType &&
       matchesWorkMode &&
       matchesSuburb &&
-      matchesPast
+      matchesPast &&
+      matchesSearch
     );
   });
 
@@ -266,6 +283,31 @@ export default function JobList() {
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Search Bar */}
+        {searchText && (
+          <View style={styles.searchSection}>
+            <Text style={styles.searchLabel}>Search results for: "{searchText}"</Text>
+          </View>
+        )}
+        
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search jobs, companies..."
+            placeholderTextColor="#999"
+            value={searchText}
+            onChangeText={setSearchText}
+            autoCapitalize="none"
+            returnKeyType="search"
+          />
+          {searchText ? (
+            <TouchableOpacity onPress={() => setSearchText('')} style={styles.clearButton}>
+              <Ionicons name="close-circle" size={20} color="#999" />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
         {/* Filters Section */}
         <View style={styles.filtersContainer}>
           <View style={{ flex: 1 }}>
