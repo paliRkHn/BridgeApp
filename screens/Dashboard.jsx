@@ -135,7 +135,7 @@ export default function Dashboard() {
           </View>
           <View style={styles.secondaryActionContent}>
             <Text style={styles.secondaryActionTitle}>Activity</Text>
-            <Text style={styles.secondaryActionSubtitle}>Track your progress</Text>
+            <Text style={styles.secondaryActionSubtitle}>Track your applications</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
@@ -154,7 +154,10 @@ export default function Dashboard() {
           <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.secondaryAction}>
+        <TouchableOpacity 
+          style={styles.secondaryAction}
+          onPress={() => navigation.navigate('HelpForm')}
+        >
           <View style={styles.secondaryActionIcon}>
             <Ionicons name="help-circle" size={24} color={theme.primary} />
           </View>
