@@ -156,8 +156,10 @@ export default function JobDescription() {
     );
   }
 
+  const styles = getStyles(theme);
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Banner Image */}
         <View style={styles.bannerContainer}>
@@ -290,10 +292,10 @@ export default function JobDescription() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
   },
   scrollView: {
     flex: 1,
@@ -317,26 +319,26 @@ const styles = StyleSheet.create({
   roleTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 12,
     textAlign: 'right',
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 12,
   },
   textBlock: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#432272',
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
     lineHeight: 24,
   },
   detailRow: {

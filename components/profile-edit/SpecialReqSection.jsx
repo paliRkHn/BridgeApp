@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { Entypo, FontAwesome6, Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 
 const SpecialReqSection = ({ specialReqs, onUpdateSpecialReqs, isEditing }) => {
+  const { theme } = useTheme();
   const [specialReqInput, setSpecialReqInput] = useState('');
   const [showPlaceholders, setShowPlaceholders] = useState(!specialReqs || specialReqs.length === 0);
   const [isFlexible, setIsFlexible] = useState(false);
@@ -71,6 +73,8 @@ const SpecialReqSection = ({ specialReqs, onUpdateSpecialReqs, isEditing }) => {
   };
   
 
+  const styles = getStyles(theme);
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Special Requirements</Text>
@@ -82,7 +86,7 @@ const SpecialReqSection = ({ specialReqs, onUpdateSpecialReqs, isEditing }) => {
             <View key={specialReq.id || index} style={styles.specialReqTag}>
               <View style={styles.specialReqTextContainer}>
                 {specialReq.isFlexible && (
-                  <FontAwesome6 name="puzzle-piece" size={12} color="#fff" style={styles.puzzleIcon} />
+                  <FontAwesome6 name="puzzle-piece" size={12} color={theme.background} style={styles.puzzleIcon} />
                 )}
                 <Text style={styles.specialReqText}>
                   {typeof specialReq === 'string' ? specialReq : specialReq.text}
@@ -141,7 +145,7 @@ const SpecialReqSection = ({ specialReqs, onUpdateSpecialReqs, isEditing }) => {
                 style={styles.infoButton}
                 onPress={() => setShowInfoPopup(!showInfoPopup)}
               >
-                <Ionicons name="information-circle-outline" size={16} color="#666" />
+                <Ionicons name="information-circle-outline" size={16} color={theme.secondary} />
               </TouchableOpacity>
               
               {/* Info Popup */}
@@ -152,7 +156,7 @@ const SpecialReqSection = ({ specialReqs, onUpdateSpecialReqs, isEditing }) => {
                     style={styles.closePopup}
                     onPress={() => setShowInfoPopup(false)}
                   >
-                    <Ionicons name="close" size={14} color="#666" />
+                    <Ionicons name="close" size={14} color={theme.secondary} />
                   </TouchableOpacity>
                 </View>
               )}
@@ -163,7 +167,7 @@ const SpecialReqSection = ({ specialReqs, onUpdateSpecialReqs, isEditing }) => {
               onPress={handleAddSpecialReq}
               disabled={!specialReqInput.trim()}
             >
-              <Entypo name="plus" size={20} color="#432272" style={styles.addButtonIcon} />
+              <Entypo name="plus" size={20} color={theme.primary} style={styles.addButtonIcon} />
               <Text style={styles.addButtonText}>Add special requirement</Text>
             </TouchableOpacity>
           </View>
@@ -174,32 +178,32 @@ const SpecialReqSection = ({ specialReqs, onUpdateSpecialReqs, isEditing }) => {
   );
 };
 
-const styles = {
+const getStyles = (theme) => ({
   section: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 16,
   },
   textBlock: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#432272',
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
     lineHeight: 24,
   },
   placeholder: {
-    color: '#999',
+    color: theme.secondary,
     fontSize: 14,
   },
   inputContainer: {
@@ -214,12 +218,12 @@ const styles = {
   specialReqInput: {
     width: '100%',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 6,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
   },
   addButton: {
     flexDirection: 'row',
@@ -390,6 +394,6 @@ const styles = {
     marginLeft: 8,
     padding: 2,
   },
-};
+});
 
 export default SpecialReqSection;

@@ -11,8 +11,10 @@ import {
   Platform
 } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../context/ThemeContext';
 
 const TextEditor = ({ navigation, route }) => {
+  const { theme } = useTheme();
   const [title, setTitle] = useState(route.params?.title || '');
   const [content, setContent] = useState(route.params?.content || '');
   const [isBold, setIsBold] = useState(false);
@@ -60,7 +62,7 @@ const TextEditor = ({ navigation, route }) => {
   };
 
   const getTextStyle = () => {
-    let style = { fontSize: 16, color: '#333' };
+    let style = { fontSize: 16, color: theme.text };
     
     if (isBold) {
       style.fontWeight = 'bold';
@@ -85,6 +87,8 @@ const TextEditor = ({ navigation, route }) => {
     return text;
   };
 
+  const styles = getStyles(theme);
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView 
@@ -103,21 +107,21 @@ const TextEditor = ({ navigation, route }) => {
             style={[styles.toolButton, isBold && styles.toolButtonActive]}
             onPress={toggleBold}
           >
-            <FontAwesome5 name="bold" size={20} color={isBold ? '#432272' : '#666'} />
+            <FontAwesome5 name="bold" size={20} color={isBold ? theme.primary : theme.secondary} />
           </TouchableOpacity>
           
           <TouchableOpacity
             style={[styles.toolButton, isItalic && styles.toolButtonActive]}
             onPress={toggleItalic}
           >
-            <FontAwesome5 name="italic" size={20} color={isItalic ? '#432272' : '#666'} />
+            <FontAwesome5 name="italic" size={20} color={isItalic ? theme.primary : theme.secondary} />
           </TouchableOpacity>
           
           <TouchableOpacity
             style={[styles.toolButton, isBullet && styles.toolButtonActive]}
             onPress={toggleBullet}
           >
-            <Ionicons name="list" size={20} color={isBullet ? '#432272' : '#666'} />
+            <Ionicons name="list" size={20} color={isBullet ? theme.primary : theme.secondary} />
           </TouchableOpacity>
         </View>
 
@@ -135,7 +139,7 @@ const TextEditor = ({ navigation, route }) => {
               value={title}
               onChangeText={setTitle}
               placeholder="Enter document title..."
-              placeholderTextColor="#999"
+              placeholderTextColor={theme.secondary}
               maxLength={100}
             />
           </View>
@@ -148,7 +152,7 @@ const TextEditor = ({ navigation, route }) => {
               value={content}
               onChangeText={setContent}
               placeholder="Start writing your document..."
-              placeholderTextColor="#999"
+              placeholderTextColor={theme.secondary}
               multiline
               textAlignVertical="top"
               autoFocus={false}
@@ -170,10 +174,10 @@ const TextEditor = ({ navigation, route }) => {
   );
 };
 
-const styles = {
+const getStyles = (theme) => ({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -184,14 +188,14 @@ const styles = {
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: theme.border,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
   },
   headerButton: {
     padding: 8,
@@ -200,18 +204,18 @@ const styles = {
     flexDirection: 'row',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: theme.border,
     gap: 16,
   },
   toolButton: {
     padding: 8,
     borderRadius: 6,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
   },
   toolButtonActive: {
-    backgroundColor: '#e8f4fd',
+    backgroundColor: theme.primary + '20',
   },
   content: {
     flex: 1,
@@ -224,18 +228,18 @@ const styles = {
   titleLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: theme.text,
     marginBottom: 8,
   },
   titleInput: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 18,
-    color: '#333',
+    color: theme.text,
   },
   contentContainer: {
     flex: 1,
@@ -243,28 +247,28 @@ const styles = {
   contentLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: theme.text,
     marginBottom: 8,
   },
   contentInput: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     minHeight: 300,
     textAlignVertical: 'top',
-    color: '#333',
+    color: theme.text,
   },
   bottomButtons: {
     flexDirection: 'row',
     paddingHorizontal: 20,
     paddingVertical: 16,
     paddingBottom: 50,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopColor: theme.border,
     gap: 12,
   },
   cancelButton: {
@@ -272,27 +276,27 @@ const styles = {
     paddingVertical: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
-    backgroundColor: '#fff',
+    borderColor: theme.border,
+    backgroundColor: theme.background,
     alignItems: 'center',
   },
   cancelButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#666',
+    color: theme.secondary,
   },
   saveButton: {
     flex: 1,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     alignItems: 'center',
   },
   saveButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: theme.background,
   },
-};
+});
 
 export default TextEditor;

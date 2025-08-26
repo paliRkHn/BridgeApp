@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 
 const SkillsSection = ({ skills, onUpdateSkills, isEditing }) => {
+  const { theme } = useTheme();
   const [skillInput, setSkillInput] = useState('');
   const [showPlaceholders, setShowPlaceholders] = useState(!skills || skills.length === 0);
 
@@ -65,6 +67,8 @@ const SkillsSection = ({ skills, onUpdateSkills, isEditing }) => {
   };
   
 
+  const styles = getStyles(theme);
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Skills</Text>
@@ -116,7 +120,7 @@ const SkillsSection = ({ skills, onUpdateSkills, isEditing }) => {
               onPress={handleAddSkill}
               disabled={!skillInput.trim()}
             >
-              <Entypo name="plus" size={20} color="#432272" style={styles.addButtonIcon} />
+              <Entypo name="plus" size={20} color={theme.primary} style={styles.addButtonIcon} />
               <Text style={styles.addButtonText}>Add skill</Text>
             </TouchableOpacity>
           </View>
@@ -127,16 +131,16 @@ const SkillsSection = ({ skills, onUpdateSkills, isEditing }) => {
   );
 };
 
-const styles = {
+const getStyles = (theme) => ({
   section: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 16,
   },
   textBlock: {
@@ -268,6 +272,6 @@ const styles = {
     fontSize: 14,
     fontWeight: 'bold',
   },
-};
+});
 
 export default SkillsSection;

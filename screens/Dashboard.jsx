@@ -2,12 +2,14 @@ import { StyleSheet, View, TextInput, ScrollView, TouchableOpacity, Text, Image,
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Dashboard() {
   const navigation = useNavigation();
   const { user, userProfile } = useAuth();
+  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   
   const getGreeting = () => {
@@ -36,6 +38,8 @@ export default function Dashboard() {
     }
   };
   
+  const styles = getStyles(theme);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
@@ -56,7 +60,7 @@ export default function Dashboard() {
 
         {/* Enhanced Search Bar */}
         <TouchableOpacity style={styles.searchContainer} onPress={handleSearch}>
-          <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+          <Ionicons name="search" size={20} color={theme.secondary} style={styles.searchIcon} />
           <TextInput
             style={styles.searchBar}
             placeholder="Search jobs, companies..."
@@ -127,35 +131,35 @@ export default function Dashboard() {
       <View style={styles.secondaryActionsContainer}>
         <TouchableOpacity style={styles.secondaryAction} onPress={() => navigation.navigate('Activity')}>
           <View style={styles.secondaryActionIcon}>
-            <Ionicons name="time" size={24} color="#432272" />
+            <Ionicons name="time" size={24} color={theme.primary} />
           </View>
           <View style={styles.secondaryActionContent}>
             <Text style={styles.secondaryActionTitle}>Activity</Text>
             <Text style={styles.secondaryActionSubtitle}>Track your progress</Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#ccc" />
+          <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.secondaryAction}>
           <View style={styles.secondaryActionIcon}>
-            <Ionicons name="settings" size={24} color="#432272" />
+            <Ionicons name="settings" size={24} color={theme.primary} />
           </View>
           <View style={styles.secondaryActionContent}>
             <Text style={styles.secondaryActionTitle}>Settings</Text>
             <Text style={styles.secondaryActionSubtitle}>Customize your experience</Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#ccc" />
+          <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.secondaryAction}>
           <View style={styles.secondaryActionIcon}>
-            <Ionicons name="help-circle" size={24} color="#432272" />
+            <Ionicons name="help-circle" size={24} color={theme.primary} />
           </View>
           <View style={styles.secondaryActionContent}>
             <Text style={styles.secondaryActionTitle}>Help & Support</Text>
             <Text style={styles.secondaryActionSubtitle}>Get assistance</Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#ccc" />
+          <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
       </View>
       </ScrollView>
@@ -163,10 +167,10 @@ export default function Dashboard() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
   },
   container: {
     flexGrow: 1,
@@ -188,13 +192,13 @@ const styles = StyleSheet.create({
   },
   greetingText: {
     fontSize: 16,
-    color: '#666',
+    color: theme.secondary,
     marginBottom: 4,
   },
   nameText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.text,
   },
   avatarContainer: {
     marginLeft: 16,
@@ -204,13 +208,13 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     borderWidth: 2,
-    borderColor: '#432272',
+    borderColor: theme.primary,
   },
 
   // Stats Section
   statsContainer: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
@@ -227,17 +231,17 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: '#666',
+    color: theme.secondary,
     textAlign: 'center',
   },
   statDivider: {
     width: 1,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: theme.border,
     marginHorizontal: 16,
   },
 
@@ -245,7 +249,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 24,
@@ -262,14 +266,14 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
   },
 
   // Section Titles
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.text,
     marginBottom: 16,
     marginTop: 8,
   },
@@ -316,7 +320,7 @@ const styles = StyleSheet.create({
 
   // Secondary Actions
   secondaryActionsContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -336,7 +340,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -347,11 +351,11 @@ const styles = StyleSheet.create({
   secondaryActionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: theme.text,
     marginBottom: 2,
   },
   secondaryActionSubtitle: {
     fontSize: 14,
-    color: '#666',
+    color: theme.secondary,
   },
 });

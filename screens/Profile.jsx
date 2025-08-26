@@ -22,12 +22,14 @@ import SkillsSection from '../components/profile-edit/SkillsSection';
 import EducationSection from '../components/profile-edit/EducationSection';
 import WorkTypeSection from '../components/profile-edit/WorkTypeSection';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { uploadAvatarForUser } from '../services/imageUploadService';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function Profile() {
   const navigation = useNavigation();
   const { user, userProfile, updateUserProfile, refreshUserProfile } = useAuth();
+  const { theme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   
@@ -143,6 +145,8 @@ export default function Profile() {
     }
   };
 
+  const styles = getStyles(theme);
+
   return (
     <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
@@ -187,7 +191,7 @@ export default function Profile() {
             
             {isEditing ? (
               <View style={styles.locationInputContainer}>
-                <Ionicons name="location-sharp" size={14} color="#999" style={styles.locationIcon} />
+                <Ionicons name="location-sharp" size={14} color={theme.secondary} style={styles.locationIcon} />
                 <TextInput
                   style={styles.locationInput}
                   value={profileData.location}
@@ -313,10 +317,10 @@ export default function Profile() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -327,9 +331,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -343,34 +347,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: theme.border,
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   backButtonText: {
-    color: '#fff',
+    color: theme.background,
     fontSize: 20,
     fontWeight: 'bold',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
   },
   editButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     borderRadius: 8,
   },
   editButtonText: {
-    color: '#fff',
+    color: theme.background,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -437,40 +441,40 @@ const styles = StyleSheet.create({
   },
   locationInput: {
     fontSize: 16,
-    color: '#666',
+    color: theme.secondary,
     flex: 1,
   },
   section: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 16,
   },
   summaryInput: {
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
     textAlignVertical: 'top',
     minHeight: 100,
   },
   textBlock: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#432272',
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
     lineHeight: 24,
   },
   jobItem: {

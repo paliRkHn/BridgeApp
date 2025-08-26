@@ -13,13 +13,15 @@ import BottomNav from '../components/BottomNav';
 import { db } from '../firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from '../components/JobList.styles';
+import { getStyles } from '../components/JobList.styles';
+import { useTheme } from '../context/ThemeContext';
 import JobListFiltersPopup from '../components/JobListFiltersPopup';
 import List from '../components/List';
 
 export default function JobList() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { theme } = useTheme();
   const { searchQuery } = route.params || {};
   const [selectedClassification, setSelectedClassification] = useState('All');
   const [searchText, setSearchText] = useState(searchQuery || '');
@@ -273,6 +275,8 @@ export default function JobList() {
     }
     setValue(next);
   };
+
+  const styles = getStyles(theme);
 
   return (
     <SafeAreaView style={styles.container}>
