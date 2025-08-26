@@ -12,6 +12,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import BottomNav from '../components/BottomNav';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
@@ -20,6 +21,7 @@ export default function Activity() {
   const navigation = useNavigation();
   const route = useRoute();
   const { userProfile } = useAuth();
+  const { theme } = useTheme();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [activeTab, setActiveTab] = useState(
     route?.params?.initialTab === 'Saved' ? 'Saved' : 'Activity'
@@ -109,6 +111,8 @@ export default function Activity() {
 
   const days = getDaysInMonth(currentMonth);
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  const styles = getStyles(theme);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -245,7 +249,7 @@ export default function Activity() {
                       ) : ((job.location?.suburb || job.location?.city) && (
                         <View style={styles.listLocation}>
                           <View style={styles.bulletIcon}>
-                            <Ionicons name="location-sharp" size={16} color="#432272" />
+                            <Ionicons name="location-sharp" size={16} color={theme.primary} />
                           </View>
                           <Text style={styles.listLocationText}>
                             {`${job.location.suburb || ''}${job.location.suburb && job.location.city ? ', ' : ''}${job.location.city || ''}`}
@@ -305,10 +309,10 @@ export default function Activity() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
@@ -317,25 +321,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: theme.border,
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   backButtonText: {
-    color: '#fff',
+    color: theme.background,
     fontSize: 20,
     fontWeight: 'bold',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
   },
   placeholder: {
     width: 40,
@@ -348,7 +352,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 8,
     marginBottom: 4,
-    backgroundColor: '#f0eef5',
+    backgroundColor: theme.card,
     borderRadius: 10,
     padding: 4,
   },
@@ -359,10 +363,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   activeTabButton: {
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
   },
   tabText: {
-    color: '#432272',
+    color: theme.primary,
     fontWeight: '600',
   },
   activeTabText: {
@@ -400,7 +404,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 12,
     fontWeight: '600',
-    color: '#666',
+    color: theme.secondary,
   },
   calendarGrid: {
     flexDirection: 'row',
@@ -415,11 +419,11 @@ const styles = StyleSheet.create({
   },
   dayText: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
   },
   activityDay: {
-    backgroundColor: '#432272',
-    color: '#fff',
+    backgroundColor: theme.primary,
+    color: theme.background,
     borderRadius: 20,
     width: 32,
     height: 32,
@@ -433,7 +437,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 16,
   },
   activityItem: {
@@ -442,19 +446,19 @@ const styles = StyleSheet.create({
   activityTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
+    color: theme.text,
     marginBottom: 8,
   },
   activityDescriptionBlock: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#432272',
+    borderLeftColor: theme.primary,
   },
   activityDescription: {
     fontSize: 14,
-    color: '#666',
+    color: theme.secondary,
     lineHeight: 20,
   },
   // Saved Tab styles
@@ -470,7 +474,7 @@ const styles = StyleSheet.create({
   savedSectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 16,
     paddingHorizontal: 20,
   },
@@ -481,14 +485,14 @@ const styles = StyleSheet.create({
   },
   elementContainer: {
     flexDirection: 'column',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     alignItems: 'center',
     width: '100%',
     borderRadius: 10,
   },
   elementItem: {
     flexDirection: 'row',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     borderRadius: 12,
     padding: 6,
     marginBottom: 2,

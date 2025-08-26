@@ -2,12 +2,14 @@ import { StyleSheet, View, Image, TextInput, Button, TouchableOpacity, Text, Ale
 import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login() {
   const navigation = useNavigation();
   const { signIn } = useAuth();
+  const { theme } = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -78,6 +80,8 @@ export default function Login() {
 
 
 
+  const styles = getStyles(theme);
+
   return (
     <KeyboardAvoidingView 
       style={styles.container} 
@@ -133,7 +137,7 @@ export default function Login() {
           <Button 
             title={isLoading ? "Signing In..." : "Sign In"} 
             onPress={handleSignIn} 
-            color="#432272"
+            color={theme.primary}
             disabled={isLoading}
           />
         </View>
@@ -170,10 +174,10 @@ export default function Login() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -188,7 +192,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     borderBottomLeftRadius: 100,
     borderBottomRightRadius: 100,
     zIndex: 1,
@@ -209,12 +213,12 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 350,
     height: 48,
-    borderColor: '#ccc',
+    borderColor: theme.border,
     borderWidth: 1,
     borderRadius: 24,
     paddingHorizontal: 16,
     marginBottom: 16,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: theme.card,
     fontSize: 16,
   },
   passwordContainer: {
@@ -222,10 +226,10 @@ const styles = StyleSheet.create({
     maxWidth: 350,
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: '#ccc',
+    borderColor: theme.border,
     borderWidth: 1,
     borderRadius: 24,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: theme.card,
     marginBottom: 16,
   },
   passwordInput: {
@@ -257,7 +261,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderWidth: 2,
-    borderColor: '#432272',
+    borderColor: theme.primary,
     borderRadius: 4,
     marginRight: 8,
     alignItems: 'center',
@@ -265,7 +269,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   checkboxChecked: {
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
   },
   rememberMeText: {
     fontSize: 14,

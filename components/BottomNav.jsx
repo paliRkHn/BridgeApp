@@ -2,9 +2,13 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../context/ThemeContext';
 
 export default function BottomNav() {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+
+  const styles = getStyles(theme);
 
   return (
     <SafeAreaView style={styles.safeArea} pointerEvents="box-none">
@@ -13,26 +17,26 @@ export default function BottomNav() {
           style={styles.navButton}
           onPress={() => navigation.navigate('Activity', { initialTab: 'Saved' })}
         >
-          <Ionicons name="bookmark" size={25} color="#fff" />
+          <Ionicons name="bookmark" size={25} color={theme.background} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Dashboard')}
         >
-          <Ionicons name="grid" size={25} color="#fff" />
+          <Ionicons name="grid" size={25} color={theme.background} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Profile')}
         >
-          <Ionicons name="person" size={25} color="#fff" />
+          <Ionicons name="person" size={25} color={theme.background} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   safeArea: {
     position: 'absolute',
     left: 0,
@@ -44,7 +48,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderTopLeftRadius: 12,
@@ -58,7 +62,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 28,
     height: 28,
-    tintColor: '#fff',
+    tintColor: theme.background,
   },
 });
 

@@ -42,8 +42,10 @@ export default function SignUpForm({
     }));
   };
 
+  const styles = getStyles(theme);
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['bottom']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <KeyboardAvoidingView 
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -223,10 +225,10 @@ export default function SignUpForm({
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: theme.background,
     },
     keyboardAvoidingView: {
       flex: 1,
@@ -242,25 +244,25 @@ const styles = StyleSheet.create({
       paddingHorizontal: 20,
       paddingVertical: 16,
       borderBottomWidth: 1,
-      borderBottomColor: '#e0e0e0',
+      borderBottomColor: theme.border,
     },
     backButton: {
       width: 40,
       height: 40,
       borderRadius: 20,
-      backgroundColor: '#432272',
+      backgroundColor: theme.primary,
       alignItems: 'center',
       justifyContent: 'center',
     },
     backButtonText: {
-      color: '#fff',
+      color: theme.background,
       fontSize: 20,
       fontWeight: 'bold',
     },
     title: {
       fontSize: 24,
       fontWeight: 'bold',
-      color: '#432272',
+      color: theme.primary,
     },
     placeholder: {
       width: 40,
@@ -294,7 +296,7 @@ const styles = StyleSheet.create({
     label: {
       fontSize: 16,
       fontWeight: '600',
-      color: '#333',
+      color: theme.text,
       marginBottom: 8,
     },
     input: {

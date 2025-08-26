@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
 
-export const styles = StyleSheet.create({
+export const getStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: theme.background,
       },
       header: {
         flexDirection: 'row',
@@ -12,25 +12,25 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
+        borderBottomColor: theme.border,
       },
       backButton: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#432272',
+        backgroundColor: theme.primary,
         alignItems: 'center',
         justifyContent: 'center',
       },
       backButtonText: {
-        color: '#fff',
+        color: theme.background,
         fontSize: 20,
         fontWeight: 'bold',
       },
       title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#432272',
+        color: theme.primary,
       },
       placeholder: {
         width: 40,
@@ -46,13 +46,13 @@ export const styles = StyleSheet.create({
       },
       searchLabel: {
         fontSize: 14,
-        color: '#666',
+        color: theme.secondary,
         fontStyle: 'italic',
       },
       searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: theme.background,
         borderRadius: 12,
         paddingHorizontal: 16,
         marginHorizontal: 20,
@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 2,
         borderWidth: 1,
-        borderColor: '#e0e0e0',
+        borderColor: theme.border,
       },
       searchIcon: {
         marginRight: 12,
@@ -72,7 +72,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         height: 48,
         fontSize: 16,
-        color: '#333',
+        color: theme.text,
       },
       clearButton: {
         marginLeft: 8,
@@ -84,7 +84,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingVertical: 16,
-        backgroundColor: '#f8f9fa',
+        backgroundColor: theme.card,
         margin: 16,
         borderRadius: 12,
       },
@@ -98,16 +98,16 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#fff',
+        backgroundColor: theme.background,
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#e0e0e0',
+        borderColor: theme.border,
       },
       dropdownButtonText: {
         fontSize: 16,
-        color: '#333',
+        color: theme.text,
         fontWeight: '500',
       },
       dropdownLabel: {
@@ -118,7 +118,7 @@ export const styles = StyleSheet.create({
       },
       dropdownArrow: {
         fontSize: 12,
-        color: '#666',
+        color: theme.secondary,
       },
       moreFiltersContainer: {
         marginTop: 12,
@@ -143,7 +143,7 @@ export const styles = StyleSheet.create({
         fontWeight: '600',
       },
       resetButtonText: {
-        color: '#333',
+        color: theme.text,
         fontSize: 14,
         fontWeight: '400',
       },
@@ -152,10 +152,10 @@ export const styles = StyleSheet.create({
         top: '100%',
         left: 0,
         right: 0,
-        backgroundColor: '#fff',
+        backgroundColor: theme.background,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#e0e0e0',
+        borderColor: theme.border,
         marginTop: 4,
         zIndex: 1000,
         elevation: 5,
@@ -184,10 +184,10 @@ export const styles = StyleSheet.create({
       },
       dropdownItemText: {
         fontSize: 16,
-        color: '#333',
+        color: theme.text,
       },
       selectedItem: {
-        color: '#432272',
+        color: theme.primary,
         fontWeight: 'bold',
       },
       emptyState: {
@@ -198,7 +198,7 @@ export const styles = StyleSheet.create({
       },
       emptyStateText: {
         fontSize: 18,
-        color: '#666',
+        color: theme.secondary,
         textAlign: 'center',
       },
       elementsContainer: {
@@ -207,14 +207,14 @@ export const styles = StyleSheet.create({
       },
       elementContainer: {
         flexDirection: 'column',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: theme.card,
         alignItems: 'center',
         width: '100%',
         borderRadius: 10,
       },
       elementItem: {
         flexDirection: 'row',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: theme.card,
         borderRadius: 12,
         padding: 6,
         marginBottom: 2,
@@ -233,7 +233,7 @@ export const styles = StyleSheet.create({
       elementTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#333',
+        color: theme.text,
         marginBottom: 10,
         marginLeft: 10,
         marginRight: 15,
@@ -249,7 +249,7 @@ export const styles = StyleSheet.create({
       },
        bulletPoint: {
         fontSize: 14,
-        color: '#432272',
+        color: theme.primary,
         marginRight: 10,
         marginLeft: 12,
         marginTop: 0,
@@ -272,7 +272,7 @@ export const styles = StyleSheet.create({
       },
       listLocationText: {
         fontSize: 14,
-        color: '#666',
+        color: theme.secondary,
         textAlign: 'center',
       },
       bulletIcon: {
@@ -302,7 +302,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
       },
       modalContainer: {
-        backgroundColor: '#fff',
+        backgroundColor: theme.background,
         borderRadius: 20,
         height: '80%',
         maxHeight: '80%',
@@ -329,7 +329,7 @@ export const styles = StyleSheet.create({
       modalTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#432272',
+        color: theme.primary,
       },
       modalContent: {
         flex: 1,
@@ -346,19 +346,19 @@ export const styles = StyleSheet.create({
       },
       modalResetText: {
         fontSize: 12,
-        color: '#333',
+        color: theme.text,
         fontWeight: '600',
       },
       modalSectionTitle: {
         fontSize: 14,
         fontWeight: 'bold',
-        color: '#432272',
+        color: theme.primary,
         marginTop: 16,
         marginBottom: 6,
       },
       modalEmptyText: {
         fontSize: 14,
-        color: '#666',
+        color: theme.secondary,
         fontStyle: 'italic',
         marginBottom: 16,
       },
@@ -385,7 +385,7 @@ export const styles = StyleSheet.create({
       },
       checkboxLabel: {
         fontSize: 16,
-        color: '#333',
+        color: theme.text,
         flex: 1,
       },
       cityPillsContainer: {
@@ -393,7 +393,7 @@ export const styles = StyleSheet.create({
       },
       cityPillsLabel: {
         fontSize: 14,
-        color: '#666',
+        color: theme.secondary,
         marginBottom: 8,
       },
       cityPillsScroll: {
@@ -411,7 +411,7 @@ export const styles = StyleSheet.create({
       },
       cityPillText: {
         fontSize: 14,
-        color: '#333',
+        color: theme.text,
         fontWeight: '500',
       },
       cityPillTextActive: {
@@ -424,7 +424,7 @@ export const styles = StyleSheet.create({
         paddingVertical: 16,
         borderTopWidth: 1,
         borderTopColor: '#e0e0e0',
-        backgroundColor: '#fff',
+        backgroundColor: theme.background,
       },
       modalFooterButtonPrimary: {
         flex: 1,

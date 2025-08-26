@@ -10,9 +10,11 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 
 const Templates = () => {
   const navigation = useNavigation();
+  const { theme } = useTheme();
   const [coverLettersExpanded, setCoverLettersExpanded] = useState(true);
   const [resumesExpanded, setResumesExpanded] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -159,7 +161,7 @@ const Templates = () => {
           <Ionicons
             name={expanded ? 'chevron-up' : 'chevron-down'}
             size={20}
-            color="#432272"
+            color={theme.primary}
           />
         </TouchableOpacity>
         
@@ -170,7 +172,7 @@ const Templates = () => {
                onPress={() => handleAddButton(sectionKey)}
                onPressIn={(e) => e.stopPropagation()}
              >
-              <Ionicons name="add" size={26} color="#432272" />
+              <Ionicons name="add" size={26} color={theme.primary} />
             </TouchableOpacity>
                          {showAddMenu && activeSection === sectionKey && (
                <View style={styles.addMenuDropdown}>
@@ -179,7 +181,7 @@ const Templates = () => {
                    onPress={() => handleAddAction('Write')}
                    onPressIn={(e) => e.stopPropagation()}
                  >
-                   <Ionicons name="create" size={16} color="#432272" />
+                                       <Ionicons name="create" size={16} color={theme.primary} />
                    <Text style={styles.dropdownOptionText}>Write</Text>
                  </TouchableOpacity>
                  <TouchableOpacity
@@ -187,7 +189,7 @@ const Templates = () => {
                    onPress={() => handleAddAction('Upload doc')}
                    onPressIn={(e) => e.stopPropagation()}
                  >
-                   <Ionicons name="cloud-upload" size={16} color="#432272" />
+                                       <Ionicons name="cloud-upload" size={16} color={theme.primary} />
                    <Text style={styles.dropdownOptionText}>Upload doc</Text>
                  </TouchableOpacity>
                </View>
@@ -203,6 +205,8 @@ const Templates = () => {
       )}
     </View>
   );
+
+  const styles = getStyles(theme);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -222,7 +226,7 @@ const Templates = () => {
         {/* Information Section */}
         <View style={styles.infoSection}>
           <View style={styles.infoContent}>
-            <Ionicons name="information-circle" size={20} color="#432272" style={styles.infoIcon} />
+            <Ionicons name="information-circle" size={20} color={theme.primary} style={styles.infoIcon} />
             <Text style={styles.infoText}>
               You can store up to 10 documents, and up to 10 cover letter texts.{'\n'}
               Supported files: doc, docx, pdf, and text.{'\n'}
@@ -249,7 +253,7 @@ const Templates = () => {
                 setSelectedItems([]);
               }}
             >
-              <Ionicons name="close" size={20} color="#666" />
+              <Ionicons name="close" size={20} color={theme.secondary} />
             </TouchableOpacity>
           </View>
           
@@ -258,14 +262,14 @@ const Templates = () => {
               style={styles.actionMenuOption}
               onPress={() => handleItemAction('Make default')}
             >
-              <Ionicons name="star" size={20} color="#432272" />
+              <Ionicons name="star" size={20} color={theme.primary} />
               <Text style={styles.actionMenuOptionText}>Make default</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionMenuOption}
               onPress={() => handleItemAction('Rename')}
             >
-              <Ionicons name="pencil" size={20} color="#432272" />
+              <Ionicons name="pencil" size={20} color={theme.primary} />
               <Text style={styles.actionMenuOptionText}>Rename</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -282,22 +286,22 @@ const Templates = () => {
   );
 };
 
-const styles = {
+const getStyles = (theme) => ({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
   },
   header: {
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    backgroundColor: '#fff',
+    borderBottomColor: theme.border,
+    backgroundColor: theme.background,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
   },
   content: {
     flex: 1,
@@ -305,7 +309,7 @@ const styles = {
   },
   section: {
     marginTop: 20,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderRadius: 12,
     padding: 16,
     shadowColor: '#000',
@@ -328,7 +332,7 @@ const styles = {
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
     marginRight: 8,
   },
   addButton: {
@@ -342,14 +346,14 @@ const styles = {
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
   },
   selectedItem: {
-    backgroundColor: '#e8f4fd',
-    borderColor: '#432272',
+    backgroundColor: theme.primary + '20',
+    borderColor: theme.primary,
   },
   radioButton: {
     marginRight: 12,
@@ -359,18 +363,18 @@ const styles = {
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#ccc',
+    borderColor: theme.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioCircleSelected: {
-    borderColor: '#432272',
+    borderColor: theme.primary,
   },
   radioInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
   },
   documentContent: {
     flex: 1,
@@ -381,7 +385,7 @@ const styles = {
     marginBottom: 4,
   },
   typeLabel: {
-    backgroundColor: '#e8f4fd',
+    backgroundColor: theme.primary + '20',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
@@ -390,12 +394,12 @@ const styles = {
   typeLabelText: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.primary,
   },
   documentTitle: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#333',
+    color: theme.text,
     flex: 1,
   },
   defaultLabel: {
@@ -412,7 +416,7 @@ const styles = {
   },
   documentDate: {
     fontSize: 12,
-    color: '#666',
+    color: theme.secondary,
   },
   modalOverlay: {
     flex: 1,
@@ -421,7 +425,7 @@ const styles = {
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderRadius: 12,
     padding: 16,
     minWidth: 200,
@@ -440,12 +444,12 @@ const styles = {
   },
   modalOptionText: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
     marginLeft: 12,
   },
   deleteOption: {
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopColor: theme.border,
     marginTop: 8,
     paddingTop: 20,
   },
@@ -455,7 +459,7 @@ const styles = {
   infoSection: {
     marginTop: 20,
     marginBottom: 20,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderRadius: 12,
     padding: 16,
     shadowColor: '#000',
@@ -475,7 +479,7 @@ const styles = {
   infoText: {
     flex: 1,
     fontSize: 14,
-    color: '#666',
+    color: theme.secondary,
     lineHeight: 20,
   },
   addMenuContent: {
@@ -489,7 +493,7 @@ const styles = {
     position: 'absolute',
     top: 40,
     right: 0,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderRadius: 8,
     padding: 8,
     shadowColor: '#000',
@@ -509,7 +513,7 @@ const styles = {
   },
   dropdownOptionText: {
     fontSize: 14,
-    color: '#333',
+    color: theme.text,
     marginLeft: 8,
   },
   actionSideMenu: {
@@ -518,9 +522,9 @@ const styles = {
     right: 0,
     bottom: 0,
     width: 200,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     borderLeftWidth: 1,
-    borderLeftColor: '#e0e0e0',
+    borderLeftColor: theme.border,
     shadowColor: '#000',
     shadowOffset: { width: -2, height: 0 },
     shadowOpacity: 0.1,
@@ -535,13 +539,13 @@ const styles = {
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    backgroundColor: '#f8f9fa',
+    borderBottomColor: theme.border,
+    backgroundColor: theme.card,
   },
   actionMenuTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#432272',
+    color: theme.primary,
   },
   closeActionMenu: {
     padding: 4,
@@ -556,11 +560,11 @@ const styles = {
     paddingHorizontal: 16,
     borderRadius: 8,
     marginBottom: 8,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
   },
   actionMenuOptionText: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
     marginLeft: 12,
     fontWeight: '500',
   },
@@ -569,6 +573,6 @@ const styles = {
     borderWidth: 1,
     borderColor: '#fed7d7',
   },
-};
+});
 
 export default Templates;
