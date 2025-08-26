@@ -70,7 +70,7 @@ export default function Dashboard() {
         </TouchableOpacity>
 
         {/* Main Actions Grid */}
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <Text style={styles.sectionTitle}>Dashboard</Text>
         <View style={styles.gridContainer}>
         <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('JobList')}>
           <LinearGradient
@@ -81,7 +81,6 @@ export default function Dashboard() {
           >
             <Ionicons name="briefcase" size={32} color="#fff" style={styles.cardIcon} />
             <Text style={styles.cardTitle}>Browse Jobs</Text>
-            <Text style={styles.cardSubtitle}>Find opportunities</Text>
           </LinearGradient>
         </TouchableOpacity>
 
@@ -98,7 +97,7 @@ export default function Dashboard() {
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionCard}>
+        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Templates')}>
           <LinearGradient
             colors={['#3498db', '#2980b9']}
             style={styles.gradientCard}
@@ -107,7 +106,6 @@ export default function Dashboard() {
           >
             <Ionicons name="document-text" size={32} color="#fff" style={styles.cardIcon} />
             <Text style={styles.cardTitle}>Templates</Text>
-            <Text style={styles.cardSubtitle}>CV & Cover letters</Text>
           </LinearGradient>
         </TouchableOpacity>
 
@@ -120,7 +118,6 @@ export default function Dashboard() {
           >
             <Ionicons name="person" size={32} color="#fff" style={styles.cardIcon} />
             <Text style={styles.cardTitle}>Profile</Text>
-            <Text style={styles.cardSubtitle}>Manage details</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>

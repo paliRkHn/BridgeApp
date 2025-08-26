@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function BottomNav() {
   const navigation = useNavigation();
@@ -10,35 +11,21 @@ export default function BottomNav() {
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate('Dashboard')}
-        >
-          <Image
-            source={require('../assets/dashboard.png')}
-            style={styles.icon}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navButton}
           onPress={() => navigation.navigate('Activity', { initialTab: 'Saved' })}
         >
-          <Image
-            source={require('../assets/favorite.png')}
-            style={styles.icon}
-            resizeMode="contain"
-          />
+          <Ionicons name="bookmark" size={25} color="#fff" />
         </TouchableOpacity>
-
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Dashboard')}
+        >
+          <Ionicons name="grid" size={25} color="#fff" />
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Profile')}
         >
-          <Image
-            source={require('../assets/user.png')}
-            style={styles.icon}
-            resizeMode="contain"
-          />
+          <Ionicons name="person" size={25} color="#fff" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -62,7 +49,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-    paddingBottom: 40,
+    paddingBottom: 50,
   },
   navButton: {
     flex: 1,
