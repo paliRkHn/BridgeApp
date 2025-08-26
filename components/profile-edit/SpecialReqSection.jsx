@@ -61,16 +61,7 @@ const SpecialReqSection = ({ specialReqs, onUpdateSpecialReqs, isEditing }) => {
   };
 
   const handleAddPlaceholderSpecialReq = (specialReqText) => {
-    if (!specialReqs.some(req => req.text === specialReqText)) {
-      const newSpecialReq = {
-        id: Date.now().toString(),
-        text: specialReqText,
-        isFlexible: false
-      };
-      const updatedSpecialReqs = [...specialReqs, newSpecialReq];
-      onUpdateSpecialReqs(updatedSpecialReqs);
-      setShowPlaceholders(false);
-    }
+    setSpecialReqInput(specialReqText);
   };
 
   const handleKeyPress = (event) => {
@@ -113,7 +104,7 @@ const SpecialReqSection = ({ specialReqs, onUpdateSpecialReqs, isEditing }) => {
           <Text style={[styles.textContent, styles.placeholder]}>
             {isEditing ? 
               placeholderSpecialReqsContainer() : 
-              'Showcase your abilities and expertise. Tap Edit to add.'
+              'Do you need specific accessibility adjustments? Tap Edit to add.'
             }
           </Text>
         </View>
