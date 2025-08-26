@@ -15,6 +15,7 @@ import JobDescription from './screens/JobDescription';
 import Profile from './screens/Profile';
 import Templates from './screens/Templates';
 import TextEditor from './components/TextEditor';
+import UserSettings from './screens/UserSettings';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +37,7 @@ export default function App() {
               <Stack.Screen name="Profile" component={Profile} />
               <Stack.Screen name="Templates" component={Templates} />
               <Stack.Screen name="TextEditor" component={TextEditor} />
+              <Stack.Screen name="UserSettings" component={UserSettings} />
             </Stack.Navigator>
           </NavigationContainer>
         </AuthProvider>

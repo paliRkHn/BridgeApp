@@ -140,7 +140,10 @@ export default function Dashboard() {
           <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.secondaryAction}>
+        <TouchableOpacity 
+          style={styles.secondaryAction}
+          onPress={() => navigation.navigate('UserSettings')}
+        >
           <View style={styles.secondaryActionIcon}>
             <Ionicons name="settings" size={24} color={theme.primary} />
           </View>
