@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { Entypo, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const { theme } = useTheme();
   const [newJob, setNewJob] = useState({
     title: '',
     company: '',
@@ -391,6 +393,7 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
 };
 
 const getStyles = (theme) => StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   section: {
     padding: 20,
     borderBottomWidth: 1,
@@ -401,6 +404,7 @@ const getStyles = (theme) => StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: theme.text,
     color: theme.text,
     marginBottom: 16,
   },
@@ -421,6 +425,8 @@ const getStyles = (theme) => StyleSheet.create({
   },
   jobTitle: {
     fontSize: 18,
+    color: theme.text,
+    flex: 1,
     fontWeight: 'bold',
     color: theme.text,
     flex: 1,
@@ -429,15 +435,16 @@ const getStyles = (theme) => StyleSheet.create({
     alignItems: 'flex-end',
   },
   jobDuration: {
+    textAlign: 'right',
     fontSize: 14,
     textAlign: 'right',
     color: theme.secondary,
     fontStyle: 'italic',
-    marginBottom: 4,
   },
   actionButtons: {
     flexDirection: 'row',
     gap: 8,
+    marginTop: 4,
   },
   editJobButton: {
     paddingHorizontal: 8,
@@ -464,6 +471,7 @@ const getStyles = (theme) => StyleSheet.create({
   jobCompany: {
     fontSize: 16,
     color: theme.text,
+    color: theme.text,
     marginBottom: 8,
   },
   jobDescription: {
@@ -473,9 +481,11 @@ const getStyles = (theme) => StyleSheet.create({
   },
   textBlock: {
     backgroundColor: theme.card,
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
+    borderLeftColor: theme.primary,
     borderLeftColor: theme.primary,
   },
   textContent: {
@@ -499,7 +509,9 @@ const getStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.primary,
+    backgroundColor: theme.primary,
     borderWidth: 2,
+    borderColor: theme.primary,
     borderColor: theme.primary,
     borderStyle: 'dashed',
     borderRadius: 8,
@@ -691,6 +703,7 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+});
 });
 
 export default JobHistorySection;

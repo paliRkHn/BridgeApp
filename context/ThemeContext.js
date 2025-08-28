@@ -1,6 +1,8 @@
 // context/ThemeContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const themes = {
   default: {
@@ -150,6 +152,7 @@ export const ThemeProvider = ({ children }) => {
   const selectTheme = (key) => {
     if (themes[key]) {
       setThemeKey(key);
+      saveThemePreference(key);
       saveThemePreference(key);
     }
   };

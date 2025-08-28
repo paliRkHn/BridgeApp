@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 
 const WorkTypeSection = ({ workType, onUpdateWorkType, isEditing }) => {
+  const { theme } = useTheme();
   const contractTypes = ["Full time", "Part time", "Casual", "Intership/Apprenticeship"];
   const workModes = ["On-site", "Remote", "Hybrid"];
 
@@ -146,27 +147,31 @@ const getStyles = (theme) => StyleSheet.create({
     padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: theme.border,
+    borderBottomColor: theme.border,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: theme.text,
+    color: theme.text,
     marginBottom: 16,
   },
   textBlock: {
+    backgroundColor: theme.card,
     backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
     borderLeftColor: theme.primary,
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
     lineHeight: 24,
   },
   placeholder: {
-    color: '#999',
+    color: theme.secondary,
     fontSize: 14,
   },
   preferenceGroup: {
@@ -176,6 +181,7 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: theme.primary,
+    color: theme.primary,
     marginBottom: 6,
   },
   tagsContainer: {
@@ -184,7 +190,7 @@ const getStyles = (theme) => StyleSheet.create({
     gap: 8,
   },
   preferenceTag: {
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -201,6 +207,7 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: theme.primary,
+    color: theme.primary,
     marginBottom: 12,
   },
   optionsContainer: {
@@ -216,24 +223,26 @@ const getStyles = (theme) => StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#ccc',
+    borderColor: theme.border,
     marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioButtonSelected: {
-    borderColor: '#432272',
+    borderColor: theme.primary,
   },
   radioButtonInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
   },
   radioLabel: {
     fontSize: 16,
     color: theme.text,
+    color: theme.text,
   },
+});
 });
 
 export default WorkTypeSection;

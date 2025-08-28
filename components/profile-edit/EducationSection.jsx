@@ -4,6 +4,7 @@ import { Entypo, MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 
 const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
+  const { theme } = useTheme();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [newEducation, setNewEducation] = useState({
@@ -138,7 +139,7 @@ const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
         education.map((edu, index) => (
           <View key={edu.id} style={styles.jobItem}>
             <View style={styles.jobHeader}>
-              <Text style={styles.jobTitle}>{edu.name}</Text>
+              <Text style={styles.jobTitle}>{edu.name}</Text>              
               <View style={styles.jobActions}>
                 {isEditing && (
                   <View style={styles.actionButtons}>
@@ -146,7 +147,7 @@ const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
                       style={styles.editJobButton}
                       onPress={() => handleEditEducation(index)}
                     >
-                      <MaterialIcons name="edit" size={16} color="#432272" />
+                      <MaterialIcons name="edit" size={16} color={theme.primary} />
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.deleteJobButton}
@@ -158,8 +159,8 @@ const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
                 )}
               </View>
             </View>
-            <Text style={styles.educationType}>{edu.type}</Text>  
-            <Text style={styles.jobCompany}>{edu.institution}</Text>                      
+            <Text style={styles.educationType}>{edu.type}</Text>
+            <Text style={styles.jobCompany}>{edu.institution}</Text>            
             <Text style={styles.jobDuration}>
                   {edu.endDate}
             </Text>
@@ -180,7 +181,7 @@ const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
             style={styles.addButton}
             onPress={() => setShowAddForm(!showAddForm)}
           >
-            <Entypo name="plus" size={20} color="#432272" style={styles.addButtonIcon} />
+            <Entypo name="plus" size={20} color={theme.primary} style={styles.addButtonIcon} />
             <Text style={styles.addButtonText}>Add education</Text>
           </TouchableOpacity>
 
@@ -282,10 +283,12 @@ const getStyles = (theme) => StyleSheet.create({
     padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: theme.border,
+    borderBottomColor: theme.border,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: theme.text,
     color: theme.text,
     marginBottom: 16,
   },
@@ -308,12 +311,14 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: theme.text,
+    color: theme.text,
     flex: 1,
   },
   jobActions: {
     alignItems: 'flex-end',
   },
   jobDuration: {
+    textAlign: 'right',
     fontSize: 14,
     textAlign: 'right',
     color: theme.secondary,
@@ -339,18 +344,21 @@ const getStyles = (theme) => StyleSheet.create({
   jobCompany: {
     fontSize: 16,
     color: theme.text,
+    color: theme.text,
     marginBottom: 8,
   },
   textBlock: {
+    backgroundColor: theme.card,
     backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
     borderLeftColor: theme.primary,
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
     lineHeight: 24,
   },
   placeholder: {
@@ -365,7 +373,9 @@ const getStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.primary,
+    backgroundColor: theme.primary,
     borderWidth: 2,
+    borderColor: theme.primary,
     borderColor: theme.primary,
     borderStyle: 'dashed',
     borderRadius: 8,
@@ -388,7 +398,7 @@ const getStyles = (theme) => StyleSheet.create({
   cascadeForm: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 8,
     marginTop: 8,
     padding: 16,
@@ -404,17 +414,17 @@ const getStyles = (theme) => StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: theme.text,
     marginBottom: 6,
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 6,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
   },
   dateRow: {
     flexDirection: 'row',
@@ -429,15 +439,15 @@ const getStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 6,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
   },
   dropdownText: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
   },
   dropdownMenu: {
     position: 'absolute',
@@ -446,7 +456,7 @@ const getStyles = (theme) => StyleSheet.create({
     right: 0,
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 6,
     marginTop: 2,
     zIndex: 1000,
@@ -463,11 +473,11 @@ const getStyles = (theme) => StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
   },
   dropdownItemText: {
     fontSize: 14,
-    color: '#333',
+    color: theme.text,
   },
   checkboxRow: {
     flexDirection: 'row',
@@ -479,13 +489,13 @@ const getStyles = (theme) => StyleSheet.create({
     height: 18,
     borderRadius: 3,
     borderWidth: 2,
-    borderColor: '#ccc',
+    borderColor: theme.border,
     marginRight: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkboxChecked: {
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     borderColor: '#432272',
   },
   checkmark: {
@@ -495,7 +505,7 @@ const getStyles = (theme) => StyleSheet.create({
   },
   checkboxLabel: {
     fontSize: 14,
-    color: '#333',
+    color: theme.text,
   },
   formActions: {
     flexDirection: 'row',
@@ -511,13 +521,13 @@ const getStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
   },
   cancelButtonText: {
-    color: '#333',
+    color: theme.text,
     fontSize: 14,
     fontWeight: '600',
   },
   saveButton: {
     flex: 1,
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     paddingVertical: 10,
     borderRadius: 6,
     alignItems: 'center',

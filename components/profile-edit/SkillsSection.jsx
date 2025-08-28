@@ -176,7 +176,7 @@ const getStyles = (theme) => StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.searchBar,
   },
   addButton: {
     flexDirection: 'row',

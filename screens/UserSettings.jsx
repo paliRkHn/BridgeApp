@@ -17,7 +17,7 @@ export default function UserSettings() {
   const { theme, themeKey, selectTheme, themes, isLoading } = useTheme();
 
   // Safety check - if theme is undefined, don't render yet
-  if (!theme) {
+  if (!theme || isLoading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' }}>
         <Text>Loading...</Text>

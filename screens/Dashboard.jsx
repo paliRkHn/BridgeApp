@@ -60,11 +60,11 @@ export default function Dashboard() {
 
         {/* Enhanced Search Bar */}
         <TouchableOpacity style={styles.searchContainer} onPress={handleSearch}>
-          <Ionicons name="search" size={20} color={theme.secondary} style={styles.searchIcon} />
+          <Ionicons name="search" size={20} color={"#1a1a1a"} style={styles.searchIcon} />
           <TextInput
             style={styles.searchBar}
             placeholder="Search jobs, companies..."
-            placeholderTextColor="#999"
+            placeholderTextColor="#1a1a1a"
             autoCapitalize="none"
             value={searchQuery}
             onChangeText={setSearchQuery}

@@ -106,12 +106,6 @@ export default function Profile() {
     }
   };
 
-
-
-  const goBack = () => {
-    navigation.navigate('Dashboard');
-  };
-
   const toggleEdit = () => {
     setIsEditing(!isEditing);
   };
@@ -197,6 +191,7 @@ export default function Profile() {
                   value={profileData.location}
                   onChangeText={(text) => setProfileData({...profileData, location: text})}
                   placeholder="Enter your location (optional)"
+                  placeholderTextColor={theme.secondary}
                 />
               </View>
             ) : (
@@ -397,10 +392,11 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'right',
-    color: '#333',
+    color: theme.border,
     marginBottom: 4,
     borderWidth: 1,
     borderColor: '#e0e0e0',
+    backgroundColor: theme.searchBar,
     borderRadius: 4,
     padding: 8,
     backgroundColor: theme.searchBar,
@@ -415,6 +411,7 @@ const getStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#e0e0e0',
+    backgroundColor: theme.searchBar,
     borderRadius: 4,
     padding: 8,
     backgroundColor: theme.searchBar,
@@ -447,6 +444,7 @@ const getStyles = (theme) => StyleSheet.create({
   summaryInput: {
     borderWidth: 1,
     borderColor: theme.border,
+    backgroundColor: theme.card,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
