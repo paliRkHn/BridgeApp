@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
 
 const WorkTypeSection = ({ workType, onUpdateWorkType, isEditing }) => {
   const contractTypes = ["Full time", "Part time", "Casual", "Intership/Apprenticeship"];
@@ -48,6 +49,9 @@ const WorkTypeSection = ({ workType, onUpdateWorkType, isEditing }) => {
   const hasAnyPreferences = () => {
     return (workType?.contractTypes?.length > 0) || (workType?.workModes?.length > 0);
   };
+
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
 
   return (
     <View style={styles.section}>
@@ -137,24 +141,24 @@ const WorkTypeSection = ({ workType, onUpdateWorkType, isEditing }) => {
   );
 };
 
-const styles = {
+const getStyles = (theme) => StyleSheet.create({
   section: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.text,
     marginBottom: 16,
   },
   textBlock: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#432272',
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
@@ -171,7 +175,7 @@ const styles = {
   preferenceLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 6,
   },
   tagsContainer: {
@@ -196,7 +200,7 @@ const styles = {
   categoryTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 12,
   },
   optionsContainer: {
@@ -228,8 +232,8 @@ const styles = {
   },
   radioLabel: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
   },
-};
+});
 
 export default WorkTypeSection;

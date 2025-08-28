@@ -1,7 +1,8 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from './JobList.styles';
+import { getStyles } from './JobList.styles';
+import { useTheme } from '../context/ThemeContext';
 
 export default function JobListFiltersPopup({
   isOpen,
@@ -26,6 +27,8 @@ export default function JobListFiltersPopup({
   setPastOnly,
   onReset,
 }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const [expandedMap, setExpandedMap] = React.useState({});
   const toggleInSet = (setValue, currentSet, rawKey) => {
     const key = (rawKey || '').trim().toLowerCase();
@@ -60,7 +63,7 @@ export default function JobListFiltersPopup({
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>More filters</Text>
             <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={24} color="#333" />
+              <Ionicons name="close" size={24} color={theme.text} />
             </TouchableOpacity>
           </View>
 

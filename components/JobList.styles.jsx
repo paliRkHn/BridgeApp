@@ -14,19 +14,6 @@ export const getStyles = (theme) => StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: theme.border,
       },
-      backButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: theme.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      backButtonText: {
-        color: theme.background,
-        fontSize: 20,
-        fontWeight: 'bold',
-      },
       title: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -52,11 +39,12 @@ export const getStyles = (theme) => StyleSheet.create({
       searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: theme.background,
+        backgroundColor: theme.searchBar,
         borderRadius: 12,
         paddingHorizontal: 16,
         marginHorizontal: 20,
-        marginBottom: 16,
+        marginTop: 16,
+        marginBottom: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
@@ -88,17 +76,11 @@ export const getStyles = (theme) => StyleSheet.create({
         margin: 16,
         borderRadius: 12,
       },
-      dropdownContainer: {
-        flex: 1,
-        marginRight: 16,
-        position: 'relative',
-        marginBottom: 8,
-      },
       dropdownButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: theme.background,
+        backgroundColor: theme.searchBar,
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderRadius: 8,
@@ -107,18 +89,18 @@ export const getStyles = (theme) => StyleSheet.create({
       },
       dropdownButtonText: {
         fontSize: 16,
-        color: theme.text,
+        color: "#333333",
         fontWeight: '500',
       },
       dropdownLabel: {
         fontSize: 16,
-        color: '#000000',
+        color: theme.text,
         marginBottom: 6,
         marginLeft: 4,
       },
       dropdownArrow: {
         fontSize: 12,
-        color: theme.secondary,
+        color: "#333333",
       },
       moreFiltersContainer: {
         marginTop: 12,
@@ -126,24 +108,24 @@ export const getStyles = (theme) => StyleSheet.create({
         justifyContent: 'space-evenly',
       },
       resetButton: {
-        backgroundColor: '#eee',
+        backgroundColor: theme.searchBar,
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 8,
-        borderColor: '#432272',
+        borderColor: theme.primary,
         borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
       },
       moreFiltersActiveButton: {
-        backgroundColor: '#432272',
+        backgroundColor: theme.primary,
       },
       moreFiltersActiveText: {
         color: '#fff',
         fontWeight: '600',
       },
       resetButtonText: {
-        color: theme.text,
+        color: '#333333',
         fontSize: 14,
         fontWeight: '400',
       },
@@ -226,6 +208,7 @@ export const getStyles = (theme) => StyleSheet.create({
         borderRadius: 8,
         marginRight: 20,
         marginLeft: 2,
+        backgroundColor: theme.searchBar,
       },
       elementContent: {
         flex: 1,
@@ -257,7 +240,7 @@ export const getStyles = (theme) => StyleSheet.create({
       listItemText: {
         flex: 1,
         fontSize: 15,
-        color: '#4c4c4c',
+        color: theme.text,
         lineHeight: 20,
         marginRight: 20,
       },
@@ -272,7 +255,7 @@ export const getStyles = (theme) => StyleSheet.create({
       },
       listLocationText: {
         fontSize: 14,
-        color: theme.secondary,
+        color: theme.text,
         textAlign: 'center',
       },
       bulletIcon: {
@@ -338,7 +321,7 @@ export const getStyles = (theme) => StyleSheet.create({
       },
       modalResetButton: {
         alignSelf: 'flex-end',
-        backgroundColor: '#f2f2f2',
+        backgroundColor: theme.secondary,
         paddingHorizontal: 16,
         paddingVertical: 6,
         borderRadius: 8,
@@ -346,7 +329,7 @@ export const getStyles = (theme) => StyleSheet.create({
       },
       modalResetText: {
         fontSize: 12,
-        color: theme.text,
+        color: "#333333",
         fontWeight: '600',
       },
       modalSectionTitle: {
@@ -400,7 +383,7 @@ export const getStyles = (theme) => StyleSheet.create({
         maxHeight: 50,
       },
       cityPill: {
-        backgroundColor: '#f0f0f0',
+        backgroundColor: theme.primary,
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 20,
@@ -428,7 +411,7 @@ export const getStyles = (theme) => StyleSheet.create({
       },
       modalFooterButtonPrimary: {
         flex: 1,
-        backgroundColor: '#432272',
+        backgroundColor: theme.primary,
         paddingVertical: 12,
         borderRadius: 8,
         marginHorizontal: 25,

@@ -176,7 +176,7 @@ export default function Dashboard() {
 const getStyles = (theme) => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: theme.card,
+    backgroundColor: theme.background,
   },
   container: {
     flexGrow: 1,
@@ -255,7 +255,7 @@ const getStyles = (theme) => StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.background,
+    backgroundColor: theme.searchBar,
     borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 24,
@@ -326,14 +326,14 @@ const getStyles = (theme) => StyleSheet.create({
 
   // Secondary Actions
   secondaryActionsContainer: {
-    backgroundColor: theme.background,
+    backgroundColor: theme.card,
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
-    marginBottom: 20,
+    marginBottom: 40,
   },
   secondaryAction: {
     flexDirection: 'row',

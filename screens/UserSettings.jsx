@@ -14,7 +14,16 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function UserSettings() {
   const navigation = useNavigation();
-  const { theme, themeKey, selectTheme, themes } = useTheme();
+  const { theme, themeKey, selectTheme, themes, isLoading } = useTheme();
+
+  // Safety check - if theme is undefined, don't render yet
+  if (!theme) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
 
   // Notification preferences state
   const [notificationSettings, setNotificationSettings] = useState({
@@ -35,9 +44,14 @@ export default function UserSettings() {
 
   const themeOptions = [
     { key: 'default', label: 'Default', description: 'Classic purple theme' },
-    { key: 'light', label: 'Light', description: 'Clean and bright' },
-    { key: 'dark', label: 'Dark', description: 'Easy on the eyes' },
-    { key: 'highContrast', label: 'High Contrast', description: 'Enhanced accessibility' }
+    { key: 'soft', label: 'Soft', description: 'Soft purple theme' },
+    { key: 'greenLight', label: 'Green Light', description: 'Fresh green theme' },
+    { key: 'redLight', label: 'Red Light', description: 'Vibrant red theme' },
+    { key: 'blueLight', label: 'Blue Light', description: 'Cool blue theme' },
+    { key: 'dark', label: 'Dark', description: 'Dark purple theme' },
+    { key: 'greenDark', label: 'Green Dark', description: 'Dark green theme' },
+    { key: 'redDark', label: 'Red Dark', description: 'Dark red theme' },
+    { key: 'yellowDark', label: 'Yellow Dark', description: 'Dark yellow theme' }
   ];
 
   const goBack = () => {
@@ -64,9 +78,6 @@ export default function UserSettings() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={goBack}>
-          <Ionicons name="arrow-back" size={24} color={theme.background} />
-        </TouchableOpacity>
         <Text style={styles.title}>Settings</Text>
         <View style={styles.placeholder} />
       </View>
@@ -126,7 +137,12 @@ export default function UserSettings() {
             Choose your preferred theme
           </Text>
 
-          {themeOptions.map((themeOption) => (
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <Text style={styles.loadingText}>Loading theme preferences...</Text>
+            </View>
+          ) : (
+            themeOptions.map((themeOption) => (
             <TouchableOpacity
               key={themeOption.key}
               style={[
@@ -150,7 +166,8 @@ export default function UserSettings() {
                 <Ionicons name="checkmark-circle" size={24} color={theme.primary} />
               )}
             </TouchableOpacity>
-          ))}
+          ))
+          )}
         </View>
 
         {/* Bottom spacing */}
@@ -293,5 +310,19 @@ const getStyles = (theme) => StyleSheet.create({
   },
   bottomSpacing: {
     height: 40,
+  },
+  loadingContainer: {
+    backgroundColor: theme.card,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: theme.border,
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: theme.secondary,
+    fontStyle: 'italic',
   },
 });

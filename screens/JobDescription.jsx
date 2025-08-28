@@ -21,13 +21,16 @@ const { width, height } = Dimensions.get('window');
 export default function JobDescription() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { theme } = useTheme();
+  const { theme, isLoading: themeLoading } = useTheme();
   const { user, userProfile, updateUserProfile, refreshUserProfile } = useAuth();
   const { jobId } = route.params || {};
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+
+  const styles = getStyles(theme);
 
   const goBack = () => {
     navigation.goBack();
@@ -156,8 +159,6 @@ export default function JobDescription() {
     );
   }
 
-  const styles = getStyles(theme);
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -172,44 +173,34 @@ export default function JobDescription() {
 
         {/* Content Sections */}
         <View style={styles.contentContainer}>
-          {/* Section 3: Requirements */}
+          {/* Section 1: Overview */}
           {!!(job?.category || job?.company || job?.jobType) && (
             <View style={styles.section}>
-              <Text style={[styles.roleTitle, { color: theme.primary }]}>{job?.title || 'Job Overview'}</Text>
+              <Text style={styles.roleTitle}>{job?.title || 'Job Overview'}</Text>
               <View style={styles.textBlock}>
                 {!!job?.company && (
                   <View style={styles.detailRow}>
-                    <Text style={[styles.detailLabel, { color: theme.text }]}>Company: </Text>
-                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.company}</Text>
+                    <Text style={styles.detailLabel}>Company: </Text>
+                    <Text style={styles.detailValue}>{job.company}</Text>
                   </View>
                 )}
                 {!!job?.category && (
                   <View style={styles.detailRow}>
-                    <Text style={[styles.detailLabel, { color: theme.text }]}>Category: </Text>
-                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.category}</Text>
+                    <Text style={styles.detailLabel}>Category: </Text>
+                    <Text style={styles.detailValue}>{job.category}</Text>
                   </View>
                 )}
                 {!!job?.jobType && (
                   <View style={styles.detailRow}>
-                    <Text style={[styles.detailLabel, { color: theme.text }]}>Job type: </Text>
-                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.jobType}</Text>
+                    <Text style={styles.detailLabel}>Job type: </Text>
+                    <Text style={styles.detailValue}>{job.jobType}</Text>
                   </View>
                 )}
               </View>
             </View>
-          )}
-
-          {/* Section 1: Job Overview */}
-          <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Details</Text>
-            <View style={styles.textBlock}>
-              <Text style={styles.textContent}>
-                {job?.description || 'No description provided.'}
-              </Text>
-            </View>
-          </View>
-
-          {/* Section 2: Responsibilities */}
+          )} 
+          
+          {/* Section 2: Tasks */}
           {!!(job?.tasks && job.tasks.length) && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Tasks</Text>
@@ -221,39 +212,22 @@ export default function JobDescription() {
             </View>
           )}
 
-          {/* Section 3: Requirements */}
-          {!!(job?.category || job?.company || job?.jobType) && (
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Details</Text>
-              <View style={styles.textBlock}>
-                {!!job?.company && (
-                  <View style={styles.detailRow}>
-                    <Text style={[styles.detailLabel, { color: theme.text }]}>Company: </Text>
-                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.company}</Text>
-                  </View>
-                )}
-                {!!job?.category && (
-                  <View style={styles.detailRow}>
-                    <Text style={[styles.detailLabel, { color: theme.text }]}>Category: </Text>
-                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.category}</Text>
-                  </View>
-                )}
-                {!!job?.jobType && (
-                  <View style={styles.detailRow}>
-                    <Text style={[styles.detailLabel, { color: theme.text }]}>Job type: </Text>
-                    <Text style={[styles.detailValue, { color: theme.text }]}>{job.jobType}</Text>
-                  </View>
-                )}
-              </View>
+          {/* Section 1: Job Description */}
+          <View style={styles.section}>
+          <Text style={styles.sectionTitle}>About the Role and Company</Text>
+            <View style={styles.textBlock}>
+              <Text style={styles.textContent}>
+                {job?.description || 'No description provided.'}
+              </Text>
             </View>
-          )}
+          </View>
 
-          {/* Section 4: Benefits */}
+          {/* Section 3: Location */}
           {!!(job?.location) && (
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Location</Text>
+              <Text style={styles.sectionTitle}>Location</Text>
               <View style={styles.textBlock}>
-                <Text style={[styles.textContent, { color: theme.text }]}>
+                <Text style={styles.textContent}>
                   {`${job.location.suburb || ''}${job.location.suburb && job.location.city ? ', ' : ''}${job.location.city || ''}`}
                 </Text>
               </View>
@@ -267,14 +241,14 @@ export default function JobDescription() {
             style={[
               styles.saveButton, 
               { borderColor: theme.primary },
-              isSaved && { backgroundColor: theme.primary }
+              isSaved && { backgroundColor: theme.secondary }
             ]} 
             onPress={handleSave}
             disabled={isSaving}
           >
             <Text style={[
               styles.saveButtonText, 
-              { color: isSaved ? '#fff' : theme.primary },
+              { olor: isSaved ? '#fff' : theme.text },
               isSaving && { opacity: 0.7 }
             ]}>
               {isSaving ? 'Saving...' : (isSaved ? 'Saved' : 'Save')}
@@ -317,16 +291,16 @@ const getStyles = (theme) => StyleSheet.create({
     marginBottom: 24,
   },
   roleTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: theme.primary,
-    marginBottom: 12,
+    color: theme.text,
+    marginVertical: 20,
     textAlign: 'right',
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: theme.primary,
+    color: theme.text,
     marginBottom: 12,
   },
   textBlock: {
@@ -348,12 +322,12 @@ const getStyles = (theme) => StyleSheet.create({
   },
   detailLabel: {
     fontSize: 16,
-    color: '#000000',
+    color: theme.text,
     fontWeight: 'bold',
   },
   detailValue: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -363,22 +337,22 @@ const getStyles = (theme) => StyleSheet.create({
   },
   saveButton: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.primary,
     borderWidth: 2,
-    borderColor: '#432272',
+    borderColor: theme.primary,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   saveButtonText: {
-    color: '#432272',
+    color: theme.text,
     fontSize: 18,
     fontWeight: 'bold',
   },
   applyButton: {
     flex: 1,
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',

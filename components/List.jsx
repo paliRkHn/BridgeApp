@@ -2,10 +2,13 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from './JobList.styles';
+import { getStyles } from './JobList.styles';
+import { useTheme } from '../context/ThemeContext';
 
 export default function List({ elements = [] }) {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
 
   return (
     <View style={styles.elementsContainer}>
@@ -64,7 +67,7 @@ export default function List({ elements = [] }) {
             ) : ((!!element.suburb || !!element.city) && (
               <View style={styles.listLocation}>
                 <View style={styles.bulletIcon}>
-                  <Ionicons name="location-sharp" size={16} color="#432272" />
+                  <Ionicons name="location-sharp" size={16} color={theme.primary} />
                 </View>
                 <Text style={styles.listLocationText}>
                   {`${element.suburb || ''}${element.suburb && element.city ? ', ' : ''}${element.city || ''}`}
