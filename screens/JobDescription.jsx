@@ -549,7 +549,7 @@ export default function JobDescription() {
           >
             <Text style={[
               styles.saveButtonText, 
-              { olor: isSaved ? '#fff' : theme.text },
+           
               isSaving && { opacity: 0.7 }
             ]}>
               {isSaving ? 'Saving...' : (isSaved ? 'Saved' : 'Save')}
@@ -648,7 +648,7 @@ const getStyles = (theme) => StyleSheet.create({
     justifyContent: 'center',
   },
   saveButtonText: {
-    color: theme.text,
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
