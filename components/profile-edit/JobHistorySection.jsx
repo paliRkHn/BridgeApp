@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { Entypo, MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 
 const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const { theme } = useTheme();
   const [newJob, setNewJob] = useState({
     title: '',
     company: '',
@@ -163,6 +165,8 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
     );
   };
 
+  const styles = getStyles(theme);
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Job History</Text>
@@ -174,9 +178,6 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
             <View style={styles.jobHeader}>
               <Text style={styles.jobTitle}>{job.title}</Text>
               <View style={styles.jobActions}>
-                <Text style={styles.jobDuration}>
-                  {job.startDate} - {job.endDate}
-                </Text>
                 {isEditing && (
                   <View style={styles.actionButtons}>
                     <TouchableOpacity
@@ -199,6 +200,10 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
             {job.description && (
               <Text style={styles.jobDescription}>{job.description}</Text>
             )}
+            
+            <Text style={styles.jobDuration}>
+                  {job.startDate} - {job.endDate}
+            </Text>
           </View>
         ))
       ) : (
@@ -387,7 +392,7 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
   );
 };
 
-const styles = {
+const getStyles = (theme) => StyleSheet.create({
   section: {
     padding: 20,
     borderBottomWidth: 1,
@@ -398,14 +403,17 @@ const styles = {
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.text,
     marginBottom: 16,
   },
   jobItem: {
     marginBottom: 20,
-    paddingBottom: 20,
+    paddingVertical: 18,
+    paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
+    borderRadius: 10,
+    backgroundColor: theme.card,
   },
   jobHeader: {
     flexDirection: 'row',
@@ -415,22 +423,23 @@ const styles = {
   },
   jobTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    color: theme.text,
     flex: 1,
+    fontWeight: 'bold',
   },
   jobActions: {
     alignItems: 'flex-end',
   },
   jobDuration: {
+    textAlign: 'right',
     fontSize: 14,
-    color: '#666',
+    color: theme.secondary,
     fontStyle: 'italic',
-    marginBottom: 4,
   },
   actionButtons: {
     flexDirection: 'row',
     gap: 8,
+    marginTop: 4,
   },
   editJobButton: {
     paddingHorizontal: 8,
@@ -456,8 +465,7 @@ const styles = {
   },
   jobCompany: {
     fontSize: 16,
-    color: '#432272',
-    fontWeight: '600',
+    color: theme.text,
     marginBottom: 8,
   },
   jobDescription: {
@@ -466,11 +474,11 @@ const styles = {
     lineHeight: 20,
   },
   textBlock: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#432272',
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
@@ -492,9 +500,9 @@ const styles = {
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.primary,
     borderWidth: 2,
-    borderColor: '#432272',
+    borderColor: theme.primary,
     borderStyle: 'dashed',
     borderRadius: 8,
     paddingVertical: 16,
@@ -685,6 +693,6 @@ const styles = {
     fontSize: 14,
     fontWeight: '600',
   },
-};
+});
 
 export default JobHistorySection;

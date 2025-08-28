@@ -14,7 +14,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function UserSettings() {
   const navigation = useNavigation();
-  const { theme, themeKey, selectTheme, themes } = useTheme();
+  const { theme, themeKey, selectTheme, themes, isLoading } = useTheme();
 
   // Notification preferences state
   const [notificationSettings, setNotificationSettings] = useState({
@@ -126,7 +126,12 @@ export default function UserSettings() {
             Choose your preferred theme
           </Text>
 
-          {themeOptions.map((themeOption) => (
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <Text style={styles.loadingText}>Loading theme preferences...</Text>
+            </View>
+          ) : (
+            themeOptions.map((themeOption) => (
             <TouchableOpacity
               key={themeOption.key}
               style={[
@@ -150,7 +155,8 @@ export default function UserSettings() {
                 <Ionicons name="checkmark-circle" size={24} color={theme.primary} />
               )}
             </TouchableOpacity>
-          ))}
+          ))
+          )}
         </View>
 
         {/* Bottom spacing */}
@@ -293,5 +299,19 @@ const getStyles = (theme) => StyleSheet.create({
   },
   bottomSpacing: {
     height: 40,
+  },
+  loadingContainer: {
+    backgroundColor: theme.card,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: theme.border,
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: theme.secondary,
+    fontStyle: 'italic',
   },
 });

@@ -60,11 +60,11 @@ export default function Dashboard() {
 
         {/* Enhanced Search Bar */}
         <TouchableOpacity style={styles.searchContainer} onPress={handleSearch}>
-          <Ionicons name="search" size={20} color={theme.secondary} style={styles.searchIcon} />
+          <Ionicons name="search" size={20} color={"#1a1a1a"} style={styles.searchIcon} />
           <TextInput
             style={styles.searchBar}
             placeholder="Search jobs, companies..."
-            placeholderTextColor="#999"
+            placeholderTextColor="#1a1a1a"
             autoCapitalize="none"
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -176,7 +176,7 @@ export default function Dashboard() {
 const getStyles = (theme) => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: theme.card,
+    backgroundColor: theme.background,
   },
   container: {
     flexGrow: 1,
@@ -255,7 +255,7 @@ const getStyles = (theme) => StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.background,
+    backgroundColor: theme.searchBar,
     borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 24,
@@ -326,7 +326,7 @@ const getStyles = (theme) => StyleSheet.create({
 
   // Secondary Actions
   secondaryActionsContainer: {
-    backgroundColor: theme.background,
+    backgroundColor: theme.card,
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

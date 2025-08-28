@@ -187,7 +187,7 @@ const getStyles = (theme) => ({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: theme.primary,
+    color: theme.text,
     marginBottom: 16,
   },
   textBlock: {
@@ -223,7 +223,7 @@ const getStyles = (theme) => ({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    backgroundColor: theme.card,
+    backgroundColor: theme.searchBar,
   },
   addButton: {
     flexDirection: 'row',
@@ -231,9 +231,9 @@ const getStyles = (theme) => ({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.primary,
     borderWidth: 2,
-    borderColor: '#432272',
+    borderColor: theme.primary,
     borderStyle: 'dashed',
     borderRadius: 8,
     paddingVertical: 16,
@@ -360,7 +360,7 @@ const getStyles = (theme) => ({
   },
   checkboxLabel: {
     fontSize: 14,
-    color: '#333',
+    color: theme.secondary,
   },
   infoButton: {
     padding: 4,

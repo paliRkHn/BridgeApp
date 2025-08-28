@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
 
 const WorkTypeSection = ({ workType, onUpdateWorkType, isEditing }) => {
+  const { theme } = useTheme();
   const contractTypes = ["Full time", "Part time", "Casual", "Intership/Apprenticeship"];
   const workModes = ["On-site", "Remote", "Hybrid"];
 
@@ -48,6 +50,8 @@ const WorkTypeSection = ({ workType, onUpdateWorkType, isEditing }) => {
   const hasAnyPreferences = () => {
     return (workType?.contractTypes?.length > 0) || (workType?.workModes?.length > 0);
   };
+
+  const styles = getStyles(theme);
 
   return (
     <View style={styles.section}>
@@ -137,32 +141,32 @@ const WorkTypeSection = ({ workType, onUpdateWorkType, isEditing }) => {
   );
 };
 
-const styles = {
+const getStyles = (theme) => ({
   section: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.text,
     marginBottom: 16,
   },
   textBlock: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#432272',
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
     lineHeight: 24,
   },
   placeholder: {
-    color: '#999',
+    color: theme.secondary,
     fontSize: 14,
   },
   preferenceGroup: {
@@ -171,7 +175,7 @@ const styles = {
   preferenceLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 6,
   },
   tagsContainer: {
@@ -180,7 +184,7 @@ const styles = {
     gap: 8,
   },
   preferenceTag: {
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -196,7 +200,7 @@ const styles = {
   categoryTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#432272',
+    color: theme.primary,
     marginBottom: 12,
   },
   optionsContainer: {
@@ -212,24 +216,24 @@ const styles = {
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#ccc',
+    borderColor: theme.border,
     marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioButtonSelected: {
-    borderColor: '#432272',
+    borderColor: theme.primary,
   },
   radioButtonInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
   },
   radioLabel: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
   },
-};
+});
 
 export default WorkTypeSection;
