@@ -16,7 +16,9 @@ import Profile from './screens/Profile';
 import Templates from './screens/Templates';
 import TextEditor from './components/TextEditor';
 import UserSettings from './screens/UserSettings';
-import HelpForm from './screens/HelpForm';
+import HelpForm from './screens/Help';
+import TermsOfService from './components/read-only-info/TermsOfService';
+import PrivacyPolicy from './components/read-only-info/PrivacyPolicy';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,6 +42,8 @@ export default function App() {
               <Stack.Screen name="TextEditor" component={TextEditor} />
               <Stack.Screen name="UserSettings" component={UserSettings} />
               <Stack.Screen name="HelpForm" component={HelpForm} />
+              <Stack.Screen name="TermsOfService" component={TermsOfService} />
+              <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
             </Stack.Navigator>
           </NavigationContainer>
         </AuthProvider>
