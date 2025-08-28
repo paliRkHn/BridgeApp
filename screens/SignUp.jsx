@@ -73,12 +73,7 @@ export default function SignUp() {
       await createUserProfile(authUser, null, {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        email: email.trim(),
-        phone: formData.phone.trim(),
-        dateOfBirth: formData.dateOfBirth,
-        suburb: formData.suburb,
-        city: formData.city,
-        photoURL: photoURL,
+        email: email.trim()
       });
 
       //Sign in process

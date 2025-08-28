@@ -4,12 +4,12 @@
     "slug": "Bridge02",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/bridge_logo_square.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "scheme": "bridgeapp",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/bridge_logo_square.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -23,7 +23,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/bridge_logo_square.png",
         "backgroundColor": "#ffffff"
       },
       "bundleIdentifier": "com.palomarojas.bridgeapp",
