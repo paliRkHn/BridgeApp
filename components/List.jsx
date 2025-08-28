@@ -2,10 +2,13 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from './JobList.styles';
+import { getStyles } from './JobList.styles';
+import { useTheme } from '../context/ThemeContext';
 
 export default function List({ elements = [] }) {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
 
   return (
     <View style={styles.elementsContainer}>

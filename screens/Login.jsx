@@ -2,14 +2,22 @@ import { StyleSheet, View, Image, TextInput, Button, TouchableOpacity, Text, Ale
 import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Static default theme for Login screen (unaffected by theme changes)
+const defaultTheme = {
+  background: '#FFFFFF',
+  text: '#333333',
+  primary: '#432272',
+  secondary: '#666666',
+  card: '#f8f9fa',
+  border: '#e0e0e0'
+};
 
 export default function Login() {
   const navigation = useNavigation();
   const { signIn } = useAuth();
-  const { theme } = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +88,7 @@ export default function Login() {
 
 
 
-  const styles = getStyles(theme);
+  const styles = getStyles(defaultTheme);
 
   return (
     <KeyboardAvoidingView 
@@ -137,7 +145,7 @@ export default function Login() {
           <Button 
             title={isLoading ? "Signing In..." : "Sign In"} 
             onPress={handleSignIn} 
-            color={theme.primary}
+            color={defaultTheme.primary}
             disabled={isLoading}
           />
         </View>
