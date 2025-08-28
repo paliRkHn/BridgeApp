@@ -6,15 +6,20 @@ import {
   ScrollView, 
   SafeAreaView, 
   Modal,
-  Alert
+  Alert,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
+import { pickDocument } from '../services/simpleDocumentService';
+import { uploadUserDocument } from '../services/storageService';
 
 const Templates = () => {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const { user } = useAuth();
   const [coverLettersExpanded, setCoverLettersExpanded] = useState(true);
   const [resumesExpanded, setResumesExpanded] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -22,6 +27,8 @@ const Templates = () => {
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const [addMenuPosition, setAddMenuPosition] = useState({ x: 0, y: 0 });
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Mock data with random dates between June and August 2025
   const [coverLetters, setCoverLetters] = useState([
@@ -62,16 +69,76 @@ const Templates = () => {
     }
   };
 
-  const handleAddAction = (action) => {
+  const handleAddAction = async (action) => {
     setShowAddMenu(false);
-    // Handle add actions here
-    console.log(`${action} for ${activeSection}`);
     
     if (action === 'Write') {
       navigation.navigate('TextEditor', {
         title: '',
         content: ''
       });
+    } else if (action === 'Upload doc') {
+      if (!user) {
+        Alert.alert('Error', 'You must be logged in to upload documents');
+        return;
+      }
+
+      try {
+        setIsUploading(true);
+        setUploadProgress(0);
+        
+        // Pick document from device
+        const pickedDocument = await pickDocument();
+        if (!pickedDocument) {
+          setIsUploading(false);
+          return;
+        }
+
+        // Upload to Firebase Storage
+        const uploadResult = await uploadUserDocument(
+          user.uid,
+          pickedDocument.uri,
+          pickedDocument.name,
+          activeSection,
+          (progress) => setUploadProgress(progress)
+        );
+
+        // Create document object in mock data format
+        const newDocument = {
+          id: `${activeSection}_${Date.now()}`,
+          title: pickedDocument.name.replace(/\.[^/.]+$/, ""), // Remove extension
+          date: new Date().toLocaleDateString('en-GB', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: '2-digit' 
+          }),
+          isDefault: false,
+          type: pickedDocument.type,
+          // Store additional metadata for potential future use
+          fileName: pickedDocument.name,
+          downloadURL: uploadResult.downloadURL,
+          storagePath: uploadResult.path,
+          isUploaded: true // Flag to identify uploaded docs
+        };
+
+        // Add to the appropriate list
+        if (activeSection === 'coverLetters') {
+          setCoverLetters(prev => [newDocument, ...prev]);
+        } else if (activeSection === 'resumes') {
+          setResumes(prev => [newDocument, ...prev]);
+        }
+
+        Alert.alert(
+          'Upload Successful', 
+          `${pickedDocument.name} has been uploaded successfully.`
+        );
+      } catch (error) {
+        console.error('Upload error:', error);
+        Alert.alert('Upload Failed', 'Failed to upload document. Please try again.');
+      } finally {
+        setIsUploading(false);
+        setUploadProgress(0);
+      }
     }
   };
 
@@ -240,6 +307,16 @@ const Templates = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Templates</Text>
       </View>
+
+      {/* Upload Progress Indicator */}
+      {isUploading && (
+        <View style={styles.uploadProgressContainer}>
+          <ActivityIndicator size="small" color={theme.primary} />
+          <Text style={styles.uploadProgressText}>
+            Uploading... {Math.round(uploadProgress)}%
+          </Text>
+        </View>
+      )}
 
       <TouchableOpacity 
         style={styles.content} 
@@ -615,6 +692,22 @@ const getStyles = (theme) => ({
     backgroundColor: '#fff5f5',
     borderWidth: 1,
     borderColor: '#fed7d7',
+  },
+  uploadProgressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: theme.card,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+  },
+  uploadProgressText: {
+    marginLeft: 12,
+    fontSize: 14,
+    color: theme.primary,
+    fontWeight: '500',
   },
 });
 
