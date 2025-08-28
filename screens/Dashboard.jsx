@@ -54,12 +54,22 @@ export default function Dashboard() {
               source={userProfile?.photoURL ? { uri: userProfile.photoURL } : require('../assets/idea.png')}
               style={styles.avatar}
               resizeMode="cover"
+              accessible={true}
+              accessibilityLabel={userProfile?.photoURL ? "User profile picture" : "Default profile picture"}
+              accessibilityRole="image"
             />
           </View>
         </View>
 
         {/* Enhanced Search Bar */}
-        <TouchableOpacity style={styles.searchContainer} onPress={handleSearch}>
+        <TouchableOpacity 
+          style={styles.searchContainer} 
+          onPress={handleSearch}
+          accessible={true}
+          accessibilityLabel="Search jobs and companies"
+          accessibilityHint="Tap to search for jobs and companies"
+          accessibilityRole="button"
+        >
           <Ionicons name="search" size={20} color={"#1a1a1a"} style={styles.searchIcon} />
           <TextInput
             style={styles.searchBar}
@@ -70,13 +80,24 @@ export default function Dashboard() {
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearch}
             returnKeyType="search"
+            accessible={true}
+            accessibilityLabel="Search input"
+            accessibilityHint="Enter keywords to search for jobs and companies"
+            accessibilityRole="search"
           />
         </TouchableOpacity>
 
         {/* Main Actions Grid */}
         <Text style={styles.sectionTitle}>Dashboard</Text>
         <View style={styles.gridContainer}>
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('JobList')}>
+        <TouchableOpacity 
+          style={styles.actionCard} 
+          onPress={() => navigation.navigate('JobList')}
+          accessible={true}
+          accessibilityLabel="Browse Jobs"
+          accessibilityHint="Tap to view available job listings"
+          accessibilityRole="button"
+        >
           <LinearGradient
             colors={['#432272', '#6a4c93']}
             style={styles.gradientCard}
@@ -88,7 +109,14 @@ export default function Dashboard() {
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Activity', { initialTab: 'Saved' })}>
+        <TouchableOpacity 
+          style={styles.actionCard} 
+          onPress={() => navigation.navigate('Activity', { initialTab: 'Saved' })}
+          accessible={true}
+          accessibilityLabel={`Saved Jobs, ${savedJobsCount} jobs saved`}
+          accessibilityHint="Tap to view your saved job listings"
+          accessibilityRole="button"
+        >
           <LinearGradient
             colors={['#e74c3c', '#f39c12']}
             style={styles.gradientCard}
@@ -101,7 +129,14 @@ export default function Dashboard() {
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Templates')}>
+        <TouchableOpacity 
+          style={styles.actionCard} 
+          onPress={() => navigation.navigate('Templates')}
+          accessible={true}
+          accessibilityLabel="Templates"
+          accessibilityHint="Tap to manage your resume and cover letter templates"
+          accessibilityRole="button"
+        >
           <LinearGradient
             colors={['#3498db', '#2980b9']}
             style={styles.gradientCard}
@@ -113,7 +148,14 @@ export default function Dashboard() {
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Profile')}>
+        <TouchableOpacity 
+          style={styles.actionCard} 
+          onPress={() => navigation.navigate('Profile')}
+          accessible={true}
+          accessibilityLabel="Profile"
+          accessibilityHint="Tap to view and edit your profile information"
+          accessibilityRole="button"
+        >
           <LinearGradient
             colors={['#27ae60', '#2ecc71']}
             style={styles.gradientCard}
@@ -129,7 +171,14 @@ export default function Dashboard() {
       {/* Secondary Actions */}
       <Text style={styles.sectionTitle}>More Options</Text>
       <View style={styles.secondaryActionsContainer}>
-        <TouchableOpacity style={styles.secondaryAction} onPress={() => navigation.navigate('Activity')}>
+        <TouchableOpacity 
+          style={styles.secondaryAction} 
+          onPress={() => navigation.navigate('Activity')}
+          accessible={true}
+          accessibilityLabel="Activity"
+          accessibilityHint="Tap to track your job applications"
+          accessibilityRole="button"
+        >
           <View style={styles.secondaryActionIcon}>
             <Ionicons name="time" size={24} color={theme.primary} />
           </View>
@@ -143,6 +192,10 @@ export default function Dashboard() {
         <TouchableOpacity 
           style={styles.secondaryAction}
           onPress={() => navigation.navigate('UserSettings')}
+          accessible={true}
+          accessibilityLabel="Settings"
+          accessibilityHint="Tap to access app settings and preferences"
+          accessibilityRole="button"
         >
           <View style={styles.secondaryActionIcon}>
             <Ionicons name="settings" size={24} color={theme.primary} />

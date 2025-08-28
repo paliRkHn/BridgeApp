@@ -1,12 +1,16 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 
 export default function BottomNav() {
   const navigation = useNavigation();
+  const route = useRoute();
   const { theme } = useTheme();
+  
+  // Get current route name for accessibility state
+  const currentRouteName = route.name;
 
   const styles = getStyles(theme);
 
@@ -16,18 +20,33 @@ export default function BottomNav() {
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Activity', { initialTab: 'Saved' })}
+          accessible={true}
+          accessibilityLabel="Saved Jobs"
+          accessibilityHint="Navigate to your saved job listings and activity"
+          accessibilityRole="tab"
+          accessibilityState={{ selected: currentRouteName === 'Activity' }}
         >
           <Ionicons name="bookmark" size={25} color={theme.background} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Dashboard')}
+          accessible={true}
+          accessibilityLabel="Dashboard"
+          accessibilityHint="Navigate to the main dashboard with job search and quick actions"
+          accessibilityRole="tab"
+          accessibilityState={{ selected: currentRouteName === 'Dashboard' }}
         >
           <Ionicons name="grid" size={25} color={theme.background} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Profile')}
+          accessible={true}
+          accessibilityLabel="Profile"
+          accessibilityHint="Navigate to your profile to view and edit your information"
+          accessibilityRole="tab"
+          accessibilityState={{ selected: currentRouteName === 'Profile' }}
         >
           <Ionicons name="person" size={25} color={theme.background} />
         </TouchableOpacity>

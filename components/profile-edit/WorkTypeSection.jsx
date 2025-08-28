@@ -51,7 +51,6 @@ const WorkTypeSection = ({ workType, onUpdateWorkType, isEditing }) => {
     return (workType?.contractTypes?.length > 0) || (workType?.workModes?.length > 0);
   };
 
-  const { theme } = useTheme();
   const styles = getStyles(theme);
 
   return (
@@ -242,7 +241,6 @@ const getStyles = (theme) => StyleSheet.create({
     color: theme.text,
     color: theme.text,
   },
-});
 });
 
 export default WorkTypeSection;

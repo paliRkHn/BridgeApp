@@ -82,6 +82,11 @@ export default function JobListFiltersPopup({
             <TouchableOpacity
               style={styles.checkboxRow}
               onPress={() => setSelectedCategories && setSelectedCategories(new Set())}
+              accessible={true}
+              accessibilityLabel="All categories filter"
+              accessibilityHint="Tap to select all categories and clear current filters"
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: selectedCategories.size === 0 }}
             >
               <View style={[styles.checkboxBox, selectedCategories.size === 0 && styles.checkboxBoxChecked]}>
                 {selectedCategories.size === 0 && <Ionicons name="checkmark" size={14} color="#fff" />}
@@ -104,6 +109,11 @@ export default function JobListFiltersPopup({
                         if (next.has(key)) next.delete(key); else next.add(key);
                         setSelectedCategories(next);
                       }}
+                      accessible={true}
+                      accessibilityLabel={`${cat.name} category filter`}
+                      accessibilityHint={`Tap to ${isSelected ? 'remove' : 'add'} ${cat.name} category filter`}
+                      accessibilityRole="checkbox"
+                      accessibilityState={{ checked: isSelected }}
                     >
                       <View style={[styles.checkboxBox, isSelected && styles.checkboxBoxChecked]}>
                         {isSelected && <Ionicons name="checkmark" size={14} color="#fff" />}
@@ -113,6 +123,10 @@ export default function JobListFiltersPopup({
                         <TouchableOpacity
                           onPress={() => setExpandedMap((prev) => ({ ...prev, [cat.name]: !prev[cat.name] }))}
                           style={{ padding: 8 }}
+                          accessible={true}
+                          accessibilityLabel={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name} subcategories`}
+                          accessibilityHint={`Tap to ${isExpanded ? 'hide' : 'show'} subcategories for ${cat.name}`}
+                          accessibilityRole="button"
                         >
                           <Ionicons name={isExpanded ? 'chevron-down' : 'chevron-forward'} size={18} color="#666" />
                         </TouchableOpacity>
@@ -133,6 +147,11 @@ export default function JobListFiltersPopup({
                                 if (next.has(subKey)) next.delete(subKey); else next.add(subKey);
                                 setSelectedCategories(next);
                               }}
+                              accessible={true}
+                              accessibilityLabel={`${sub} subcategory filter`}
+                              accessibilityHint={`Tap to ${subSelected ? 'remove' : 'add'} ${sub} subcategory filter`}
+                              accessibilityRole="checkbox"
+                              accessibilityState={{ checked: subSelected }}
                             >
                               <View style={[styles.checkboxBox, subSelected && styles.checkboxBoxChecked]}>
                                 {subSelected && <Ionicons name="checkmark" size={14} color="#fff" />}
@@ -163,6 +182,11 @@ export default function JobListFiltersPopup({
                     key={`jobtype-${key}`}
                     style={styles.checkboxRow}
                     onPress={() => toggleInSet(setSelectedJobTypes, selectedJobTypes, key)}
+                    accessible={true}
+                    accessibilityLabel={`${jobType} job type filter`}
+                    accessibilityHint={`Tap to ${isChecked ? 'remove' : 'add'} ${jobType} job type filter`}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: isChecked }}
                   >
                     <View style={[styles.checkboxBox, isChecked && styles.checkboxBoxChecked]}>
                       {isChecked && <Ionicons name="checkmark" size={14} color="#fff" />}
@@ -186,6 +210,11 @@ export default function JobListFiltersPopup({
                     key={`workmode-${key}`}
                     style={styles.checkboxRow}
                     onPress={() => toggleInSet(setSelectedWorkModes, selectedWorkModes, key)}
+                    accessible={true}
+                    accessibilityLabel={`${workMode} work mode filter`}
+                    accessibilityHint={`Tap to ${isChecked ? 'remove' : 'add'} ${workMode} work mode filter`}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: isChecked }}
                   >
                     <View style={[styles.checkboxBox, isChecked && styles.checkboxBoxChecked]}>
                       {isChecked && <Ionicons name="checkmark" size={14} color="#fff" />}
@@ -206,6 +235,11 @@ export default function JobListFiltersPopup({
                     key={`city-pill-${city}`}
                     style={[styles.cityPill, modalCity === city && styles.cityPillActive]}
                     onPress={() => setModalCity(city)}
+                    accessible={true}
+                    accessibilityLabel={`${city} city filter`}
+                    accessibilityHint={`Tap to filter suburbs by ${city}`}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: modalCity === city }}
                   >
                     <Text style={[styles.cityPillText, modalCity === city && styles.cityPillTextActive]}>
                       {city}
@@ -227,6 +261,11 @@ export default function JobListFiltersPopup({
                   key={`suburb-${key}`}
                   style={styles.checkboxRow}
                   onPress={() => toggleInSet(setSelectedSuburbs, selectedSuburbs, key)}
+                  accessible={true}
+                  accessibilityLabel={`${suburb} suburb filter`}
+                  accessibilityHint={`Tap to ${isChecked ? 'remove' : 'add'} ${suburb} suburb filter`}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: isChecked }}
                 >
                   <View style={[styles.checkboxBox, isChecked && styles.checkboxBoxChecked]}>
                     {isChecked && <Ionicons name="checkmark" size={14} color="#fff" />}
@@ -242,6 +281,11 @@ export default function JobListFiltersPopup({
             <TouchableOpacity 
               style={styles.checkboxRow} 
               onPress={() => setPastOnly(!pastOnly)}
+              accessible={true}
+              accessibilityLabel="Show inactive positions filter"
+              accessibilityHint={`Tap to ${pastOnly ? 'hide' : 'show'} inactive job positions`}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: pastOnly }}
             >
               <View style={[styles.checkboxBox, pastOnly && styles.checkboxBoxChecked]}>
                 {pastOnly && <Ionicons name="checkmark" size={14} color="#fff" />}

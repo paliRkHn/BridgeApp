@@ -76,11 +76,18 @@ export default function AvatarUpload({
           onPress={onAvatarPress} 
           disabled={!onAvatarPress}
           style={{ borderRadius: size / 2 }}
+          accessible={true}
+          accessibilityLabel="Profile picture"
+          accessibilityHint="Tap to view full size profile picture"
+          accessibilityRole="button"
         >
           <Image 
             source={getAvatarSource()} 
             style={[styles.avatar, { width: size, height: size, borderRadius: size / 2 }]}
             resizeMode="cover"
+            accessible={true}
+            accessibilityLabel={avatar && avatar.uri ? "Custom profile picture" : "Default profile picture"}
+            accessibilityRole="image"
           />
         </TouchableOpacity>
         {isUploadingAvatar && (
@@ -100,6 +107,11 @@ export default function AvatarUpload({
             ]} 
             onPress={handleAvatarPress}
             disabled={isUploadingAvatar || disabled}
+            accessible={true}
+            accessibilityLabel={getButtonText()}
+            accessibilityHint={avatar && avatar.uri ? "Tap to change your profile picture" : "Tap to upload a profile picture"}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: isUploadingAvatar || disabled }}
           >
             <Text style={styles.uploadButtonText}>
               {getButtonText()}

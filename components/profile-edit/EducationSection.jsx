@@ -127,7 +127,6 @@ const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
     );
   };
 
-  const { theme } = useTheme();
   const styles = getStyles(theme);
 
   return (

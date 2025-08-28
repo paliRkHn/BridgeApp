@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { Entypo, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
@@ -165,7 +164,6 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
     );
   };
 
-  const { theme } = useTheme();
   const styles = getStyles(theme);
 
   return (
@@ -392,7 +390,6 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
   );
 };
 
-const getStyles = (theme) => StyleSheet.create({
 const getStyles = (theme) => StyleSheet.create({
   section: {
     padding: 20,
@@ -703,7 +700,6 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-});
 });
 
 export default JobHistorySection;

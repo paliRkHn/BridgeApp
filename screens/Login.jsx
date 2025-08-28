@@ -106,6 +106,9 @@ export default function Login() {
              source={require('../assets/logo_square.png')}
              style={styles.image}
              resizeMode="cover"
+             accessible={true}
+             accessibilityLabel="Bridge App Logo"
+             accessibilityRole="image"
            />
          </View>
          
@@ -119,6 +122,10 @@ export default function Login() {
           autoCapitalize="none"
           keyboardType="email-address"
           returnKeyType="next"
+          accessible={true}
+          accessibilityLabel="Email address"
+          accessibilityHint="Enter your email address to sign in"
+          accessibilityRole="text"
         />
         <View style={styles.passwordContainer}>
           <TextInput
@@ -129,10 +136,18 @@ export default function Login() {
             secureTextEntry={!isPasswordVisible}
             returnKeyType="done"
             onSubmitEditing={handleSignIn}
+            accessible={true}
+            accessibilityLabel="Password"
+            accessibilityHint="Enter your password to sign in"
+            accessibilityRole="text"
           />
           <TouchableOpacity
             style={styles.eyeIcon}
             onPress={togglePasswordVisibility}
+            accessible={true}
+            accessibilityLabel={isPasswordVisible ? "Hide password" : "Show password"}
+            accessibilityHint={isPasswordVisible ? "Tap to hide your password" : "Tap to show your password"}
+            accessibilityRole="button"
           >
             {isPasswordVisible ? 
               <MaterialIcons name="visibility" size={24} color="black" /> : 
@@ -156,6 +171,11 @@ export default function Login() {
             <TouchableOpacity 
               style={styles.checkboxContainer} 
               onPress={toggleRememberMe}
+              accessible={true}
+              accessibilityLabel={`Remember me, ${rememberMe ? 'checked' : 'unchecked'}`}
+              accessibilityHint="Tap to toggle remembering your login credentials"
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: rememberMe }}
             >
               <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
                 {rememberMe && (
@@ -164,7 +184,13 @@ export default function Login() {
               </View>
               <Text style={styles.rememberMeText}>Remember Me</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => Alert.alert('Forgot Password', 'Password reset functionality will be implemented here.')}>
+            <TouchableOpacity 
+              onPress={() => Alert.alert('Forgot Password', 'Password reset functionality will be implemented here.')}
+              accessible={true}
+              accessibilityLabel="Forgot Password"
+              accessibilityHint="Tap to reset your password"
+              accessibilityRole="button"
+            >
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
@@ -173,7 +199,13 @@ export default function Login() {
         {/* Sign Up Link */}
         <View style={styles.signUpContainer}>
           <Text style={styles.signUpText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('SignUp')}
+            accessible={true}
+            accessibilityLabel="Sign up for new account"
+            accessibilityHint="Tap to create a new account"
+            accessibilityRole="button"
+          >
             <Text style={styles.signUpLink}>Sign Up</Text>
           </TouchableOpacity>
         </View>
