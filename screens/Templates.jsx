@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { pickDocument } from '../services/simpleDocumentService';
+import { pickDocument } from '../services/documentUploadService';
 import { uploadUserDocument } from '../services/storageService';
 
 const Templates = () => {

@@ -76,6 +76,15 @@ export const getStyles = (theme) => StyleSheet.create({
         margin: 16,
         borderRadius: 12,
       },
+      dropdownContainer: {
+        position: 'relative',
+        marginBottom: 16,
+        zIndex: 10,
+      },
+      dropdownContainerActive: {
+        zIndex: 1001,
+        elevation: 10,
+      },
       dropdownButton: {
         flexDirection: 'row',
         alignItems: 'center',

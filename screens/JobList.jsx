@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   Image,
   TextInput,
+  TouchableWithoutFeedback,
+  Modal,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import BottomNav from '../components/BottomNav';
@@ -119,6 +121,11 @@ export default function JobList() {
 
   const goBack = () => {
     navigation.goBack();
+  };
+
+  const closeDropdowns = () => {
+    setIsDropdownOpen(false);
+    setIsCityDropdownOpen(false);
   };
 
   const handleResetFilters = () => {
@@ -281,20 +288,25 @@ export default function JobList() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Classifications</Text>
-        <View style={styles.placeholder} />
-      </View>
+      <TouchableWithoutFeedback onPress={closeDropdowns}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Job Offers</Text>
+          <View style={styles.placeholder} />
+        </View>
+      </TouchableWithoutFeedback>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Search Bar */}
         {searchText && (
-          <View style={styles.searchSection}>
-            <Text style={styles.searchLabel}>Search results for: "{searchText}"</Text>
-          </View>
+          <TouchableWithoutFeedback onPress={closeDropdowns}>
+            <View style={styles.searchSection}>
+              <Text style={styles.searchLabel}>Search results for: "{searchText}"</Text>
+            </View>
+          </TouchableWithoutFeedback>
         )}
         
-        <View style={styles.searchContainer}>
+        <TouchableWithoutFeedback onPress={closeDropdowns}>
+          <View style={styles.searchContainer}>
           <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
@@ -310,13 +322,21 @@ export default function JobList() {
               <Ionicons name="close-circle" size={20} color="#999" />
             </TouchableOpacity>
           ) : null}
-        </View>
+          </View>
+        </TouchableWithoutFeedback>
 
+        {/* Padding area above filters to catch outside taps */}
+        {(isDropdownOpen || isCityDropdownOpen) && (
+          <TouchableWithoutFeedback onPress={closeDropdowns}>
+            <View style={{ height: 20, backgroundColor: 'transparent' }} />
+          </TouchableWithoutFeedback>
+        )}
+        
         {/* Filters Section */}
         <View style={styles.filtersContainer}>
           <View style={{ flex: 1 }}>
             {/* Categories Dropdown */}
-            <View style={styles.dropdownContainer}>
+            <View style={[styles.dropdownContainer, isDropdownOpen && styles.dropdownContainerActive]}>
               <Text style={styles.dropdownLabel}>Categories</Text>
               <TouchableOpacity 
                 style={styles.dropdownButton} 
@@ -410,7 +430,7 @@ export default function JobList() {
             </View>
 
             {/* City Dropdown */}
-            <View style={styles.dropdownContainer}>
+            <View style={[styles.dropdownContainer, isCityDropdownOpen && styles.dropdownContainerActive]}>
               <Text style={styles.dropdownLabel}>City</Text>
               <TouchableOpacity
                 style={styles.dropdownButton}
@@ -456,12 +476,25 @@ export default function JobList() {
           </View>
         </View>
 
-        {/* Render the list of jobs */}
-        <List elements={filteredElements} />
+        {/* Padding area below filters to catch outside taps */}
+        {(isDropdownOpen || isCityDropdownOpen) && (
+          <TouchableWithoutFeedback onPress={closeDropdowns}>
+            <View style={{ height: 20, backgroundColor: 'transparent' }} />
+          </TouchableWithoutFeedback>
+        )}
 
-        {/* Bottom spacer to avoid content under nav */}
-        <View style={{ height: 90 }} />
+        {/* Render the list of jobs */}
+        <TouchableWithoutFeedback onPress={closeDropdowns}>
+          <View>
+            <List elements={filteredElements} />
+            {/* Bottom spacer to avoid content under nav */}
+            <View style={{ height: 90 }} />
+          </View>
+        </TouchableWithoutFeedback>
       </ScrollView>
+      
+
+      
       <BottomNav />
       
       {/* More Filters Modal */}
