@@ -26,18 +26,63 @@ export default function Activity() {
   const [activeTab, setActiveTab] = useState(
     route?.params?.initialTab === 'Saved' ? 'Saved' : 'Activity'
   );
-  
-  // Sample activity dates - these would come from your data
-  const activityDates = [5, 12, 18, 25, 30];
-  
-  // Sample activity types
-  const activityTypes = [
-    { title: 'Physical Activity', description: 'Exercise, sports, and movement activities' },
-    { title: 'Social Events', description: 'Community gatherings and social interactions' },
-    { title: 'Learning Sessions', description: 'Educational workshops and skill development' },
-    { title: 'Creative Activities', description: 'Arts, crafts, and creative expression' },
-    { title: 'Wellness Programs', description: 'Mental health and wellness activities' }
+  const [activityFilter, setActivityFilter] = useState('All'); // 'All', 'Upcoming', 'Applications', 'Interviews', 'Trials'
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const filterOptions = [
+    { label: 'All', value: 'All' },
+    { label: 'Upcoming', value: 'Upcoming' },
+    { label: 'Applications', value: 'Applications' },
+    { label: 'Interviews', value: 'Interviews' },
+    { label: 'Trials', value: 'Trials' },
   ];
+  
+  // Mock activity data
+  const mockActivities = [
+    { id: 1, type: 'Applied to', jobName: 'Data Analytics Specialist for JPMorgan Chase', date: '04/08/25' },
+    { id: 2, type: 'Applied to', jobName: 'Laundry Services Worker for Fresh Clean Laundromat', date: '06/08/25' },
+    { id: 3, type: 'Applied to', jobName: 'Parts Organizer for AutoFix Parts Warehouse', date: '15/08/25' },
+    { id: 4, type: 'Applied to', jobName: 'Financial Risk Analyst for Wells Fargo', date: '16/08/25' },
+    { id: 5, type: 'Applied to', jobName: 'Operations Analyst for Microsoft', date: '20/08/25' },
+    { id: 6, type: 'Trial', jobName: 'Parts Organizer for AutoFix Parts Warehouse', date: '03/09/25' },
+    { id: 7, type: 'Interview', jobName: 'IT Service Operations Analyst for Microsoft', date: '08/09/25' },
+  ];
+
+  // Parse date string to Date object for comparison
+  const parseDate = (dateStr) => {
+    const [day, month, year] = dateStr.split('/');
+    return new Date(2000 + parseInt(year), parseInt(month) - 1, parseInt(day));
+  };
+
+  // Sort activities by date (newest first)
+  const sortedActivities = [...mockActivities].sort((a, b) => {
+    return parseDate(b.date) - parseDate(a.date);
+  });
+
+  // Filter activities based on selected filter
+  const filteredActivities = sortedActivities.filter(activity => {
+    if (activityFilter === 'All') return true;
+    if (activityFilter === 'Upcoming') {
+      const activityDate = parseDate(activity.date);
+      const today = new Date();
+      return activityDate >= today;
+    }
+    if (activityFilter === 'Applications') {
+      return activity.type === 'Applied to';
+    }
+    if (activityFilter === 'Interviews') {
+      return activity.type === 'Interview';
+    }
+    if (activityFilter === 'Trials') {
+      return activity.type === 'Trial';
+    }
+    return true;
+  });
+
+  const handleFilterSelect = (filterValue) => {
+    setActivityFilter(filterValue);
+    setShowDropdown(false);
+  };
 
   // Get saved jobs from user profile or use sample data
   const userSavedJobs = userProfile?.savedJobs || [];
@@ -49,18 +94,32 @@ export default function Activity() {
       title: 'Community Support Worker',
       image: require('../assets/job-offer.png'),
       items: ['Part-time position', 'Shift work available', 'Immediate start'],
-      status: 'APPLIED',
+      status: false,
     },
     {
       id: 'sample-2',
+      title: 'Outreach Specialist',
+      image: require('../assets/job-offer.png'),
+      items: ['Contract role', 'Travel within metro area', 'Must have driver license'],
+      status: 'APPLIED',
+    },
+    {
+      id: 'sample-3',
       title: 'Program Coordinator',
       image: require('../assets/job-offer.png'),
       items: ['Full-time role', 'Lead community programs', '3+ years experience'],
       status: 'IN PROCESS',
     },
     {
-      id: 'sample-3',
+      id: 'sample-4',
       title: 'Outreach Specialist',
+      image: require('../assets/job-offer.png'),
+      items: ['Contract role', 'Travel within metro area', 'Must have driver license'],
+      status: 'INTERVIEW',
+    },
+    {
+      id: 'sample-5',
+      title: 'Program Coordinator',
       image: require('../assets/job-offer.png'),
       items: ['Contract role', 'Travel within metro area', 'Must have driver license'],
       status: 'CLOSED',
@@ -69,6 +128,26 @@ export default function Activity() {
 
   // Combine user saved jobs with sample items
   const savedItems = [...userSavedJobs, ...sampleSavedItems];
+
+  // Extract activity dates for calendar highlighting
+  const activityDates = mockActivities.map(activity => {
+    const [day, month, year] = activity.date.split('/');
+    const activityDate = new Date(2000 + parseInt(year), parseInt(month) - 1, parseInt(day));
+    return {
+      day: parseInt(day),
+      month: parseInt(month) - 1,
+      year: 2000 + parseInt(year),
+      fullDate: activityDate
+    };
+  });
+
+  // Get activity dates for current month
+  const currentMonthActivityDates = activityDates
+    .filter(date => 
+      date.month === currentMonth.getMonth() && 
+      date.year === currentMonth.getFullYear()
+    )
+    .map(date => date.day);
 
   const goBack = () => {
     navigation.goBack();
@@ -116,12 +195,7 @@ export default function Activity() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Activity</Text>
-        <View style={styles.placeholder} />
-      </View>
-
+     
       {/* Tabs */}
       <View style={styles.tabsContainer}>
         <TouchableOpacity
@@ -140,7 +214,11 @@ export default function Activity() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {activeTab === 'Activity' ? (
-          <>
+          <TouchableOpacity 
+            activeOpacity={1} 
+            onPress={() => setShowDropdown(false)}
+            style={styles.activityContent}
+          >
             {/* Calendar Section */}
             <View style={styles.calendarContainer}>
               <View style={styles.calendarHeader}>
@@ -167,7 +245,7 @@ export default function Activity() {
                     {day && (
                       <Text style={[
                         styles.dayText,
-                        activityDates.includes(day) && styles.activityDay
+                        currentMonthActivityDates.includes(day) && styles.activityDay
                       ]}>
                         {day}
                       </Text>
@@ -177,19 +255,82 @@ export default function Activity() {
               </View>
             </View>
 
-            {/* Activity Types Section */}
-            <View style={styles.activityTypesContainer}>
-              <Text style={styles.sectionTitle}>Activity Types</Text>
-              {activityTypes.map((activity, index) => (
-                <View key={index} style={styles.activityItem}>
-                  <Text style={styles.activityTitle}>{activity.title}</Text>
-                  <View style={styles.activityDescriptionBlock}>
-                    <Text style={styles.activityDescription}>{activity.description}</Text>
-                  </View>
+            {/* Filter Dropdown */}
+            <View style={styles.filterContainer}>
+              <TouchableOpacity
+                style={styles.dropdownButton}
+                onPress={() => setShowDropdown(!showDropdown)}
+              >
+                <Text style={styles.dropdownButtonText}>
+                  {filterOptions.find(option => option.value === activityFilter)?.label || 'All'}
+                </Text>
+                <Ionicons 
+                  name={showDropdown ? "chevron-up" : "chevron-down"} 
+                  size={20} 
+                  color={theme.primary} 
+                />
+              </TouchableOpacity>
+              
+              {showDropdown && (
+                <View style={styles.dropdownMenu}>
+                  {filterOptions.map((option) => (
+                    <TouchableOpacity
+                      key={option.value}
+                      style={[
+                        styles.dropdownItem,
+                        activityFilter === option.value && styles.activeDropdownItem
+                      ]}
+                      onPress={() => handleFilterSelect(option.value)}
+                    >
+                      <Text style={[
+                        styles.dropdownItemText,
+                        activityFilter === option.value && styles.activeDropdownItemText
+                      ]}>
+                        {option.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
-              ))}
+              )}
             </View>
-          </>
+
+            {/* Activity List */}
+            <View style={styles.activityListContainer}>              
+              {filteredActivities.length > 0 ? (
+                filteredActivities.map((activity) => (
+                  <View key={activity.id} style={styles.activityListItem}>
+                    {/* Type badge at top left */}
+                    <View style={styles.activityTypeContainer}>
+                      <View style={[
+                        styles.activityTypeBadge,
+                        activity.type === 'Applied to' && styles.appliedBadge,
+                        activity.type === 'Interview' && styles.interviewBadge,
+                        activity.type === 'Trial' && styles.trialBadge,
+                      ]}>
+                        <Text style={styles.activityTypeBadgeText}>{activity.type}</Text>
+                      </View>
+                    </View>
+                    
+                    {/* Job name and date row */}
+                    <View style={styles.activityBottomRow}>
+                      <Text style={styles.activityJobName}>{activity.jobName}</Text>
+                      <Text style={styles.activityDate}>{activity.date}</Text>
+                    </View>
+                  </View>
+                ))
+              ) : (
+                <View style={styles.emptyStateContainer}>
+                  <Text style={styles.emptyStateText}>
+                    {activityFilter === 'Upcoming' && 'No upcoming activities'}
+                    {activityFilter === 'Applications' && 'No applications found'}
+                    {activityFilter === 'Interviews' && 'No interviews found'}
+                    {activityFilter === 'Trials' && 'No trials found'}
+                    {activityFilter === 'All' && 'No activities found'}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
         ) : (
           <View style={styles.savedContainer}>
             {/* Real Saved Jobs Section */}
@@ -281,6 +422,7 @@ export default function Activity() {
                             item.status === 'APPLIED' && { backgroundColor: '#2e7d32' },
                             item.status === 'IN PROCESS' && { backgroundColor: '#f9a825' },
                             item.status === 'CLOSED' && { backgroundColor: '#9e9e9e' },
+                            item.status === 'INTERVIEW' && { backgroundColor: '#6215EA' },
                           ]}
                         >
                           <Text style={styles.statusTagText}>{item.status}</Text>
@@ -347,10 +489,13 @@ const getStyles = (theme) => StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  activityContent: {
+    flex: 1,
+  },
   tabsContainer: {
     flexDirection: 'row',
     marginHorizontal: 16,
-    marginTop: 8,
+    marginTop: 20,
     marginBottom: 4,
     backgroundColor: theme.card,
     borderRadius: 10,
@@ -367,10 +512,145 @@ const getStyles = (theme) => StyleSheet.create({
   },
   tabText: {
     color: theme.primary,
+    fontSize: 18,
     fontWeight: '600',
   },
   activeTabText: {
     color: '#fff',
+  },
+  // Filter dropdown styles
+  filterContainer: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 16,
+    position: 'relative',
+    zIndex: 1000,
+  },
+  dropdownButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: theme.card,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  dropdownButtonText: {
+    color: theme.text,
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    backgroundColor: theme.card,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: theme.border,
+    marginTop: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex: 1001,
+  },
+  dropdownItem: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+  },
+  activeDropdownItem: {
+    backgroundColor: theme.primary + '20',
+  },
+  dropdownItemText: {
+    color: theme.text,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  activeDropdownItemText: {
+    color: theme.primary,
+    fontWeight: '600',
+  },
+  // Activity list styles
+  activityListContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  activityListItem: {
+    flexDirection: 'column',
+    backgroundColor: theme.card,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  activityTypeContainer: {
+    alignSelf: 'flex-start',
+    marginBottom: 12,
+  },
+  activityTypeBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  appliedBadge: {
+    backgroundColor: '#e3f2fd',
+  },
+  interviewBadge: {
+    backgroundColor: '#fff3e0',
+  },
+  trialBadge: {
+    backgroundColor: '#e8f5e8',
+  },
+  activityTypeBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#333',
+  },
+  activityBottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  activityJobName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.text,
+    lineHeight: 22,
+    flex: 1,
+    marginRight: 12,
+  },
+  activityDate: {
+    fontSize: 12,
+    color: theme.secondary,
+    fontWeight: '500',
+    textAlign: 'right',
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: theme.secondary,
+    textAlign: 'center',
   },
   calendarContainer: {
     padding: 20,
@@ -431,35 +711,11 @@ const getStyles = (theme) => StyleSheet.create({
     lineHeight: 32,
     fontWeight: 'bold',
   },
-  activityTypesContainer: {
-    padding: 20,
-  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: theme.primary,
     marginBottom: 16,
-  },
-  activityItem: {
-    marginBottom: 20,
-  },
-  activityTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.text,
-    marginBottom: 8,
-  },
-  activityDescriptionBlock: {
-    backgroundColor: theme.card,
-    padding: 16,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: theme.primary,
-  },
-  activityDescription: {
-    fontSize: 14,
-    color: theme.secondary,
-    lineHeight: 20,
   },
   // Saved Tab styles
   savedContainer: {
