@@ -36,6 +36,7 @@ export default function JobDescription() {
   const [selectedResume, setSelectedResume] = useState(null);
   const [showCoverLetterDropdown, setShowCoverLetterDropdown] = useState(false);
   const [showResumeDropdown, setShowResumeDropdown] = useState(false);
+  const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
 
   // Mock templates data (same as Templates screen)
   const [availableTemplates] = useState({
@@ -513,23 +514,91 @@ export default function JobDescription() {
             </View>
           )}
 
-          {/* Section 1: Job Description */}
-            <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About the Role and Company</Text>
-              <View style={styles.textBlock}>
-              <Text style={styles.textContent}>
-                {job?.description || 'No description provided.'}
-              </Text>
-            </View>
-          </View>
+                     {/* Section 1: Job Description */}
+             <View style={styles.section}>
+               <Text style={styles.sectionTitle}>About the Role and Company</Text>
+               <View style={styles.textBlock}>
+                 <Text style={styles.textContent}>
+                   {job?.description || 'No description provided.'}
+                 </Text>
+                 <View style={styles.additionalCompanyInfo}>
+                   <Text style={styles.textContent}>
+                     <Text style={styles.boldLabel}>Team Work size: </Text>{job.teamWorkSize}
+                   </Text>
+                   <Text style={styles.textContent}>
+                     <Text style={styles.boldLabel}>Company size: </Text>{job.companySize}
+                   </Text>
+                 </View>
+               </View>
+             </View>
+
+           {/* Section: Additional Info */}
+           <View style={styles.section}>
+             <TouchableOpacity 
+               style={styles.collapsibleHeader}
+               onPress={() => setShowAdditionalInfo(!showAdditionalInfo)}
+               accessible={true}
+               accessibilityLabel="Additional information section"
+               accessibilityHint="Tap to expand or collapse additional job information"
+               accessibilityRole="button"
+             >
+               <Text style={styles.sectionTitle}>Additional info</Text>
+               <Ionicons 
+                 name={showAdditionalInfo ? "chevron-up" : "chevron-down"} 
+                 size={20} 
+                 color={theme.primary} 
+               />
+             </TouchableOpacity>
+             {showAdditionalInfo && (
+               <View style={styles.textBlock}>
+                 {!!job?.hoursWeekly && (
+                   <View style={styles.detailRow}>
+                     <Text style={styles.detailLabel}>Hours weekly: </Text>
+                     <Text style={styles.detailValue}>{job.hoursWeekly}</Text>
+                   </View>
+                 )}
+                 {!!job?.breakTimes && (
+                   <View style={styles.detailRow}>
+                     <Text style={styles.detailLabel}>Break times: </Text>
+                     <Text style={styles.detailValue}>{job.breakTimes}</Text>
+                   </View>
+                 )}
+                 {job?.flexibleHours !== undefined && (
+                   <View style={styles.detailRow}>
+                     <Text style={styles.detailLabel}>Flexible hours: </Text>
+                     <Text style={styles.detailValue}>{job.flexibleHours ? 'Yes' : 'No'}</Text>
+                   </View>
+                 )}
+                 {job?.involvesCustomerService !== undefined && (
+                   <View style={styles.detailRow}>
+                     <Text style={styles.detailLabel}>Involves customer service: </Text>
+                     <Text style={styles.detailValue}>{job.involvesCustomerService ? 'Yes' : 'No'}</Text>
+                   </View>
+                 )}
+                 {!!job?.dressCode && (
+                   <View style={styles.detailRow}>
+                     <Text style={styles.detailLabel}>Dress code: </Text>
+                     <Text style={styles.detailValue}>{job.dressCode}</Text>
+                   </View>
+                 )}
+               </View>
+             )}
+           </View>
 
           {/* Section 3: Location */}
           {!!(job?.location) && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Location</Text>
-              <View style={styles.textBlock}>
+              <View style={styles.textBlock}>                
                 <Text style={styles.textContent}>
-                  {`${job.location.suburb || ''}${job.location.suburb && job.location.city ? ', ' : ''}${job.location.city || ''}`}
+                  <Ionicons name="location-sharp" size={16} color={theme.primary} style={styles.locationTextBlock} />  
+                  {[
+                    job.location.addressLine1,
+                    job.location.addressLine2,
+                    job.location.suburb,
+                    job.location.city,
+                    job.location.state
+                  ].filter(Boolean).join(', ')}
                 </Text>
               </View>
             </View>
@@ -602,7 +671,7 @@ const getStyles = (theme) => StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: theme.text,
+    color: theme.primary,
     marginBottom: 12,
   },
   textBlock: {
@@ -611,6 +680,9 @@ const getStyles = (theme) => StyleSheet.create({
     borderRadius: 8,
     borderLeftWidth: 4,
     borderLeftColor: theme.primary,
+  },
+  locationTextBlock: {
+    marginRight: 30,
   },
   textContent: {
     fontSize: 16,
@@ -624,7 +696,7 @@ const getStyles = (theme) => StyleSheet.create({
   },
   detailLabel: {
     fontSize: 16,
-    color: theme.text,
+    color: theme.primary,
     fontWeight: 'bold',
   },
   detailValue: {
@@ -879,4 +951,17 @@ const getStyles = (theme) => StyleSheet.create({
     right: 20,
     maxHeight: 200,
   },
+     additionalCompanyInfo: {
+     alignItems: 'flex-start',
+     marginTop: 18,
+   },
+   boldLabel: {
+     fontWeight: 'bold',
+   },
+   collapsibleHeader: {
+     flexDirection: 'row',
+     justifyContent: 'space-between',
+     alignItems: 'center',
+     paddingVertical: 8,
+   },
 });
