@@ -289,7 +289,7 @@ const Templates = () => {
 const getStyles = (theme) => ({
   container: {
     flex: 1,
-    backgroundColor: theme.card,
+    backgroundColor: theme.background,
   },
   header: {
     paddingHorizontal: 20,
@@ -309,7 +309,7 @@ const getStyles = (theme) => ({
   },
   section: {
     marginTop: 20,
-    backgroundColor: theme.background,
+    backgroundColor: theme.card,
     borderRadius: 12,
     padding: 16,
     shadowColor: '#000',
@@ -346,7 +346,7 @@ const getStyles = (theme) => ({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: theme.card,
+    backgroundColor: theme.background,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: theme.border,

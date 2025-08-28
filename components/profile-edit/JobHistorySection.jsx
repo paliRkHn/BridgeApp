@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { Entypo, MaterialIcons, Ionicons } from '@expo/vector-icons';
-
+import { useTheme } from '../../context/ThemeContext';
 const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const { theme } = useTheme();
   const [newJob, setNewJob] = useState({
     title: '',
     company: '',
@@ -163,9 +165,12 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
     );
   };
 
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
+
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Job History</Text>
+      <Text style={[styles.sectionTitle, { color: theme.text }]}>Job History</Text>
       
       {/* Existing Job History */}
       {jobHistory && jobHistory.length > 0 ? (
@@ -174,9 +179,6 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
             <View style={styles.jobHeader}>
               <Text style={styles.jobTitle}>{job.title}</Text>
               <View style={styles.jobActions}>
-                <Text style={styles.jobDuration}>
-                  {job.startDate} - {job.endDate}
-                </Text>
                 {isEditing && (
                   <View style={styles.actionButtons}>
                     <TouchableOpacity
@@ -199,6 +201,9 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
             {job.description && (
               <Text style={styles.jobDescription}>{job.description}</Text>
             )}
+            <Text style={styles.jobDuration}>
+              {job.startDate} - {job.endDate}
+            </Text>
           </View>
         ))
       ) : (
@@ -387,25 +392,30 @@ const JobHistorySection = ({ jobHistory, onUpdateJobHistory, isEditing }) => {
   );
 };
 
-const styles = {
+const getStyles = (theme) => StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   section: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
     overflow: 'visible',
     zIndex: 1,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.text,
+    color: theme.text,
     marginBottom: 16,
   },
   jobItem: {
     marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: theme.card,
+    borderLeftWidth: 4,
+    borderLeftColor: theme.primary,
   },
   jobHeader: {
     flexDirection: 'row',
@@ -415,22 +425,26 @@ const styles = {
   },
   jobTitle: {
     fontSize: 18,
+    color: theme.text,
+    flex: 1,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.text,
     flex: 1,
   },
   jobActions: {
     alignItems: 'flex-end',
   },
   jobDuration: {
+    textAlign: 'right',
     fontSize: 14,
-    color: '#666',
+    textAlign: 'right',
+    color: theme.secondary,
     fontStyle: 'italic',
-    marginBottom: 4,
   },
   actionButtons: {
     flexDirection: 'row',
     gap: 8,
+    marginTop: 4,
   },
   editJobButton: {
     paddingHorizontal: 8,
@@ -456,8 +470,8 @@ const styles = {
   },
   jobCompany: {
     fontSize: 16,
-    color: '#432272',
-    fontWeight: '600',
+    color: theme.text,
+    color: theme.text,
     marginBottom: 8,
   },
   jobDescription: {
@@ -466,11 +480,13 @@ const styles = {
     lineHeight: 20,
   },
   textBlock: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#432272',
+    borderLeftColor: theme.primary,
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
@@ -492,9 +508,11 @@ const styles = {
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.primary,
+    backgroundColor: theme.primary,
     borderWidth: 2,
-    borderColor: '#432272',
+    borderColor: theme.primary,
+    borderColor: theme.primary,
     borderStyle: 'dashed',
     borderRadius: 8,
     paddingVertical: 16,
@@ -502,13 +520,13 @@ const styles = {
   },
   addButtonIcon: {
     fontSize: 20,
-    color: '#432272',
+    color: theme.emphasis,
     textAlign: 'right',
     paddingHorizontal: 10,
   },
   addButtonText: {
     fontSize: 16,
-    color: '#432272',
+    color: theme.emphasis,
     fontWeight: '800',
     textAlign: 'left',
     paddingHorizontal: 10,
@@ -685,6 +703,7 @@ const styles = {
     fontSize: 14,
     fontWeight: '600',
   },
-};
+});
+});
 
 export default JobHistorySection;

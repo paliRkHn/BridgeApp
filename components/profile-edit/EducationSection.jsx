@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet } from 'react-native';
 import { Entypo, MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 
 const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
+  const { theme } = useTheme();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [newEducation, setNewEducation] = useState({
@@ -125,6 +127,9 @@ const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
     );
   };
 
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Education</Text>
@@ -134,18 +139,15 @@ const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
         education.map((edu, index) => (
           <View key={edu.id} style={styles.jobItem}>
             <View style={styles.jobHeader}>
-              <Text style={styles.jobTitle}>{edu.name}</Text>
+              <Text style={styles.jobTitle}>{edu.name}</Text>              
               <View style={styles.jobActions}>
-                <Text style={styles.jobDuration}>
-                  {edu.endDate}
-                </Text>
                 {isEditing && (
                   <View style={styles.actionButtons}>
                     <TouchableOpacity
                       style={styles.editJobButton}
                       onPress={() => handleEditEducation(index)}
                     >
-                      <MaterialIcons name="edit" size={16} color="#432272" />
+                      <MaterialIcons name="edit" size={16} color={theme.primary} />
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.deleteJobButton}
@@ -157,8 +159,11 @@ const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
                 )}
               </View>
             </View>
-            <Text style={styles.jobCompany}>{edu.institution}</Text>
             <Text style={styles.educationType}>{edu.type}</Text>
+            <Text style={styles.jobCompany}>{edu.institution}</Text>            
+            <Text style={styles.jobDuration}>
+                  {edu.endDate}
+            </Text>
           </View>
         ))
       ) : (
@@ -176,7 +181,7 @@ const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
             style={styles.addButton}
             onPress={() => setShowAddForm(!showAddForm)}
           >
-            <Entypo name="plus" size={20} color="#432272" style={styles.addButtonIcon} />
+            <Entypo name="plus" size={20} color={theme.primary} style={styles.addButtonIcon} />
             <Text style={styles.addButtonText}>Add education</Text>
           </TouchableOpacity>
 
@@ -273,23 +278,28 @@ const EducationSection = ({ education, onUpdateEducation, isEditing }) => {
   );
 };
 
-const styles = {
+const getStyles = (theme) => StyleSheet.create({
   section: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
+    borderBottomColor: theme.border,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#432272',
+    color: theme.text,
+    color: theme.text,
     marginBottom: 16,
   },
   jobItem: {
     marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: theme.card,
+    borderLeftWidth: 4,
+    borderLeftColor: theme.primary,
   },
   jobHeader: {
     flexDirection: 'row',
@@ -300,15 +310,18 @@ const styles = {
   jobTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.text,
+    color: theme.text,
     flex: 1,
   },
   jobActions: {
     alignItems: 'flex-end',
   },
   jobDuration: {
+    textAlign: 'right',
     fontSize: 14,
-    color: '#666',
+    textAlign: 'right',
+    color: theme.secondary,
     fontStyle: 'italic',
     marginBottom: 4,
   },
@@ -330,20 +343,22 @@ const styles = {
   },
   jobCompany: {
     fontSize: 16,
-    color: '#432272',
-    fontWeight: '600',
+    color: theme.text,
+    color: theme.text,
     marginBottom: 8,
   },
   textBlock: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#432272',
+    borderLeftColor: theme.primary,
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
     lineHeight: 24,
   },
   placeholder: {
@@ -357,9 +372,11 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.primary,
+    backgroundColor: theme.primary,
     borderWidth: 2,
-    borderColor: '#432272',
+    borderColor: theme.primary,
+    borderColor: theme.primary,
     borderStyle: 'dashed',
     borderRadius: 8,
     paddingVertical: 16,
@@ -367,13 +384,13 @@ const styles = {
   },
   addButtonIcon: {
     fontSize: 20,
-    color: '#432272',
+    color: theme.emphasis,
     textAlign: 'right',
     paddingHorizontal: 10,
   },
   addButtonText: {
     fontSize: 16,
-    color: '#432272',
+    color: theme.emphasis,
     fontWeight: '800',
     textAlign: 'left',
     paddingHorizontal: 10,
@@ -381,7 +398,7 @@ const styles = {
   cascadeForm: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 8,
     marginTop: 8,
     padding: 16,
@@ -397,17 +414,17 @@ const styles = {
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: theme.text,
     marginBottom: 6,
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 6,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
   },
   dateRow: {
     flexDirection: 'row',
@@ -422,15 +439,15 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 6,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
   },
   dropdownText: {
     fontSize: 16,
-    color: '#333',
+    color: theme.text,
   },
   dropdownMenu: {
     position: 'absolute',
@@ -439,7 +456,7 @@ const styles = {
     right: 0,
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: theme.border,
     borderRadius: 6,
     marginTop: 2,
     zIndex: 1000,
@@ -456,11 +473,11 @@ const styles = {
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
   },
   dropdownItemText: {
     fontSize: 14,
-    color: '#333',
+    color: theme.text,
   },
   checkboxRow: {
     flexDirection: 'row',
@@ -472,13 +489,13 @@ const styles = {
     height: 18,
     borderRadius: 3,
     borderWidth: 2,
-    borderColor: '#ccc',
+    borderColor: theme.border,
     marginRight: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkboxChecked: {
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     borderColor: '#432272',
   },
   checkmark: {
@@ -488,7 +505,7 @@ const styles = {
   },
   checkboxLabel: {
     fontSize: 14,
-    color: '#333',
+    color: theme.text,
   },
   formActions: {
     flexDirection: 'row',
@@ -504,13 +521,13 @@ const styles = {
     alignItems: 'center',
   },
   cancelButtonText: {
-    color: '#333',
+    color: theme.text,
     fontSize: 14,
     fontWeight: '600',
   },
   saveButton: {
     flex: 1,
-    backgroundColor: '#432272',
+    backgroundColor: theme.primary,
     paddingVertical: 10,
     borderRadius: 6,
     alignItems: 'center',
@@ -522,10 +539,9 @@ const styles = {
   },
   educationType: {
     fontSize: 14,
-    color: '#666',
-    fontStyle: 'italic',
+    color: theme.secondary,
     marginTop: 4,
   },
-};
+});
 
 export default EducationSection;

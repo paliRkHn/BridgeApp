@@ -106,12 +106,6 @@ export default function Profile() {
     }
   };
 
-
-
-  const goBack = () => {
-    navigation.navigate('Dashboard');
-  };
-
   const toggleEdit = () => {
     setIsEditing(!isEditing);
   };
@@ -197,6 +191,7 @@ export default function Profile() {
                   value={profileData.location}
                   onChangeText={(text) => setProfileData({...profileData, location: text})}
                   placeholder="Enter your location (optional)"
+                  placeholderTextColor={theme.secondary}
                 />
               </View>
             ) : (
@@ -349,19 +344,6 @@ const getStyles = (theme) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: theme.border,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backButtonText: {
-    color: theme.background,
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -389,7 +371,7 @@ const getStyles = (theme) => StyleSheet.create({
     padding: 20,
     alignItems: 'flex-start',
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.border,
   },
   avatarUploadContainer: {
     marginRight: 20,
@@ -402,7 +384,7 @@ const getStyles = (theme) => StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.text,
     marginBottom: 4,
     textAlign: 'right',
   },
@@ -410,12 +392,14 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'right',
-    color: '#333',
+    color: theme.border,
     marginBottom: 4,
     borderWidth: 1,
     borderColor: '#e0e0e0',
+    backgroundColor: theme.searchBar,
     borderRadius: 4,
     padding: 8,
+    backgroundColor: theme.searchBar,
   },
   locationContainer: {
     flexDirection: 'row',
@@ -427,8 +411,10 @@ const getStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#e0e0e0',
+    backgroundColor: theme.searchBar,
     borderRadius: 4,
     padding: 8,
+    backgroundColor: theme.searchBar,
   },
   locationIcon: {
     marginRight: 8,
@@ -452,18 +438,20 @@ const getStyles = (theme) => StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: theme.primary,
+    color: theme.text,
     marginBottom: 16,
   },
   summaryInput: {
     borderWidth: 1,
     borderColor: theme.border,
+    backgroundColor: theme.card,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    color: theme.text,
+    color: '#000000',
     textAlignVertical: 'top',
     minHeight: 100,
+    backgroundColor: theme.searchBar,
   },
   textBlock: {
     backgroundColor: theme.card,
@@ -511,8 +499,6 @@ const getStyles = (theme) => StyleSheet.create({
     color: '#666',
     lineHeight: 20,
   },
-
-
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.9)',

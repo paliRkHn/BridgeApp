@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -131,7 +131,7 @@ const SkillsSection = ({ skills, onUpdateSkills, isEditing }) => {
   );
 };
 
-const getStyles = (theme) => ({
+const getStyles = (theme) => StyleSheet.create({
   section: {
     padding: 20,
     borderBottomWidth: 1,
@@ -140,15 +140,15 @@ const getStyles = (theme) => ({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: theme.primary,
+    color: theme.text,
     marginBottom: 16,
   },
   textBlock: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.card,
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#432272',
+    borderLeftColor: theme.primary,
   },
   textContent: {
     fontSize: 16,
@@ -176,7 +176,7 @@ const getStyles = (theme) => ({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.searchBar,
   },
   addButton: {
     flexDirection: 'row',
@@ -184,9 +184,9 @@ const getStyles = (theme) => ({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.primary,
     borderWidth: 2,
-    borderColor: '#432272',
+    borderColor: theme.primary,
     borderStyle: 'dashed',
     borderRadius: 8,
     paddingVertical: 16,
@@ -194,13 +194,13 @@ const getStyles = (theme) => ({
   },
   addButtonIcon: {
     fontSize: 20,
-    color: '#432272',
+    color: theme.emphasis,
     textAlign: 'right',
     paddingHorizontal: 10,
   },
   addButtonText: {
     fontSize: 16,
-    color: '#432272',
+    color: theme.emphasis,
     fontWeight: '800',
     textAlign: 'left',
     paddingHorizontal: 10,
