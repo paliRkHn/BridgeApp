@@ -25,16 +25,6 @@ const defaultTheme = {
   border: '#e0e0e0'
 };
 
-// Static default theme for SignUp screen (unaffected by theme changes)
-const defaultTheme = {
-  background: '#FFFFFF',
-  text: '#333333',
-  primary: '#432272',
-  secondary: '#666666',
-  card: '#f8f9fa',
-  border: '#e0e0e0'
-};
-
 export default function SignUpForm({ 
   formData, 
   setFormData, 
@@ -60,7 +50,6 @@ export default function SignUpForm({
   };
 
   const styles = getStyles(defaultTheme);
-  const styles = getStyles(defaultTheme);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -77,7 +66,6 @@ export default function SignUpForm({
         >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.title, { color: defaultTheme.primary }]}>Sign Up</Text>
           <Text style={[styles.title, { color: defaultTheme.primary }]}>Sign Up</Text>
           <View style={styles.placeholder} />
         </View>
@@ -99,12 +87,11 @@ export default function SignUpForm({
           <View style={styles.nameRow}>
             <View style={styles.nameField}>
               <Text style={[styles.label, { color: defaultTheme.text }]}>First Name *</Text>
-              <Text style={[styles.label, { color: defaultTheme.text }]}>First Name *</Text>
               <TextInput
                 style={[styles.input, { 
                   borderColor: defaultTheme.secondary,
                   backgroundColor: defaultTheme.background,
-                  color: defaultTheme.text
+                  color: defaultTheme.text,
                   borderColor: defaultTheme.secondary,
                   backgroundColor: defaultTheme.background,
                   color: defaultTheme.text
@@ -115,16 +102,19 @@ export default function SignUpForm({
                 placeholderTextColor="#999"
                 autoCapitalize="words"
                 returnKeyType="next"
+                accessible={true}
+                accessibilityLabel="First Name"
+                accessibilityHint="Enter your first name for account registration"
+                accessibilityRole="text"
               />
             </View>
             <View style={styles.nameField}>
-              <Text style={[styles.label, { color: defaultTheme.text }]}>Last Name *</Text>
               <Text style={[styles.label, { color: defaultTheme.text }]}>Last Name *</Text>
               <TextInput
                 style={[styles.input, { 
                   borderColor: defaultTheme.secondary,
                   backgroundColor: defaultTheme.background,
-                  color: defaultTheme.text
+                  color: defaultTheme.text,
                   borderColor: defaultTheme.secondary,
                   backgroundColor: defaultTheme.background,
                   color: defaultTheme.text
@@ -135,6 +125,10 @@ export default function SignUpForm({
                 placeholderTextColor="#999"
                 autoCapitalize="words"
                 returnKeyType="next"
+                accessible={true}
+                accessibilityLabel="Last Name"
+                accessibilityHint="Enter your last name for account registration"
+                accessibilityRole="text"
               />
             </View>
           </View>
@@ -142,12 +136,11 @@ export default function SignUpForm({
           {/* Email Field */}
           <View style={styles.fieldContainer}>
             <Text style={[styles.label, { color: defaultTheme.text }]}>Email Address *</Text>
-            <Text style={[styles.label, { color: defaultTheme.text }]}>Email Address *</Text>
             <TextInput
               style={[styles.input, { 
                 borderColor: defaultTheme.secondary,
                 backgroundColor: defaultTheme.background,
-                color: defaultTheme.text
+                color: defaultTheme.text,
                 borderColor: defaultTheme.secondary,
                 backgroundColor: defaultTheme.background,
                 color: defaultTheme.text
@@ -156,25 +149,26 @@ export default function SignUpForm({
               onChangeText={(text) => setFormData({...formData, email: text})}
               placeholder="Enter email address"
               placeholderTextColor={defaultTheme.secondary}
-              placeholderTextColor={defaultTheme.secondary}
               keyboardType="email-address"
               autoCapitalize="none"
               returnKeyType="next"
+              accessible={true}
+              accessibilityLabel="Email Address"
+              accessibilityHint="Enter a valid email address for your account"
+              accessibilityRole="text"
             />
           </View>
 
           {/* Password Field */}
           <View style={styles.fieldContainer}>
             <Text style={[styles.label, { color: defaultTheme.text }]}>Password *</Text>
-            <Text style={[styles.label, { color: defaultTheme.text }]}>Password *</Text>
             <View style={[styles.passwordContainer, { 
               borderColor: defaultTheme.secondary,
-              backgroundColor: defaultTheme.background
+              backgroundColor: defaultTheme.background,
               borderColor: defaultTheme.secondary,
               backgroundColor: defaultTheme.background
             }]}>
               <TextInput
-                style={[styles.passwordInput, { color: defaultTheme.text }]}
                 style={[styles.passwordInput, { color: defaultTheme.text }]}
                 value={formData.password}
                 onChangeText={(text) => setFormData({...formData, password: text})}
@@ -183,10 +177,18 @@ export default function SignUpForm({
                 secureTextEntry={!isPasswordVisible}
                 autoCapitalize="none"
                 returnKeyType="next"
+                accessible={true}
+                accessibilityLabel="Password"
+                accessibilityHint="Enter a password with at least 6 characters"
+                accessibilityRole="text"
               />
               <TouchableOpacity 
                 style={styles.eyeButton}
                 onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                accessible={true}
+                accessibilityLabel={isPasswordVisible ? "Hide password" : "Show password"}
+                accessibilityHint={isPasswordVisible ? "Tap to hide your password" : "Tap to show your password"}
+                accessibilityRole="button"
               >
                 <View style={styles.eyeButtonText}>
                   {isPasswordVisible ? <MaterialIcons name="visibility" size={24} color="black" /> : <MaterialIcons name="visibility-off" size={24} color="black" />}
@@ -198,15 +200,13 @@ export default function SignUpForm({
           {/* Confirm Password Field */}
           <View style={styles.fieldContainer}>
             <Text style={[styles.label, { color: defaultTheme.text }]}>Confirm Password *</Text>
-            <Text style={[styles.label, { color: defaultTheme.text }]}>Confirm Password *</Text>
             <View style={[styles.passwordContainer, { 
               borderColor: defaultTheme.secondary,
-              backgroundColor: defaultTheme.background
+              backgroundColor: defaultTheme.background,
               borderColor: defaultTheme.secondary,
               backgroundColor: defaultTheme.background
             }]}>
               <TextInput
-                style={[styles.passwordInput, { color: defaultTheme.text }]}
                 style={[styles.passwordInput, { color: defaultTheme.text }]}
                 value={formData.confirmPassword}
                 onChangeText={(text) => setFormData({...formData, confirmPassword: text})}
@@ -216,10 +216,18 @@ export default function SignUpForm({
                 autoCapitalize="none"
                 returnKeyType="done"
                 onSubmitEditing={handleSignUp}
+                accessible={true}
+                accessibilityLabel="Confirm Password"
+                accessibilityHint="Re-enter your password to confirm it matches"
+                accessibilityRole="text"
               />
               <TouchableOpacity 
                 style={styles.eyeButton}
                 onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
+                accessible={true}
+                accessibilityLabel={isConfirmPasswordVisible ? "Hide confirm password" : "Show confirm password"}
+                accessibilityHint={isConfirmPasswordVisible ? "Tap to hide your confirm password" : "Tap to show your confirm password"}
+                accessibilityRole="button"
               >
                 <View style={styles.eyeButtonText}>
                   {isConfirmPasswordVisible ? <MaterialIcons name="visibility" size={24} color="black" /> : <MaterialIcons name="visibility-off" size={24} color="black" />}
@@ -231,12 +239,9 @@ export default function SignUpForm({
           {/* Terms and Conditions */}
           <View style={styles.termsContainer}>
             <Text style={[styles.termsText, { color: defaultTheme.secondary }]}>
-            <Text style={[styles.termsText, { color: defaultTheme.secondary }]}>
               By signing up, you agree to our{' '}
               <Text style={[styles.linkText, { color: defaultTheme.primary }]}>Terms of Service</Text>
-              <Text style={[styles.linkText, { color: defaultTheme.primary }]}>Terms of Service</Text>
               {' '}and{' '}
-              <Text style={[styles.linkText, { color: defaultTheme.primary }]}>Privacy Policy</Text>
               <Text style={[styles.linkText, { color: defaultTheme.primary }]}>Privacy Policy</Text>
             </Text>
           </View>
@@ -246,9 +251,13 @@ export default function SignUpForm({
         <View style={styles.buttonContainer}>
           <TouchableOpacity 
             style={[styles.signUpButton, { backgroundColor: defaultTheme.primary }]} 
-            style={[styles.signUpButton, { backgroundColor: defaultTheme.primary }]} 
             onPress={handleSignUp}
             disabled={isLoading}
+            accessible={true}
+            accessibilityLabel={isLoading ? "Creating Account" : "Sign Up"}
+            accessibilityHint="Tap to create your new account with the information provided"
+            accessibilityRole="button"
+            accessibilityState={{ disabled: isLoading }}
           >
             <Text style={styles.signUpButtonText}>
               {isLoading ? 'Creating Account...' : 'Sign Up'}
@@ -259,9 +268,13 @@ export default function SignUpForm({
         {/* Login Link */}
         <View style={styles.loginContainer}>
           <Text style={[styles.loginText, { color: defaultTheme.secondary }]}>Already have an account? </Text>
-          <Text style={[styles.loginText, { color: defaultTheme.secondary }]}>Already have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={[styles.loginLink, { color: defaultTheme.primary }]}>Log In</Text>
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('Login')}
+            accessible={true}
+            accessibilityLabel="Log In"
+            accessibilityHint="Tap to go to the login screen if you already have an account"
+            accessibilityRole="button"
+          >
             <Text style={[styles.loginLink, { color: defaultTheme.primary }]}>Log In</Text>
           </TouchableOpacity>
         </View>
@@ -271,7 +284,7 @@ export default function SignUpForm({
   );
 }
 
-const getStyles = (theme) => StyleSheet.create({
+const getStyles = (defaultTheme) => StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: defaultTheme.background,

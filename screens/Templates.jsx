@@ -116,10 +116,20 @@ const Templates = () => {
         selectedItems.includes(item.id) && styles.selectedItem
       ]}
       onPress={() => handleSelection(item.id)}
+      accessible={true}
+      accessibilityLabel={`${item.title} document, ${item.type ? `${item.type} file, ` : ''}${item.isDefault ? 'default, ' : ''}created ${item.date}`}
+      accessibilityHint={`Tap to ${selectedItems.includes(item.id) ? 'deselect' : 'select'} this document`}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: selectedItems.includes(item.id) }}
     >
       <TouchableOpacity
         style={styles.radioButton}
         onPress={() => handleSelection(item.id)}
+        accessible={true}
+        accessibilityLabel={`${selectedItems.includes(item.id) ? 'Deselect' : 'Select'} ${item.title}`}
+        accessibilityHint={`Tap to ${selectedItems.includes(item.id) ? 'deselect' : 'select'} this document`}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: selectedItems.includes(item.id) }}
       >
         <View style={[
           styles.radioCircle,
@@ -156,6 +166,11 @@ const Templates = () => {
         <TouchableOpacity
           style={styles.sectionTitleRow}
           onPress={() => setExpanded(!expanded)}
+          accessible={true}
+          accessibilityLabel={`${title} section`}
+          accessibilityHint={`Tap to ${expanded ? 'collapse' : 'expand'} ${title} section`}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: expanded }}
         >
           <Text style={styles.sectionTitle}>{title}</Text>
           <Ionicons
@@ -171,6 +186,10 @@ const Templates = () => {
                style={styles.addButton}
                onPress={() => handleAddButton(sectionKey)}
                onPressIn={(e) => e.stopPropagation()}
+               accessible={true}
+               accessibilityLabel={`Add new ${sectionKey === 'coverLetters' ? 'cover letter' : 'resume'}`}
+               accessibilityHint={`Tap to add a new ${sectionKey === 'coverLetters' ? 'cover letter' : 'resume'} document`}
+               accessibilityRole="button"
              >
               <Ionicons name="add" size={26} color={theme.primary} />
             </TouchableOpacity>
@@ -180,16 +199,24 @@ const Templates = () => {
                    style={styles.dropdownOption}
                    onPress={() => handleAddAction('Write')}
                    onPressIn={(e) => e.stopPropagation()}
+                   accessible={true}
+                   accessibilityLabel="Write new document"
+                   accessibilityHint="Tap to create a new document using the text editor"
+                   accessibilityRole="button"
                  >
-                                       <Ionicons name="create" size={16} color={theme.primary} />
+                   <Ionicons name="create" size={16} color={theme.primary} />
                    <Text style={styles.dropdownOptionText}>Write</Text>
                  </TouchableOpacity>
                  <TouchableOpacity
                    style={styles.dropdownOption}
                    onPress={() => handleAddAction('Upload doc')}
                    onPressIn={(e) => e.stopPropagation()}
+                   accessible={true}
+                   accessibilityLabel="Upload document"
+                   accessibilityHint="Tap to upload a document file from your device"
+                   accessibilityRole="button"
                  >
-                                       <Ionicons name="cloud-upload" size={16} color={theme.primary} />
+                   <Ionicons name="cloud-upload" size={16} color={theme.primary} />
                    <Text style={styles.dropdownOptionText}>Upload doc</Text>
                  </TouchableOpacity>
                </View>
@@ -252,6 +279,10 @@ const Templates = () => {
                 setShowActionMenu(false);
                 setSelectedItems([]);
               }}
+              accessible={true}
+              accessibilityLabel="Close selection menu"
+              accessibilityHint="Tap to close the selection menu and clear all selections"
+              accessibilityRole="button"
             >
               <Ionicons name="close" size={20} color={theme.secondary} />
             </TouchableOpacity>
@@ -261,6 +292,10 @@ const Templates = () => {
             <TouchableOpacity
               style={styles.actionMenuOption}
               onPress={() => handleItemAction('Make default')}
+              accessible={true}
+              accessibilityLabel="Make default"
+              accessibilityHint="Tap to set the selected documents as default"
+              accessibilityRole="button"
             >
               <Ionicons name="star" size={20} color={theme.primary} />
               <Text style={styles.actionMenuOptionText}>Make default</Text>
@@ -268,6 +303,10 @@ const Templates = () => {
             <TouchableOpacity
               style={styles.actionMenuOption}
               onPress={() => handleItemAction('Rename')}
+              accessible={true}
+              accessibilityLabel="Rename"
+              accessibilityHint="Tap to rename the selected documents"
+              accessibilityRole="button"
             >
               <Ionicons name="pencil" size={20} color={theme.primary} />
               <Text style={styles.actionMenuOptionText}>Rename</Text>
@@ -275,6 +314,10 @@ const Templates = () => {
             <TouchableOpacity
               style={[styles.actionMenuOption, styles.deleteActionOption]}
               onPress={() => handleItemAction('Delete')}
+              accessible={true}
+              accessibilityLabel="Delete"
+              accessibilityHint="Tap to delete the selected documents permanently"
+              accessibilityRole="button"
             >
               <Ionicons name="trash" size={20} color="#e74c3c" />
               <Text style={[styles.actionMenuOptionText, styles.deleteText]}>Delete</Text>
