@@ -289,6 +289,45 @@ export default function HelpForm() {
             </View>
           </View>
 
+          {/* Legal Links Section */}
+          <View style={styles.legalSection}>
+            <View style={styles.legalHeader}>
+              <MaterialIcons name="info-outline" size={24} color={theme.primary} />
+              <Text style={styles.sectionTitle}>Legal Information</Text>
+            </View>
+            <Text style={styles.sectionDescription}>
+              Review our policies and terms
+            </Text>
+
+            <View style={styles.legalLinks}>
+              <TouchableOpacity
+                style={styles.legalLinkButton}
+                onPress={() => navigation.navigate('TermsOfService')}
+                accessible={true}
+                accessibilityLabel="Terms of Service"
+                accessibilityHint="Tap to view the Terms of Service"
+                accessibilityRole="button"
+              >
+                <MaterialIcons name="description" size={20} color={theme.primary} />
+                <Text style={styles.legalLinkText}>Terms of Service</Text>
+                <MaterialIcons name="chevron-right" size={20} color={theme.secondary} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.legalLinkButton, styles.lastLegalLinkButton]}
+                onPress={() => navigation.navigate('PrivacyPolicy')}
+                accessible={true}
+                accessibilityLabel="Privacy Policy"
+                accessibilityHint="Tap to view the Privacy Policy"
+                accessibilityRole="button"
+              >
+                <MaterialIcons name="privacy-tip" size={20} color={theme.primary} />
+                <Text style={styles.legalLinkText}>Privacy Policy</Text>
+                <MaterialIcons name="chevron-right" size={20} color={theme.secondary} />
+              </TouchableOpacity>
+            </View>
+          </View>
+
           {/* Bottom spacing */}
           <View style={styles.bottomSpacing} />
         </ScrollView>
@@ -442,5 +481,40 @@ const getStyles = (theme) => StyleSheet.create({
   },
   bottomSpacing: {
     height: 40,
+  },
+  legalSection: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 16,
+  },
+  legalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  legalLinks: {
+    backgroundColor: theme.card,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.border,
+    overflow: 'hidden',
+  },
+  legalLinkButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+  },
+  legalLinkText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: theme.text,
+    flex: 1,
+    marginLeft: 12,
+  },
+  lastLegalLinkButton: {
+    borderBottomWidth: 0,
   },
 });

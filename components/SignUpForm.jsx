@@ -240,9 +240,27 @@ export default function SignUpForm({
           <View style={styles.termsContainer}>
             <Text style={[styles.termsText, { color: defaultTheme.secondary }]}>
               By signing up, you agree to our{' '}
-              <Text style={[styles.linkText, { color: defaultTheme.primary }]}>Terms of Service</Text>
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('TermsOfService')}
+                accessible={true}
+                accessibilityLabel="Terms of Service"
+                accessibilityHint="Tap to view the Terms of Service"
+                accessibilityRole="button"
+                style={styles.inlineButton}
+              >
+                <Text style={[styles.linkText, { color: defaultTheme.primary }]}>Terms of Service</Text>
+              </TouchableOpacity>
               {' '}and{' '}
-              <Text style={[styles.linkText, { color: defaultTheme.primary }]}>Privacy Policy</Text>
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('PrivacyPolicy')}
+                accessible={true}
+                accessibilityLabel="Privacy Policy"
+                accessibilityHint="Tap to view the Privacy Policy"
+                accessibilityRole="button"
+                style={styles.inlineButton}
+              >
+                <Text style={[styles.linkText, { color: defaultTheme.primary }]}>Privacy Policy</Text>
+              </TouchableOpacity>
             </Text>
           </View>
         </View>
@@ -406,6 +424,9 @@ const getStyles = (defaultTheme) => StyleSheet.create({
     linkText: {
       color: '#432272',
       fontWeight: '600',
+    },
+    inlineButton: {
+      display: 'inline',
     },
     buttonContainer: {
       paddingHorizontal: 20,
