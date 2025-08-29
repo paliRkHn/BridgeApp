@@ -11,13 +11,7 @@ const db = admin.firestore();
 
 // Your fields to add to each document
 const fieldsToAdd = {
-  "hoursWeekly": "25h",
-  "breakTimes": "2 x 10 min break, 30 min lunch break",
-  "flexibleHours": true,
-  "involvesCustomerService": false,
-  "teamWorkSize": "8 people",
-  "companySize": "60-90 workers",
-  "dressCode": "Uniform"
+  "rate": "$35/h",
 };
 
 async function updateAllDocuments(collectionName) {
