@@ -498,6 +498,12 @@ export default function JobDescription() {
                     <Text style={styles.detailValue}>{job.jobType}</Text>
                   </View>
                 )}
+                {!!job?.rate && (
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>Rate: </Text>
+                    <Text style={styles.detailValue}>{job.rate}</Text>
+                  </View>
+                )}
               </View>
             </View>
           )}
