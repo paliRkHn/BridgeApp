@@ -330,7 +330,7 @@ export const getStyles = (theme) => StyleSheet.create({
       },
       modalResetButton: {
         alignSelf: 'flex-end',
-        backgroundColor: theme.secondary,
+        backgroundColor: theme.searchBar,
         paddingHorizontal: 16,
         paddingVertical: 6,
         borderRadius: 8,
@@ -385,25 +385,25 @@ export const getStyles = (theme) => StyleSheet.create({
       },
       cityPillsLabel: {
         fontSize: 14,
-        color: theme.secondary,
+        color: theme.emphasis,
         marginBottom: 8,
       },
       cityPillsScroll: {
         maxHeight: 50,
       },
       cityPill: {
-        backgroundColor: theme.primary,
+        backgroundColor: theme.secondary,
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 20,
         marginRight: 8,
       },
       cityPillActive: {
-        backgroundColor: '#432272',
+        backgroundColor: theme.primary,
       },
       cityPillText: {
         fontSize: 14,
-        color: theme.text,
+        color: theme.emphasis,
         fontWeight: '500',
       },
       cityPillTextActive: {
